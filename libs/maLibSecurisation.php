@@ -28,10 +28,17 @@ function verifUser($login,$password)
 	// Cas succès : on enregistre pseudo, idUser dans les variables de session 
 	// il faut appeler session_start ! 
 	// Le controleur le fait déjà !!
-	// $_SESSION["pseudo"] = $login;
-	// $_SESSION["idUser"] = $id;
+	$_SESSION["pseudo"] = $login;
+	$_SESSION["idUser"] = $id;
+	$_SESSION["connecte"] = true;
+	$_SESSION["heureConnexion"] = date("H:i:s");
+	$_SESSION["isAdmin"] = isAdmin($id);
+
 	return true;	
 }
+
+
+
 
 /**
  * Fonction à placer au début de chaque page privée
