@@ -1,5 +1,6 @@
 <?php
 
+include_once("maLibSQL.pdo.php");
 /*
 Dans ce fichier, on définit diverses fonctions permettant de récupérer des données utiles pour notre TP d'identification. Deux parties sont à compléter, en suivant les indications données dans le support de TP
 */
@@ -42,7 +43,7 @@ function verifUserBdd($login,$passe)
 	// renvoie faux si user inconnu
 	// renvoie l'id de l'utilisateur si succès
 
-	$SQL="SELECT id FROM users WHERE pseudo='$login' AND passe='$passe'";
+	$SQL="SELECT id FROM utilisateur WHERE nom='$login' AND mdp='$passe'";
 
 	return SQLGetChamp($SQL);
 	// si on avait besoin de plus d'un champ
@@ -67,6 +68,8 @@ function mkUser($pseudo, $passe,$admin=false,$couleur="black")
 function connecterUtilisateur($idUser)
 {
 	// cette fonction affecte le booléen "connecte" à vrai pour l'utilisateur concerné 
+	$SQL ="UPDATE utilisateur SET connecte='1' WHERE id='$idUser'"; 
+	SQLUpdate($SQL);
 }
 
 function deconnecterUtilisateur($idUser)
