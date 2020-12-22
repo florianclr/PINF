@@ -54,7 +54,7 @@ function verifUserBdd($login,$passe)
 function isAdmin($idUser)
 {
 	// vérifie si l'utilisateur est un administrateur
-	$SQL ="SELECT admin FROM users WHERE id='$idUser'";
+	$SQL ="SELECT admin FROM utilisateur WHERE id='$idUser'";
 	return SQLGetChamp($SQL); 
 }
 
