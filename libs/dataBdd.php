@@ -11,13 +11,6 @@ header("Access-Control-Allow-Headers: *");
 $method = $_SERVER["REQUEST_METHOD"];
 $request = false ; 
 
-setcookie("cookie[three]", "cookiethree");
-setcookie("cookie[two]", "cookietwo");
-setcookie("cookie[one]", "cookieone");
-//die($method); 
-
-
-
 if ($action = valider("action"))
 {
 
