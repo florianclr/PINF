@@ -8,6 +8,9 @@
 $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
 
+
+//print_r($_COOKIE);  
+
 if ($checked = valider("remember", "COOKIE")) $checked = "checked"; 
 
 
@@ -20,9 +23,12 @@ function connexion() {
 	if($("#remember").is(":checked"))var remember="1";
 	else var remember="0";
 	console.log(remember);
-	$.ajax({url:"libs/dataBdd.php",//cible de la requete ajax
-			data:{"login":login,"passe":passe,"remember":remember},
-			 success:function (oRep){
+
+	$.ajax({
+                url: "libs/dataBdd.php",
+                data:{"action":"Connexion","login":login,"passe":passe,"remember":remember},
+                type : "GET",
+                success:function (oRep){
 			 	console.log(oRep);
 			 	document.location.href="./index.php";
 			
