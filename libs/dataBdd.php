@@ -17,6 +17,31 @@ if ($action = valider("action"))
 	$request .= $method . "_" . $action ; 
 	//die($request); 
 
+
+	switch($request)
+		{	
+			case 'GET_Connexion' : 
+									if ($login = valider("login"))
+									if ($passe = valider("passe")){
+
+									if(verifUser($login,$passe)){
+
+										//die($_SESSION['idUser']); // pour debug !!!!!!
+										if (valider("remember")) {
+										setcookie("login",$login , time()+60*60*24*30,"/");
+										setcookie("passe",$passe, time()+60*60*24*30,"/");
+										setcookie("remember",true, time()+60*60*24*30,"/");
+										} 
+										else {
+										setcookie("login","", time()-3600,"/");
+										setcookie("passe","", time()-3600,"/");
+										setcookie("remember",false, time()-3600,"/");
+										//die($_SESSION['idUser']); // pour debug !!!!!!
+
+										}
+										// On écrit seulement après cette entête
+
+
 	switch($request)
 		{	
 			case 'GET_Connexion' : 
@@ -45,6 +70,7 @@ if ($action = valider("action"))
 								}
 								//die("test");
 								
+
 			break ; 
 
 			case 'GET_Deconnexion' :
@@ -58,7 +84,6 @@ if ($action = valider("action"))
 				$tab=categories();
 				echo(json_encode($tab));
 			break;
-
 
 		}
 }
