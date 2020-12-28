@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,17 +9,46 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Shop Homepage - Start Bootstrap Template</title>
 
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
   <link href="css/shop-homepage.css" rel="stylesheet">
+   <script src="vendor/jquery/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+var jMenu=$('<a class="list-group-item"></a>');
+
+function affichage() {
+  $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"Categories"},
+    type : "GET",
+    success:function (oRep){
+      console.log(oRep);
+      for (var i=0 ;i<oRep.length;i++) {
+        $(".list-group").append(jMenu.clone(true)
+          .html(oRep[i].nomCategorie)
+          .attr("id",oRep[i].id)
+          .attr("href","index.php?view="+oRep[i].nomCategorie)); 
+      }
+        
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+  });
+
+}
+
+</script>
 
 </head>
 
-<body>
+<body onload="affichage();">
 
   <!-- Page Content -->
   <div class="container">
@@ -27,11 +57,7 @@
 
       <div class="col-lg-3">
 
-        <h1 class="my-4">Shop Name</h1>
         <div class="list-group">
-          <a href="#" class="list-group-item">Category 1</a>
-          <a href="#" class="list-group-item">Category 2</a>
-          <a href="#" class="list-group-item">Category 3</a>
         </div>
 
       </div>

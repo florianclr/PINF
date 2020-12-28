@@ -33,7 +33,29 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 
   <!-- Custom styles for this template -->
   <link href="css/shop-homepage.css" rel="stylesheet">
+  <script src="vendor/jquery/jquery.min.js"></script>
 
+<script type="text/javascript">
+  
+function deconnexion() {
+
+  $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"Deconnexion"},
+    type : "GET",
+    success:function (oRep){
+      console.log(oRep);
+      document.location.href="./index.php";
+    },
+    error : function(jqXHR, textStatus){
+      console.log("erreur");
+    },
+    dataType: "json"
+  });
+
+}
+
+</script>
 </head>
 <!-- **** F I N **** H E A D **** -->
 
@@ -44,6 +66,17 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 <footer class="py-5 bg-dark">
     <div class="container">
       <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+      <p class="m-0 text-center text-white">
+      <?php
+    // Si l'utilisateur est connecte, on affiche un lien de deconnexion 
+    if (valider("connecte","SESSION"))
+    {
+      echo "Utilisateur <b>$_SESSION[pseudo]</b> connecté depuis <b>$_SESSION[heureConnexion]</b> &nbsp; "; 
+      echo '<input type="button" onclick="deconnexion();" value="Se déconnecter"/>';
+    }
+
+    ?>
+  </p>
     </div>
     <!-- /.container -->
   </footer>

@@ -12,6 +12,12 @@ Dans ce fichier, on définit diverses fonctions permettant de récupérer des do
 // inclure ici la librairie faciliant les requêtes SQL
 
 
+function categories()
+{
+
+	$SQL="SELECT * FROM catalogue";
+	return parcoursRs(SQLSelect($SQL));
+}
 function listerUtilisateurs($classe = "both")
 {
 	// Cette fonction liste les utilisateurs de la base de données 
@@ -54,7 +60,7 @@ function verifUserBdd($login,$passe)
 function isAdmin($idUser)
 {
 	// vérifie si l'utilisateur est un administrateur
-	$SQL ="SELECT admin FROM users WHERE id='$idUser'";
+	$SQL ="SELECT admin FROM utilisateur WHERE id='$idUser'";
 	return SQLGetChamp($SQL); 
 }
 
@@ -75,6 +81,8 @@ function connecterUtilisateur($idUser)
 function deconnecterUtilisateur($idUser)
 {
 	// cette fonction affecte le booléen "connecte" à faux pour l'utilisateur concerné 
+	$SQL ="UPDATE utilisateur SET connecte='0' WHERE id='$idUser'"; 
+	SQLUpdate($SQL);
 }
 
 function changerCouleur($idUser,$couleur="black")

@@ -7,9 +7,14 @@
 
 $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
+  
 
 if ($checked = valider("remember", "COOKIE")) $checked = "checked"; 
 
+if(valider("connecte","SESSION")){
+	$style="none";
+} 
+else $style="block";
 
 ?>
 <script type="text/javascript">
@@ -20,9 +25,12 @@ function connexion() {
 	if($("#remember").is(":checked"))var remember="1";
 	else var remember="0";
 	console.log(remember);
-	$.ajax({url:"libs/dataBdd.php",//cible de la requete ajax
-			data:{"login":login,"passe":passe,"remember":remember},
-			 success:function (oRep){
+
+	$.ajax({
+                url: "libs/dataBdd.php",
+                data:{"action":"Connexion","login":login,"passe":passe,"remember":remember},
+                type : "GET",
+                success:function (oRep){
 			 	console.log(oRep);
 			 	document.location.href="./index.php";
 			
@@ -44,7 +52,7 @@ function connexion() {
 
 <div id="erreur"></div>
 
- <div id="connexion">
+ <div id="connexion" style="display:<?php echo $style; ?>" >
 Login : <input type="text" id="login"  value="<?php echo $login;?>"/><br />
 Passe : <input type="password" id="passe" value="<?php echo $passe;?>"  /><br />
 <label for="remember">Se souvenir de moi </label><input type="checkbox" <?php echo $checked;?> name="remember" id="remember" value="ok"/> <br />
