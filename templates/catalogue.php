@@ -19,11 +19,18 @@
 
 <script type="text/javascript">
 
-var jMenu=$('<a class="list-group-item"></a>');
-var jArticle=$('<div class="card h-100"><img class="card-img-top" alt=""></a><div class="card-body"><h4 class="card-title"></h4></div></div></div>');
+var jMenu=$('<a class="list-group-item"></a>')
+          .click(function () {
+            console.log(this);
+          });
+
+var jArticle=$('<div class="card h-100"><img class="card-img-top" alt=""/><div class="card-body"><h4 class="card-title"></h4></div></div></div>');
+
 var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
         .click(function () {
              console.log(this.id);
+             document.location.href="./index.php?view=article&produit="+this.id;
+
         });
 
 function affichage() {
@@ -36,10 +43,9 @@ function affichage() {
       console.log(oRep);
       for (var i=0 ;i<oRep.length;i++) {
         $(".list-group").append(jMenu.clone(true)
-          .html(oRep[i].nomCategorie)
-          .attr("href","index.php?view=articles&categorie="+oRep[i].nomCategorie)); 
-      }
-        
+          .html(oRep[i].nomCategorie));
+
+      } 
     },
     error : function(jqXHR, textStatus) {
       console.log("erreur");  
@@ -47,7 +53,6 @@ function affichage() {
     dataType: "json"
   });
 
-//$(".col-lg-9 .row").append(jArticle.clone(true));
 $.ajax({
     url: "libs/dataBdd.php",
     data:{"action":"Articles"},
@@ -60,7 +65,6 @@ $.ajax({
         $(id).append(jArticle.clone(true));
         $(id +" .card-img-top").attr('src',"./ressources/"+oRep[i].image+".jpeg");
          $(id +" .card-title").html(oRep[i].titre);
-
       }
         
     },
