@@ -33,6 +33,31 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 
   <!-- Custom styles for this template -->
   <link href="css/shop-homepage.css" rel="stylesheet">
+   <script src="vendor/jquery/jquery.min.js"></script>
+
+  <script type="text/javascript">
+    
+    var jMenu=$('<a class="list-group-item"></a>');
+    $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"Categories"},
+    type : "GET",
+    success:function (oRep){
+      console.log(oRep);
+      for (var i=0 ;i<oRep.length;i++) {
+        $(".list-group").append(jMenu.clone(true)
+          .html(oRep[i].nomCategorie)
+          .attr("href","index.php?view=articles&categorie="+oRep[i].nomCategorie)); 
+      }
+        
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+  });
+
+  </script>
 
 </head>
 <!-- **** F I N **** H E A D **** -->
@@ -74,6 +99,17 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
     </div>
   </nav>
 
+  <div class="row">
+
+        <div class="col-lg-3">
+
+          <div class="list-group">
+          </div>
+
+        </div>
+      </div>
+
+</body>
 
 
 

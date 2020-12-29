@@ -12,10 +12,17 @@ Dans ce fichier, on définit diverses fonctions permettant de récupérer des do
 // inclure ici la librairie faciliant les requêtes SQL
 
 
-function categories()
+function listerCategories()
 {
 
 	$SQL="SELECT * FROM catalogue";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function listerArticles()
+{
+
+	$SQL="SELECT * FROM ferrures";
 	return parcoursRs(SQLSelect($SQL));
 }
 function listerUtilisateurs($classe = "both")

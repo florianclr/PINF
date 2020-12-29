@@ -1,38 +1,30 @@
+ <script src="vendor/jquery/jquery.min.js"></script>
+<?php
+	include_once "libs/maLibUtils.php";
+	include_once "libs/maLibSQL.pdo.php";
+	include_once "libs/maLibSecurisation.php"; 
+	include_once "libs/modele.php"; 
+	include_once "libs/maLibForms.php";
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-
-  <!-- Bootstrap core CSS -->
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="css/shop-homepage.css" rel="stylesheet">
-   <script src="vendor/jquery/jquery.min.js"></script>
+$categorie = valider("categorie");
+?>
 
 <script type="text/javascript">
-
+	var categorie="<?php echo $categorie; ?>";
+	console.log(categorie);
 var jArticle=$('<div class="card h-100"><img class="card-img-top" alt=""></a><div class="card-body"><h4 class="card-title"></h4></div></div></div>');
 var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
         .click(function () {
              console.log(this.id);
         });
 
-function affichage() {
 $.ajax({
     url: "libs/dataBdd.php",
     data:{"action":"Articles"},
     type : "GET",
     success:function (oRep){
       console.log(oRep);
-      for (var i =0; i<3;i++) {
+      for (var i =0; i<oRep.length;i++) {
         $(".col-lg-9 .row").append(jDiv.clone(true).attr("id",oRep[i].id));
         var id='#'+oRep[i].id;
         $(id).append(jArticle.clone(true));
@@ -46,19 +38,23 @@ $.ajax({
       console.log("erreur");  
     },
     dataType: "json"
-  });
-}
+  });       
 
 </script>
+<body>
+ 
+ <h1 class="my-4"><?php echo $categorie;?></h1>
+ <div class="container">
 
-</head>
+    <div class="row">
 
-<body onload="affichage();">
+      <div class="col-lg-3">
 
-  <!-- Page Content -->
-  <div class="container">
+        <div class="list-group">
+        </div>
 
-
+      </div>
+      <!-- /.col-lg-3 -->
 
       <div class="col-lg-9">
 
@@ -71,9 +67,10 @@ $.ajax({
       </div>
       <!-- /.col-lg-9 -->
 
-  </div>
-  <!-- /.container -->
+    </div>
+    <!-- /.row -->
 
+  </div>
 
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>

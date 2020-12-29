@@ -9,9 +9,6 @@ $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
   
 
-
-//print_r($_COOKIE);  
-
 if ($checked = valider("remember", "COOKIE")) $checked = "checked"; 
 
 if(valider("connecte","SESSION")){
