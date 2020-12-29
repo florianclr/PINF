@@ -58,8 +58,6 @@ $.ajax({
   <!-- Page Content -->
   <div class="container">
 
-
-
       <div class="col-lg-9">
 
         <div class="row">

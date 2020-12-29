@@ -35,6 +35,30 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
   <link href="css/shop-homepage.css" rel="stylesheet">
    <script src="vendor/jquery/jquery.min.js"></script>
 
+  <script type="text/javascript">
+    
+    var jMenu=$('<a class="list-group-item"></a>');
+    $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"Categories"},
+    type : "GET",
+    success:function (oRep){
+      console.log(oRep);
+      for (var i=0 ;i<oRep.length;i++) {
+        $(".list-group").append(jMenu.clone(true)
+          .html(oRep[i].nomCategorie)
+          .attr("href","index.php?view=articles&categorie="+oRep[i].nomCategorie)); 
+      }
+        
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+  });
+
+  </script>
+
 </head>
 <!-- **** F I N **** H E A D **** -->
 
@@ -45,35 +69,17 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 
 <!-- Wrap all page content here -->
 <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand">Decima</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="index.php?view=catalogue">Catalogue
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Devis</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Planning</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="index.php?view=connexion">Connexion/Compte</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Administration</a>
-          </li>
-        </ul>
+<div class="container">
+  <div class="row">
+
+        <div class="col-lg-3">
+
+          <div class="list-group">
+          </div>
+
+        </div>
       </div>
-    </div>
-  </nav>
+</div>
 
 </body>
 
