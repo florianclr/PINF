@@ -19,6 +19,7 @@
 
 <script type="text/javascript">
 
+var jMenu=$('<a class="list-group-item"></a>');
 var jArticle=$('<div class="card h-100"><img class="card-img-top" alt=""></a><div class="card-body"><h4 class="card-title"></h4></div></div></div>');
 var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
         .click(function () {
@@ -26,6 +27,27 @@ var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
         });
 
 function affichage() {
+  
+  $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"Categories"},
+    type : "GET",
+    success:function (oRep){
+      console.log(oRep);
+      for (var i=0 ;i<oRep.length;i++) {
+        $(".list-group").append(jMenu.clone(true)
+          .html(oRep[i].nomCategorie)
+          .attr("href","index.php?view=articles&categorie="+oRep[i].nomCategorie)); 
+      }
+        
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+  });
+
+//$(".col-lg-9 .row").append(jArticle.clone(true));
 $.ajax({
     url: "libs/dataBdd.php",
     data:{"action":"Articles"},
@@ -58,6 +80,16 @@ $.ajax({
   <!-- Page Content -->
   <div class="container">
 
+    <div class="row">
+
+      <div class="col-lg-3">
+
+        <div class="list-group">
+        </div>
+
+      </div>
+      <!-- /.col-lg-3 -->
+
       <div class="col-lg-9">
 
         <div class="row">
@@ -68,6 +100,9 @@ $.ajax({
 
       </div>
       <!-- /.col-lg-9 -->
+
+    </div>
+    <!-- /.row -->
 
   </div>
   <!-- /.container -->

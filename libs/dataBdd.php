@@ -64,6 +64,13 @@ if ($action = valider("action"))
 				echo(json_encode($tab));
 			break;
 
+			case 'GET_Produits' :
+				if($categorie=valider("categorie"))
+				$tab=listerProduits($categorie);
+				die($categorie);
+				echo(json_encode($tab));
+			break;
+
 
 		}
 }

@@ -31,7 +31,6 @@ Les formulaires de toutes les vues générées enverront leurs données vers la 
 	// si l'utilisateur n'est pas connecté 
 
 	include("templates/header.php");
-	include("templates/menu.php");
 
 	// En fonction de la vue à afficher, on appelle tel ou tel template
 	switch($view)

@@ -25,6 +25,13 @@ function listerArticles()
 	$SQL="SELECT * FROM ferrures";
 	return parcoursRs(SQLSelect($SQL));
 }
+
+function listerProduits($categorie)
+{
+
+	$SQL="SELECT * FROM ferrures WHERE refcategories ='$categorie'";
+	return parcoursRs(SQLSelect($SQL));
+}
 function listerUtilisateurs($classe = "both")
 {
 	// Cette fonction liste les utilisateurs de la base de données 

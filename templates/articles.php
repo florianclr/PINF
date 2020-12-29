@@ -12,7 +12,9 @@ $categorie = valider("categorie");
 <script type="text/javascript">
 	var categorie="<?php echo $categorie; ?>";
 	console.log(categorie);
+
 var jArticle=$('<div class="card h-100"><img class="card-img-top" alt=""></a><div class="card-body"><h4 class="card-title"></h4></div></div></div>');
+
 var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
         .click(function () {
              console.log(this.id);
@@ -20,7 +22,7 @@ var jDiv=$('<div class="col-lg-4 col-md-6 mb-4">')
 
 $.ajax({
     url: "libs/dataBdd.php",
-    data:{"action":"Articles"},
+    data:{"action":"Produits","categorie":categorie},
     type : "GET",
     success:function (oRep){
       console.log(oRep);
