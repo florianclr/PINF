@@ -65,7 +65,7 @@ function deconnexion() {
 
 <footer class="py-5 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+      <p class="m-0 text-center text-white">Copyright &copy; Déci'2i</p>
       <p class="m-0 text-center text-white">
       <?php
     // Si l'utilisateur est connecte, on affiche un lien de deconnexion 

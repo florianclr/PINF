@@ -4,6 +4,9 @@
 	include_once "libs/maLibSecurisation.php"; 
 	include_once "libs/modele.php"; 
 	include_once "libs/maLibForms.php";
+	
+	// on sélectionne une rubrique différente du site dans le menu
+	//$(".sr-only").html("(current)");
 
 $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
@@ -37,7 +40,7 @@ function connexion() {
 			 },
 			error : function(jqXHR, textStatus)
 			{
-				$("#erreur").html("erreur");
+				$("#erreur").html("Login ou mot de passe incorrect").show();
 				 
 			},
 			dataType: "json"
@@ -47,18 +50,23 @@ function connexion() {
 </script>
 
 <body>
- 
- <h1 class="my-4">Connexion</h1>
 
 <div id="erreur"></div>
-
- <div id="connexion" style="display:<?php echo $style; ?>" >
-Login : <input type="text" id="login"  value="<?php echo $login;?>"/><br />
-Passe : <input type="password" id="passe" value="<?php echo $passe;?>"  /><br />
-<label for="remember">Se souvenir de moi </label><input type="checkbox" <?php echo $checked;?> name="remember" id="remember" value="ok"/> <br />
-<input type="submit" name="action" value="Connexion" onclick="connexion();" />
+<div style="display:<?php echo $style; ?>">
+	<div id="connexion">
+		<h1 class="my-4">Connexion</h1>
+		Login : <input type="text" id="login"  value="<?php echo $login;?>"/><br/><br/>
+		Mot de passe : <input type="password" id="passe" value="<?php echo $passe;?>"/><br/><br/><br/>
+		<input type="checkbox" <?php echo $checked;?> name="remember" id="remember" value="ok"/>
+		<label for="remember">Se souvenir de moi</label>
+		<br/><br/>
+		<input type="submit" name="action" value="Se connecter" onclick="connexion();"/><br/><br/>
+	</div>
+	<div id="newAccount"><a href="#">Demander l'ouverture d'un compte</a></div>
 </div>
-        
+
+	
+
 
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
