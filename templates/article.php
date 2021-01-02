@@ -1,55 +1,62 @@
- <head>
-   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
- </head>
  
- <script src="vendor/jquery/jquery.min.js"></script>
 <?php
-	include_once "libs/maLibUtils.php";
-	include_once "libs/maLibSQL.pdo.php";
-	include_once "libs/maLibSecurisation.php"; 
-	include_once "libs/modele.php"; 
-	include_once "libs/maLibForms.php";
-
 $produit = valider("produit");
 ?>
 
+
 <script type="text/javascript">
-	var produit="<?php echo $produit; ?>";
-	console.log(produit);
+  var tab = ['mediumblue', 'darkred', 'yellowgreen', 'indigo', 'darkcyan'];
 
-var jImg=$('<div class="card h-100"><img class="card-img-top" alt=""/></div>');
+  var produit="<?php echo $produit; ?>";
+  console.log(produit);
 
-var jTitre=$('<div class="card h-100"><h4 class="card-title"></h4></div>');
+  var jImg=$('<div class="card h-100" id="imgProduct"><img class="card-img-top" alt=""/></div>');
 
-var jDescription=$('')
+  var jTitre=$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
+  var jDescription=$('<div class="contenu"><h5>Description</h5><p id="description"></p></div>');
+  
+  var jTable=$('<table><tr><td>Matière</td><td id="mat"></td></tr><tr><td >Finition</td><td id="fin"></td></tr><tr><td>N° de plan</td><td id="plan"></td></tr></table>');
+  var jLien = $('<a></a>');
 
-$.ajax({
+  $.ajax({
     url: "libs/dataBdd.php",
     data:{"action":"Produit","idProduit":produit},
     type : "GET",
-    success:function (oRep){
-      console.log(oRep);
-       $(".row").append(jTitre.clone(true).html(oRep[0].titre))
-      $(".row").append(jImg.clone(true));
-       $(".row .card-img-top").attr("src","./ressources/"+oRep[0].image+".jpeg");
-
+    success: function(oRep){
+      var couleurFond = tab[(oRep[0].refcategories)-1];
+        console.log(oRep);
+        console.log(couleurFond);
         
+        $(".product").append(jTitre.clone(true).html(oRep[0].titre));
+        $("#titleProduct").css("background-color", couleurFond);
+        $(".row").append(jImg.clone(true));
+        $(".row .card-img-top").attr("src","./ressources/"+oRep[0].image+".jpeg");
+        $(".row").append(jDescription.clone(true));
+        $(".row #description").html(oRep[0].description);
+        
+        $(".contenu").append(jTable.clone(true));
+        $(".contenu #mat").html(oRep[0].nomM);
+        $(".contenu #fin").html(oRep[0].nomF);
+        $(".contenu #plan").append(jLien.clone(true).attr("href","templates/telecharger.php?pdf="+oRep[0].planPDF).html(oRep[0].numeroPlan))
     },
     error : function(jqXHR, textStatus) {
       console.log("erreur");  
     },
     dataType: "json"
-  });       
+    });       
 
 
 </script>
 <body>
- 
- <h1 class="my-4"></h1>
- <div class="container">
-<div class="row"></div>
-</div>
+
+   
+    <div class="container">
+      <div class="product"></div> 
+      <div class="row">
+      </div>
+     
+    </div>
 
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
@@ -58,3 +65,4 @@ $.ajax({
 </body>
 
 </html>
+
