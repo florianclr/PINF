@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Lun 14 Décembre 2020 à 14:36
+-- Généré le :  Sam 02 Janvier 2021 à 13:55
 -- Version du serveur :  5.7.32-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.7
 
@@ -30,6 +30,18 @@ CREATE TABLE `catalogue` (
   `id` int(11) NOT NULL,
   `nomCategorie` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `catalogue`
+--
+
+INSERT INTO `catalogue` (`id`, `nomCategorie`) VALUES
+(1, 'Vidéo'),
+(2, 'Audio'),
+(3, 'Affichage'),
+(4, 'Accés Sécurité'),
+(5, 'CFO CFA'),
+(6, 'Tout');
 
 -- --------------------------------------------------------
 
@@ -78,8 +90,24 @@ CREATE TABLE `ferrures` (
   `refFinition` int(11) NOT NULL,
   `numeroPlan` varchar(255) NOT NULL,
   `planPDF` varchar(255) NOT NULL,
-  `refcategories` int(11) NOT NULL
+  `refcategories` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `titre` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `ferrures`
+--
+
+INSERT INTO `ferrures` (`id`, `image`, `refMatiere`, `refFinition`, `numeroPlan`, `planPDF`, `refcategories`, `description`, `titre`) VALUES
+(1, 'image1', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau '),
+(2, 'image2', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable'),
+(3, 'image3', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable'),
+(4, 'image4', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant'),
+(5, 'image1', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier'),
+(6, 'image2', 1, 1, '03-0235-001', 'pdf', 2, 'applique', 'applique'),
+(7, 'image3', 1, 1, '03-0136-001', 'pdf', 2, 'suspente', 'suspente'),
+(8, 'image4', 1, 1, '03-0237-001', 'pdf', 2, 'drapeau', 'drapeau');
 
 -- --------------------------------------------------------
 
@@ -106,8 +134,16 @@ CREATE TABLE `ferruresDevis` (
 
 CREATE TABLE `finition` (
   `id` int(11) NOT NULL,
-  `nom` varchar(255) NOT NULL
+  `nomF` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `finition`
+--
+
+INSERT INTO `finition` (`id`, `nomF`) VALUES
+(1, 'Thermolaqué'),
+(2, 'Brut');
 
 -- --------------------------------------------------------
 
@@ -117,8 +153,16 @@ CREATE TABLE `finition` (
 
 CREATE TABLE `matiere` (
   `id` int(11) NOT NULL,
-  `nom` varchar(255) NOT NULL
+  `nomM` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `matiere`
+--
+
+INSERT INTO `matiere` (`id`, `nomM`) VALUES
+(1, 'Acier S235JR'),
+(2, 'Aluminium AU4G');
 
 -- --------------------------------------------------------
 
@@ -159,6 +203,15 @@ CREATE TABLE `prix` (
   `refFerrures` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Contenu de la table `prix`
+--
+
+INSERT INTO `prix` (`id`, `min`, `max`, `prixU`, `refFerrures`) VALUES
+(1, 0, 200, 475, 1),
+(2, 201, 500, 375, 1),
+(3, 0, 100, 250, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -175,6 +228,13 @@ CREATE TABLE `utilisateur` (
   `connecte` tinyint(1) DEFAULT '0',
   `admin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `utilisateur`
+--
+
+INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mdp`, `mail`, `telephone`, `connecte`, `admin`) VALUES
+(1, 'benoit', 'admin', 'admin', 'admin@admin.fr', 0, 1, 0);
 
 --
 -- Index pour les tables exportées
@@ -264,7 +324,7 @@ ALTER TABLE `utilisateur`
 -- AUTO_INCREMENT pour la table `catalogue`
 --
 ALTER TABLE `catalogue`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT pour la table `devis`
 --
@@ -279,7 +339,7 @@ ALTER TABLE `dimension`
 -- AUTO_INCREMENT pour la table `ferrures`
 --
 ALTER TABLE `ferrures`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT pour la table `ferruresDevis`
 --
@@ -289,12 +349,12 @@ ALTER TABLE `ferruresDevis`
 -- AUTO_INCREMENT pour la table `finition`
 --
 ALTER TABLE `finition`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT pour la table `matiere`
 --
 ALTER TABLE `matiere`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT pour la table `motsCles`
 --
@@ -309,12 +369,12 @@ ALTER TABLE `option`
 -- AUTO_INCREMENT pour la table `prix`
 --
 ALTER TABLE `prix`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT pour la table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- Contraintes pour les tables exportées
 --

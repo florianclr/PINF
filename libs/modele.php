@@ -117,6 +117,17 @@ function retrograderUser($idUser)
 	// cette fonction fait de l'utilisateur un simple mortel
 }
 
+function getInfo($idUser, $info)
+{
+	$SQL="SELECT $info FROM utilisateur WHERE id='$idUser'";
+	return SQLGetChamp($SQL);
+}
+
+function updateInfo($idUser, $info, $value)
+{
+	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
+	SQLUpdate($SQL);
+}
 
 /********* PARTIE 3 *********/
 

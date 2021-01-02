@@ -54,6 +54,13 @@ if ($action = valider("action"))
 				}
 			break;
 
+			case 'GET_Info' :
+				if ($value = valider("value"))
+				if ($info = valider("info"))
+					
+				updateInfo($_SESSION['idUser'], $info, $value);
+			break;
+
 			case 'GET_Categories' :
 
 				$tab=listerCategories();
@@ -82,6 +89,7 @@ if ($action = valider("action"))
                 $tab=getProduit($idProduit);
                 echo(json_encode($tab));
             break;
+
 
 
 		}
