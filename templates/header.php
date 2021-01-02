@@ -1,16 +1,18 @@
 <?php
+
+// librairies php //  
 	include_once "libs/maLibUtils.php";
 	include_once "libs/maLibSQL.pdo.php";
 	include_once "libs/maLibSecurisation.php"; 
 	include_once "libs/modele.php"; 
 	include_once "libs/maLibForms.php";
+
 // Si la page est appelée directement par son adresse, on redirige en passant pas la page index
 if (basename($_SERVER["PHP_SELF"]) != "index.php")
 {
 	header("Location:../index.php");
 	die("");
 }
-
 // Pose qq soucis avec certains serveurs...
 echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 ?>
@@ -32,8 +34,14 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
-  <link href="css/shop-homepage.css" rel="stylesheet">
-   <script src="vendor/jquery/jquery.min.js"></script>
+  <link href="css/shop-homepage.css" rel="stylesheet">  <!-- => contient notre css -->
+
+  <link href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+  <link href="jquery-ui/jquery-ui.structure.css" rel="stylesheet" />
+  <link href="jquery-ui/jquery-ui.theme.css" rel="stylesheet" />
+
+  <script src="vendor/jquery/jquery.min.js"></script>  <!-- => css de la bootstrap -->
+
 
 </head>
 <!-- **** F I N **** H E A D **** -->
@@ -43,15 +51,18 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 
 <!-- style inspiré de http://www.bootstrapzero.com/bootstrap-template/sticky-footer --> 
 
-<!-- Wrap all page content here -->
-<!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+
+     <img id="logo" src="ressources/logo.jpg"/>
+     
     <div class="container">
-      <img id="logo" src="ressources/logo.jpg">
-      <a class="navbar-brand">Decima</a>
+
+      <!-- BOUTON D'AFFICHAGE DES MENUS LORSQUE LA PAGE RÉTRÉCIT  -->
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+
+      <!-- BARRE DES MENUS : TODO  MODIF CODE ET COMPRENDE BOSSTRAP -->
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
@@ -59,16 +70,16 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
               <span class="sr-only">(current)</span>
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="#">Devis</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="#">Planning</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="index.php?view=connexion">Connexion/Compte</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="#">Administration</a>
           </li>
         </ul>
