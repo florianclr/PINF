@@ -181,6 +181,35 @@ body {
 	padding-right: 5px;
 }
 
+/******************************** ADMINISTRATION *********************************/
+
+#listeCompte {
+	text-align: center;
+	background-color: gainsboro;
+	border: 5px solid #B33838;
+	padding: 20px;
+	margin-left: 10%;
+	margin-right: 10%;
+	margin-top: 40px;
+}
+
+.demande {
+	display: inline;
+	margin-right: 30px;
+}
+
+.attente input {
+	margin-left: 10px;
+}
+
+.attente {
+	border: 2px solid grey;
+	margin-bottom: 5px;
+	background-color: black;
+	padding: 10px;
+	color: white;
+}
+
 /******************************** FICHE PRODUIT **********************************/
 
 #titleProduct {
