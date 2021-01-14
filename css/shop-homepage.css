@@ -40,6 +40,39 @@ body {
 	top:20%;
 }
 
+#recherche {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#mot {
+	width: 140px;
+}
+
+#searchButton {
+	margin-left: 5px;
+}
+
+#nothingFound {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#warning {
+	width: 100%;
+  	margin-top: 10px;
+	text-align: center;
+	font-weight: bold;
+	color: red;
+	background-color: white;
+	border: 2px solid red;
+	box-shadow: 0px 0px 3px #000;
+  }
+
 /*------------------------------------ICONS-----------------------------------------*/
 /*TODO : CORRIGER ZOOM ICON !!!*/
 .trashButton{
