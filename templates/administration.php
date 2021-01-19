@@ -23,11 +23,8 @@ else $admin=0;
 
 <script type="text/javascript">
 
-
 var admin=<?php echo $admin; ?>;
-
 var jCompte = $('<div class="attente"></div>');
-
 var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Accepter&idUser="+$(this).prop("id")+"&admin="+admin,
@@ -40,6 +37,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
                 						$(this).remove();
                 					});
 				 				});
+
 var jButtonNO = $('<input type="button" value="Refuser"/>').click(function() {
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Refuser&idUser="+$(this).prop("id")+"&admin="+admin,
@@ -53,7 +51,7 @@ var jButtonNO = $('<input type="button" value="Refuser"/>').click(function() {
                 					});
 				 				});
 
-var jBtnAccepter=$('<input type="button"  id="btn"value="Tout accepter"/>').click(function(){
+var jBtnAccepter=$('<input type="button" id="btn" value="Tout accepter"/>').click(function(){
 	$(".attente").each(function () {
 		var id=$(this).prop("id");
 		$.ajax({
@@ -74,13 +72,14 @@ var jBtnAccepter=$('<input type="button"  id="btn"value="Tout accepter"/>').clic
 
 						 		$("#"+id).hide('slow', function() { 
                 						$(this).remove();
+										$("#btn").remove();
                 					});
-						 	
+
 							},
 							error : function(jqXHR, textStatus)
 							{
 								console.log("erreur");
-								 
+
 							},
 							dataType: "json"
 						});//fin 2e requete
@@ -91,26 +90,26 @@ var jBtnAccepter=$('<input type="button"  id="btn"value="Tout accepter"/>').clic
 	})//fin each
 });//fin click
 
-
 $.ajax({
                 url: "libs/dataBdd.php",
                 data:{"action":"CompteAttente","admin":admin,},
                 type : "GET",
                 success:function (oRep){
 			 	console.log(oRep);
+					$("#listeCompte").append($("<h4><b>Demandes de création de compte</b></h4></br>"));
 				 	if(oRep.length != 0){
-				 		$("#listeCompte").append($("<h4><b>Demandes de création de compte</b></h4></br>"));
 				 		for (var i = 0; i < oRep.length; i++) {
 				 			$("#listeCompte").append(jCompte.clone(true).attr("id",oRep[i].id)
 				 				.append($('<div class="demande">Demande de <b>'+oRep[i].prenom+' '+oRep[i].nom+'</b></div>'))
 				 				.append(jButtonOK.clone(true).attr("id",oRep[i].id))
 				 				.append(jButtonNO.clone(true).attr("id",oRep[i].id))
-
 				 			);//fin append
-				 			$("h4").after(jBtnAccepter.clone(true));
+							if ($("#btn").length == 0)
+								$("h4").after(jBtnAccepter.clone(true));
 				 		}
 				 	}
-			 	
+					else
+			 			$("#listeCompte").append($("<div>Aucune demande de création de compte n'a été envoyée</div></br>"));
 			
 			 },
 			error : function(jqXHR, textStatus)
@@ -139,7 +138,6 @@ function sendMail(mdp,mailD) {
 			subject: subject,
 			body: body,
 			mailD: mailD
-
 		},
 
 		success: function(response) {
@@ -152,10 +150,12 @@ function sendMail(mdp,mailD) {
 	});
 
 }
+
 </script>
 
 <body>
 <div id="listeCompte"></div>
+</br></br></br></br></br>
 </body>
 
 </html>

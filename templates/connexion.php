@@ -35,12 +35,12 @@ else
 
 <script type="text/javascript">
 
-
 var popupCreate = $("<div id='popup' title='Créer un compte'>")
 				.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
 				.append($("<label class='champ'>Prénom :</label><input type='text' id='firstname'></br>"))
     			.append($("<label class='champ'>Mail :</label><input type='email' id='mail'></br>"))
 				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>")); 
+
 
 function connexion() {
 	var login = $("#login").val();
@@ -79,12 +79,14 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-             	
-               sendMail();  // envoi d'un mail
+               	sendMail();  // envoi d'un mail 
+				$(this).dialog("close"); // ferme la pop up 
+               	$(this).remove(); // supprime la pop up
+				$("#newAccount").replaceWith("<div id='demandOK'>Votre demande a été prise en compte</div>");
              },
              "Annuler": function() {
-               $(this).dialog("close"); // ferme la pop up 
-               $(this).remove(); // supprime la pop up
+               	$(this).dialog("close"); // ferme la pop up 
+               	$(this).remove(); // supprime la pop up
              },
          },
          close: function() { // lorsque on appui sur la croix pour fermer la pop up 
@@ -147,16 +149,17 @@ function updateInfos(idUser) {
 	}
 ?>
 }
+
 function sendMail() {
 
 	var surname = $("#surname").val();
 	var firstname = $("#firstname").val();
-	var mail = $("#email").val();
-	var tel = $("#telephone").val();
+	var mail = $("#mail").val();
+	var tel = $("#tel").val();
 
 	$.ajax({
 	    url: "libs/dataBdd.php",
-	    data:{"action":"Compte","surname":surname,"firstname":firstname, "mail": mail, "tel": tel, "admin": 0},
+	    data:{"action":"Compte","surname":surname,"firstname":firstname, "mail": mail, "tel": tel},
 	    type : "POST",
 	    success:function (){
 			console.log("Nouveau compte créé");}
@@ -168,8 +171,7 @@ function sendMail() {
 	var expediteur = "no-reply";
 	var email = "no-reply@decima.fr";
 	var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
-
-	var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
+	var body = "Veuillez valider ou refuser la creation du compte sur votre page administrateur";
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',
@@ -180,8 +182,8 @@ function sendMail() {
 			name: "no-reply",
 			email: email,
 			subject: subject,
-			body: body
-
+			body: body,
+			mailD: "jeanne.sueur@ig2i.centralelille.fr"
 		},
 
 		success: function(response) {
@@ -206,7 +208,7 @@ if ($connecte)
 	<br/><br/>
 	<div id="compte">
 			<h1 class="my-4">Mon compte</h1>
-			<h4>Vos informations</h4><br/>
+			<h4>Mes informations</h4><br/>
 			Mot de passe : <input type="password" id="passe"  value="<?php echo $passe;?>"/><br/><br/>
 			Mail : <input type="text" id="mail" value="<?php echo $mail;?>"/><br/><br/>
 			Tél : <input type="text" id="tel"  value="<?php echo $tel;?>"/><br/><br/>
