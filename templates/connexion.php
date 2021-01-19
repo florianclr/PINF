@@ -146,7 +146,7 @@ function updateInfos(idUser) {
 		<?php
 	}
 ?>
-
+}
 function sendEmail() {
 
 	.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
@@ -185,7 +185,7 @@ function sendEmail() {
 		}
 	});
 }
-}
+
 
 function sendMail() {
 
