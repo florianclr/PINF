@@ -5,11 +5,8 @@ if (isset($_POST['name']) && isset($_POST['email'])) {
 	$name = $_POST['name'];
 	$email = $_POST['email'];
 	$subject = $_POST['subject'];
-<<<<<<< Updated upstream
-	$body = $_POST['body']
-=======
 	$body = $_POST['body'];
->>>>>>> Stashed changes
+	$mailD=$_POST['mailD'];
 
 	require_once '../PHPMailer/src/PHPMailer.php';
 	require_once '../PHPMailer/src/SMTP.php';
@@ -27,7 +24,7 @@ if (isset($_POST['name']) && isset($_POST['email'])) {
 
 	$mail->isHTML(true);
 	$mail->setFrom($email, $name);
-	$mail->addAddress('florian.celary2@gmail.com');
+	$mail->addAddress($mailD);
 
 	$mail->Subject = $subject;
 	$mail->Body = $body;

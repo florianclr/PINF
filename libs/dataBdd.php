@@ -54,13 +54,6 @@ if ($action = valider("action"))
 				}
 			break;
 
-			case 'GET_Info' :
-				if ($value = valider("value"))
-				if ($info = valider("info"))
-					
-				updateInfo($_SESSION['idUser'], $info, $value);
-			break;
-
 			case 'GET_Categories' :
 
 				$tab=listerCategories();
@@ -90,6 +83,61 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
+            case 'GET_Prix' :
+                if($idProduit=valider("idProduit"))
+                $tab=getPrix($idProduit);
+                echo(json_encode($tab));
+            break;
+
+            case 'GET_Options' :
+                if($idProduit=valider("idProduit"))
+                $tab=getOptions($idProduit);
+                echo(json_encode($tab));
+            break;
+
+            case 'GET_Rechercher' :
+                if($keyword=valider("keyword"))
+                $tab=rechercherFerrures($keyword);
+                echo(json_encode($tab));
+            break;
+
+            case 'PUT_Info' :
+				if ($value = valider("value"))
+				if ($info = valider("info"))
+					
+				updateInfo($_SESSION['idUser'], $info, $value);
+			break;
+
+			case 'GET_CompteAttente' :
+                if($admin=valider("admin")){
+                	if($idUser=valider("idUser")){
+                		$tab=getCompte($idUser);
+                		echo(json_encode($tab));
+                	}
+                	else{
+                		$tab=getCompte(null);
+                		echo(json_encode($tab));
+                	}
+                }
+
+            break;
+
+            case 'PUT_Accepter' :
+                if($admin=valider("admin") && $idUser=valider("idUser")){
+                	$bytes = random_bytes(3);
+					$mdp=bin2hex($bytes);
+					$tab=accepterCompte($mdp,$idUser);
+                }
+                echo(json_encode($tab));
+            break;
+
+            case 'DELETE_Refuser' :
+                if($admin=valider("admin") && $idUser=valider("idUser")){
+					$tab=refuserCompte($idUser);
+                }
+                echo(json_encode($tab));
+            break;
+
             case 'POST_Compte' :
             	if ($surname = valider("surname"))
 				if ($firstname = valider("firstname"))
@@ -100,6 +148,8 @@ if ($action = valider("action"))
 				creerCompte($surname, $firstname, "str", $mail, $tel, $admin);
 
 			break;
+
+
 
 
 
