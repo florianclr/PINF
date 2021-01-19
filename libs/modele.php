@@ -129,6 +129,12 @@ function updateInfo($idUser, $info, $value)
 	SQLUpdate($SQL);
 }
 
+function creerCompte($nom, $prenom, $mdp, $mail, $telephone, $admin)
+{
+	$SQL="INSERT INTO utilisateur (nom, prenom, mdp, mail, telephone, admin)  VALUES ('$nom', '$prenom', '$mdp', '$mail', '$telephone', '$admin')";
+	SQLInsert($SQL);
+}
+
 /********* PARTIE 3 *********/
 
 function listerUtilisateursConnectes()

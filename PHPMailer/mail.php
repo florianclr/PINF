@@ -5,7 +5,11 @@ if (isset($_POST['name']) && isset($_POST['email'])) {
 	$name = $_POST['name'];
 	$email = $_POST['email'];
 	$subject = $_POST['subject'];
+<<<<<<< Updated upstream
 	$body = $_POST['body']
+=======
+	$body = $_POST['body'];
+>>>>>>> Stashed changes
 
 	require_once '../PHPMailer/src/PHPMailer.php';
 	require_once '../PHPMailer/src/SMTP.php';
@@ -30,8 +34,13 @@ if (isset($_POST['name']) && isset($_POST['email'])) {
 
 	if ($mail->send())
 	{
+<<<<<<< Updated upstream
 		$status = "success"
 		$response = "sent"	
+=======
+		$status = "success";
+		$response = "sent";
+>>>>>>> Stashed changes
 	}
 	else
 	{

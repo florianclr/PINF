@@ -90,6 +90,17 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
+            case 'POST_Compte' :
+            	if ($surname = valider("surname"))
+				if ($firstname = valider("firstname"))
+				if ($mail = valider("mail"))
+				if ($tel = valider("tel"))
+				if ($admin = valider("admin"))
+
+				creerCompte($surname, $firstname, "str", $mail, $tel, $admin);
+
+			break;
+
 
 
 		}

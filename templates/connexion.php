@@ -35,12 +35,12 @@ else
 
 <script type="text/javascript">
 
+
 var popupCreate = $("<div id='popup' title='Créer un compte'>")
 				.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
 				.append($("<label class='champ'>Prénom :</label><input type='text' id='firstname'></br>"))
     			.append($("<label class='champ'>Mail :</label><input type='email' id='mail'></br>"))
 				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>")); 
-
 
 function connexion() {
 	var login = $("#login").val();
@@ -79,6 +79,10 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                sendMail();  // envoi d'un mail
              },
              "Annuler": function() {
@@ -184,6 +188,54 @@ function sendEmail() {
 		}
 	});
 }
+}
+
+function sendMail() {
+
+	var surname = $("#surname").val();
+	var firstname = $("#firstname").val();
+	var mail = $("#email").val();
+	var tel = $("#telephone").val();
+
+	$.ajax({
+	    url: "libs/dataBdd.php",
+	    data:{"action":"Compte","surname":surname,"firstname":firstname, "mail": mail, "tel": tel, "admin": 0},
+	    type : "POST",
+	    success:function (){
+			console.log("Nouveau compte créé");}
+		});
+
+	console.log(surname);
+	console.log(firstname);
+
+	var expediteur = "no-reply";
+	var email = "no-reply@decima.fr";
+	var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
+
+	var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
+
+	$.ajax({
+		url: 'PHPMailer/mail.php',
+		method: 'POST',
+		dataType: 'json',
+
+		data: {
+			name: "no-reply",
+			email: email,
+			subject: subject,
+			body: body
+
+		},
+
+		success: function(response) {
+			console.log(response);
+		},
+
+		error: function(response) {	
+			console.log(response);
+		}
+	});
+
 }
 
 </script>
