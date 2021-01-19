@@ -72,8 +72,6 @@ if ($action = valider("action"))
 
 			else
 				$tab = listerArticles(null,null); // on veut toutes les ferures
-			
-
 				echo(json_encode($tab));
 			break;
 
@@ -83,7 +81,17 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
-            case 'GET_Prix' :
+			case 'POST_Compte' :
+            	if ($surname = valider("surname"))
+				if ($firstname = valider("firstname"))
+				if ($mail = valider("mail"))
+				if ($tel = valider("tel")) {
+					$tab = creerCompte($surname, $firstname, $mail, $tel);
+					echo(json_encode($tab));
+				}
+			break;
+
+			case 'GET_Prix' :
                 if($idProduit=valider("idProduit"))
                 $tab=getPrix($idProduit);
                 echo(json_encode($tab));
@@ -100,11 +108,11 @@ if ($action = valider("action"))
                 $tab=rechercherFerrures($keyword);
                 echo(json_encode($tab));
             break;
-
+            
             case 'PUT_Info' :
 				if ($value = valider("value"))
 				if ($info = valider("info"))
-					
+
 				updateInfo($_SESSION['idUser'], $info, $value);
 			break;
 
@@ -122,7 +130,13 @@ if ($action = valider("action"))
 
             break;
 
-            case 'PUT_Accepter' :
+			case 'GET_CompteAttente' :
+                if($admin=valider("admin"))
+                $tab=getCompte();
+                echo(json_encode($tab));
+            break;
+
+			case 'PUT_Accepter' :
                 if($admin=valider("admin") && $idUser=valider("idUser")){
                 	$bytes = random_bytes(3);
 					$mdp=bin2hex($bytes);
@@ -130,28 +144,13 @@ if ($action = valider("action"))
                 }
                 echo(json_encode($tab));
             break;
-
+            
             case 'DELETE_Refuser' :
                 if($admin=valider("admin") && $idUser=valider("idUser")){
 					$tab=refuserCompte($idUser);
                 }
                 echo(json_encode($tab));
             break;
-
-            case 'POST_Compte' :
-            	if ($surname = valider("surname"))
-				if ($firstname = valider("firstname"))
-				if ($mail = valider("mail"))
-				if ($tel = valider("tel"))
-				if ($admin = valider("admin"))
-
-				creerCompte($surname, $firstname, "str", $mail, $tel, $admin);
-
-			break;
-
-
-
-
 
 		}
 }

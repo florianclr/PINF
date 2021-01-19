@@ -12,44 +12,6 @@ Dans ce fichier, on définit diverses fonctions permettant de récupérer des do
 // inclure ici la librairie faciliant les requêtes SQL
 
 
-function creerCompte($nom, $prenom, $mdp, $mail, $telephone, $admin)
-{
-	$SQL="INSERT INTO utilisateur (nom, prenom, mdp, mail, telephone, admin)  VALUES ('$nom', '$prenom', '$mdp', '$mail', '$telephone', '$admin')";
-	SQLInsert($SQL);
-} 
-
-function accepterCompte($mdp, $idUser)
-{
-   $SQL="UPDATE utilisateur SET mdp='$mdp' WHERE id='$idUser'";
-	return SQLUpdate($SQL);
-}
-
-function refuserCompte($idUser)
-{
-   $SQL="DELETE FROM utilisateur WHERE id='$idUser'";
-	return SQLDelete($SQL);
-}
-
-function getCompte($id)
-{
-	if($id==null){
-		$SQL="SELECT * FROM utilisateur WHERE mdp=''";
-    return parcoursRs(SQLSelect($SQL));
-	}
-	else {
-		$SQL="SELECT * FROM utilisateur WHERE id='$id'";
-    return parcoursRs(SQLSelect($SQL));
-	}
-    
-}
-
-function rechercherFerrures($mot)
-{
-
-    $SQL="SELECT * FROM ferrures WHERE tags LIKE '%$mot%'";
-    return parcoursRs(SQLSelect($SQL));
-}
-
 function listerCategories()
 {
 	$SQL="SELECT * FROM catalogue";
@@ -77,7 +39,6 @@ function listerArticles($categorie,$nombre)
 
 function getProduit($id)
 {
-
     $SQL="SELECT ferrures.*, matiere.nomM, finition.nomF FROM ferrures,finition,matiere WHERE finition.id=ferrures.refFinition AND matiere.id=ferrures.refMatiere AND ferrures.id='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
@@ -93,6 +54,39 @@ function getOptions($id)
     $SQL="SELECT * FROM `option` WHERE refFerrures='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
+
+function rechercherFerrures($mot)
+{
+    $SQL="SELECT * FROM ferrures WHERE tags LIKE '%$mot%'";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getCompte($id)
+{
+	if($id==null){
+		$SQL="SELECT * FROM utilisateur WHERE mdp IS NULL";
+    return parcoursRs(SQLSelect($SQL));
+	}
+	else {
+		$SQL="SELECT * FROM utilisateur WHERE id='$id'";
+    return parcoursRs(SQLSelect($SQL));
+	}
+
+}
+
+function accepterCompte($mdp, $idUser)
+{
+   	$SQL="UPDATE utilisateur SET mdp='$mdp' WHERE id='$idUser'";
+	return SQLUpdate($SQL);
+}
+
+function refuserCompte($idUser)
+{
+   	$SQL="DELETE FROM utilisateur WHERE id='$idUser'";
+	return SQLDelete($SQL);
+}
+
+/****************************************************************************/
 
 function interdireUtilisateur($idUser)
 {
@@ -147,6 +141,26 @@ function deconnecterUtilisateur($idUser)
 	SQLUpdate($SQL);
 }
 
+function changerPasse($idUser,$passe)
+{
+	// cette fonction modifie le mot de passe d'un utilisateur
+}
+
+function changerPseudo($idUser,$pseudo)
+{
+	// cette fonction modifie le pseudo d'un utilisateur
+}
+
+function promouvoirAdmin($idUser)
+{
+	// cette fonction fait de l'utilisateur un administrateur
+}
+
+function retrograderUser($idUser)
+{
+	// cette fonction fait de l'utilisateur un simple mortel
+}
+
 function getInfo($idUser, $info)
 {
 	$SQL="SELECT $info FROM utilisateur WHERE id='$idUser'";
@@ -159,5 +173,17 @@ function updateInfo($idUser, $info, $value)
 	SQLUpdate($SQL);
 }
 
+function creerCompte($nom, $prenom, $mail, $telephone)
+{
+	$SQL="INSERT INTO utilisateur (nom, prenom, mail, telephone)  VALUES ('$nom', '$prenom', '$mail', '$telephone')";
+	return SQLInsert($SQL);
+} 
 
+
+/********* PARTIE 3 *********/
+
+function listerUtilisateursConnectes()
+{
+	// Liste les utilisteurs connectes
+}
 ?>
