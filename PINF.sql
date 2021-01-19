@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Sam 02 Janvier 2021 à 13:55
+-- Généré le :  Mar 19 Janvier 2021 à 11:25
 -- Version du serveur :  5.7.32-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.7
 
@@ -92,22 +92,23 @@ CREATE TABLE `ferrures` (
   `planPDF` varchar(255) NOT NULL,
   `refcategories` int(11) NOT NULL,
   `description` text NOT NULL,
-  `titre` varchar(255) NOT NULL
+  `titre` varchar(255) NOT NULL,
+  `tags` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `ferrures`
 --
 
-INSERT INTO `ferrures` (`id`, `image`, `refMatiere`, `refFinition`, `numeroPlan`, `planPDF`, `refcategories`, `description`, `titre`) VALUES
-(1, 'image1', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau '),
-(2, 'image2', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable'),
-(3, 'image3', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable'),
-(4, 'image4', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant'),
-(5, 'image1', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier'),
-(6, 'image2', 1, 1, '03-0235-001', 'pdf', 2, 'applique', 'applique'),
-(7, 'image3', 1, 1, '03-0136-001', 'pdf', 2, 'suspente', 'suspente'),
-(8, 'image4', 1, 1, '03-0237-001', 'pdf', 2, 'drapeau', 'drapeau');
+INSERT INTO `ferrures` (`id`, `image`, `refMatiere`, `refFinition`, `numeroPlan`, `planPDF`, `refcategories`, `description`, `titre`, `tags`) VALUES
+(1, 'image1', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau ', 'support video'),
+(2, 'image2', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable', 'support video'),
+(3, 'image3', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable', 'scocle vidéo'),
+(4, 'image4', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant', 'video'),
+(5, 'image1', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier', ''),
+(6, 'image2', 1, 1, '03-0235-001', 'pdf', 2, 'applique', 'applique', ''),
+(7, 'image3', 1, 1, '03-0136-001', 'pdf', 2, 'suspente', 'suspente', ''),
+(8, 'image4', 1, 1, '03-0237-001', 'pdf', 2, 'drapeau', 'drapeau', '');
 
 -- --------------------------------------------------------
 
@@ -167,18 +168,6 @@ INSERT INTO `matiere` (`id`, `nomM`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure de la table `motsCles`
---
-
-CREATE TABLE `motsCles` (
-  `id` int(11) NOT NULL,
-  `refFerrures` int(11) NOT NULL,
-  `cles` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `option`
 --
 
@@ -189,6 +178,14 @@ CREATE TABLE `option` (
   `refFerrures` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Contenu de la table `option`
+--
+
+INSERT INTO `option` (`id`, `nom`, `prix`, `refFerrures`) VALUES
+(1, 'Plus-value contre plaqué', 6, 1),
+(2, 'Plus-value hauteur / ml', 35, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -197,20 +194,35 @@ CREATE TABLE `option` (
 
 CREATE TABLE `prix` (
   `id` int(11) NOT NULL,
-  `min` float DEFAULT NULL,
-  `max` float DEFAULT NULL,
+  `dimMin` float DEFAULT NULL,
+  `dimMax` float DEFAULT NULL,
   `prixU` float DEFAULT NULL,
-  `refFerrures` int(11) DEFAULT NULL
+  `refFerrures` int(11) DEFAULT NULL,
+  `qteMin` int(11) NOT NULL,
+  `qteMax` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `prix`
 --
 
-INSERT INTO `prix` (`id`, `min`, `max`, `prixU`, `refFerrures`) VALUES
-(1, 0, 200, 475, 1),
-(2, 201, 500, 375, 1),
-(3, 0, 100, 250, 2);
+INSERT INTO `prix` (`id`, `dimMin`, `dimMax`, `prixU`, `refFerrures`, `qteMin`, `qteMax`) VALUES
+(4, NULL, NULL, 308, 1, 0, 1),
+(5, NULL, NULL, 173, 1, 2, 4),
+(6, NULL, NULL, 92, 1, 5, 9),
+(7, NULL, NULL, 72, 1, 10, 1000),
+(8, 0.7, 1, 388, 2, 0, 1),
+(9, 0.7, 1, 249, 2, 2, 4),
+(10, 0.7, 1, 171, 2, 5, 9),
+(11, 0.7, 1, 152, 2, 10, 1000),
+(12, 1, 2, 419, 2, 0, 1),
+(13, 1, 2, 280, 2, 2, 4),
+(14, 1, 2, 213, 2, 5, 9),
+(15, 1, 2, 194, 2, 10, 1000),
+(16, 2, 3, 425, 2, 0, 1),
+(17, 2, 3, 294, 2, 2, 4),
+(18, 2, 3, 236, 2, 5, 9),
+(19, 2, 3, 217, 2, 10, 1000);
 
 -- --------------------------------------------------------
 
@@ -234,7 +246,7 @@ CREATE TABLE `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mdp`, `mail`, `telephone`, `connecte`, `admin`) VALUES
-(1, 'benoit', 'admin', 'admin', 'admin@admin.fr', 0, 1, 0);
+(1, 'benoit', 'admin', 'admin', 'admin@admin.com', 215, 1, 1);
 
 --
 -- Index pour les tables exportées
@@ -288,13 +300,6 @@ ALTER TABLE `finition`
 --
 ALTER TABLE `matiere`
   ADD PRIMARY KEY (`id`);
-
---
--- Index pour la table `motsCles`
---
-ALTER TABLE `motsCles`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `refFerrures` (`refFerrures`);
 
 --
 -- Index pour la table `option`
@@ -356,20 +361,15 @@ ALTER TABLE `finition`
 ALTER TABLE `matiere`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
--- AUTO_INCREMENT pour la table `motsCles`
---
-ALTER TABLE `motsCles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT pour la table `option`
 --
 ALTER TABLE `option`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT pour la table `prix`
 --
 ALTER TABLE `prix`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 --
 -- AUTO_INCREMENT pour la table `utilisateur`
 --
@@ -405,12 +405,6 @@ ALTER TABLE `ferrures`
 ALTER TABLE `ferruresDevis`
   ADD CONSTRAINT `ferruresDevis_ibfk_1` FOREIGN KEY (`refDevis`) REFERENCES `devis` (`id`),
   ADD CONSTRAINT `ferruresDevis_ibfk_2` FOREIGN KEY (`refFerrures`) REFERENCES `ferrures` (`id`);
-
---
--- Contraintes pour la table `motsCles`
---
-ALTER TABLE `motsCles`
-  ADD CONSTRAINT `motsCles_ibfk_1` FOREIGN KEY (`refFerrures`) REFERENCES `ferrures` (`id`);
 
 --
 -- Contraintes pour la table `option`
