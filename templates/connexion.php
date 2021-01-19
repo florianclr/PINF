@@ -79,10 +79,7 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
+             	
                sendMail();  // envoi d'un mail
              },
              "Annuler": function() {

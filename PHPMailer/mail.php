@@ -34,13 +34,8 @@ if (isset($_POST['name']) && isset($_POST['email'])) {
 
 	if ($mail->send())
 	{
-<<<<<<< Updated upstream
-		$status = "success"
-		$response = "sent"	
-=======
 		$status = "success";
 		$response = "sent";
->>>>>>> Stashed changes
 	}
 	else
 	{
