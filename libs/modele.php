@@ -158,31 +158,11 @@ function updateInfo($idUser, $info, $value)
 	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
 	SQLUpdate($SQL);
 }
-function changerPasse($idUser,$passe)
+
+function creerCompte($nom, $prenom, $mdp, $mail, $telephone, $admin)
 {
-	// cette fonction modifie le mot de passe d'un utilisateur
+	$SQL="INSERT INTO utilisateur (nom, prenom, mdp, mail, telephone, admin)  VALUES ('$nom', '$prenom', '$mdp', '$mail', '$telephone', '$admin')";
+	SQLInsert($SQL);
 }
 
-function changerPseudo($idUser,$pseudo)
-{
-	// cette fonction modifie le pseudo d'un utilisateur
-}
-
-function promouvoirAdmin($idUser)
-{
-	// cette fonction fait de l'utilisateur un administrateur
-}
-
-function retrograderUser($idUser)
-{
-	// cette fonction fait de l'utilisateur un simple mortel
-}
-
-
-/********* PARTIE 3 *********/
-
-function listerUtilisateursConnectes()
-{
-	// Liste les utilisteurs connectes
-}
 ?>
