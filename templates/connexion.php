@@ -147,46 +147,6 @@ function updateInfos(idUser) {
 	}
 ?>
 }
-function sendEmail() {
-
-	.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
-				.append($("<label class='champ'>Prénom :</label><input type='text' id='firstname'></br>"))
-    			.append($("<label class='champ'>Mail :</label><input type='email' id='mail'></br>"))
-				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>")); 
-
-	var surname = $.trim($("surname").val());
-	var firstname = $.trim($("firstname").val());
-
-	var expediteur = "no-reply";
-	var email = "no-reply@decima.fr"
-	var subject = "Demande d'ouverture de compte de " + firstname + " " + surname;
-
-	var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
-
-	$.ajax({
-		url: 'PHPMailer/mail.php',
-		method: 'POST',
-		dataType: 'json',
-
-		data: {
-			name: "no-reply",
-			email: email,
-			subject: subject,
-			body: body,
-
-		},
-
-		success: function(response) {
-			console.log(response);
-		}
-
-		error: function(response) {
-			console.log(response);
-		}
-	});
-}
-
-
 function sendMail() {
 
 	var surname = $("#surname").val();
