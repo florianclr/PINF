@@ -181,6 +181,20 @@ body {
 	padding-right: 5px;
 }
 
+#demandOK {
+	margin-top: 30px;
+	margin-bottom: 40%;
+	margin-left: 30%;
+	margin-right: 30%;
+	text-align: center;
+	font-weight: bold;
+	font-size: large;
+	color: green;
+	background-color: white;
+	border: 2px solid green;
+	box-shadow: 0px 0px 3px #000;
+}
+
 /******************************** ADMINISTRATION *********************************/
 
 #listeCompte {
@@ -191,6 +205,11 @@ body {
 	margin-left: 10%;
 	margin-right: 10%;
 	margin-top: 40px;
+}
+
+#btn {
+	margin: 20px;
+	margin-bottom: 20px;
 }
 
 .demande {
