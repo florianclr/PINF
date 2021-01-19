@@ -54,21 +54,53 @@ if ($action = valider("action"))
 				}
 			break;
 
+			case 'GET_Info' :
+				if ($value = valider("value"))
+				if ($info = valider("info"))
+					
+				updateInfo($_SESSION['idUser'], $info, $value);
+			break;
+
 			case 'GET_Categories' :
+
 				$tab=listerCategories();
 				echo(json_encode($tab));
 			break;
 
 			case 'GET_Articles' :
-				$tab=listerArticles();
+
+			if($categorie = valider("categorie") && $nombre = valider("nombre")){ 
+				$tab=listerArticles($categorie,$nombre);
+			}
+
+			else if ($categorie = valider("categorie")){
+				$tab=listerArticles($categorie,null);
+			}
+
+			else
+				$tab = listerArticles(null,null); // on veut toutes les ferures
+			
+
 				echo(json_encode($tab));
 			break;
 
 			case 'GET_Produit' :
-				if($idProduit=valider("idProduit"))
-				$tab=getProduit($idProduit);
-				echo(json_encode($tab));
+                if($idProduit=valider("idProduit"))
+                $tab=getProduit($idProduit);
+                echo(json_encode($tab));
+            break;
+
+            case 'POST_Compte' :
+            	if ($surname = valider("surname"))
+				if ($firstname = valider("firstname"))
+				if ($mail = valider("mail"))
+				if ($tel = valider("tel"))
+				if ($admin = valider("admin"))
+
+				creerCompte($surname, $firstname, "str", $mail, $tel, $admin);
+
 			break;
+
 
 
 		}
