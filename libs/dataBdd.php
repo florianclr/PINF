@@ -93,8 +93,11 @@ if ($action = valider("action"))
 
 			case 'GET_Prix' :
                 if($idProduit=valider("idProduit"))
-                $tab=getPrix($idProduit);
-                echo(json_encode($tab));
+                if($qteMax=valider("qteMax"))
+                $qteMin=valider("qteMin");
+                if($qteMin=="")$qteMin=0;
+                        $tab=getPrix($idProduit,$qteMin,$qteMax);
+                        echo(json_encode($tab));
             break;
 
             case 'GET_Options' :
@@ -106,6 +109,18 @@ if ($action = valider("action"))
             case 'GET_Rechercher' :
                 if($keyword=valider("keyword"))
                 $tab=rechercherFerrures($keyword);
+                echo(json_encode($tab));
+            break;
+
+			case 'GET_Qte' :
+                if($idProduit=valider("idProduit"))
+                $tab=getQte($idProduit);
+                echo(json_encode($tab));
+            break;
+
+            case 'GET_Dim' :
+                if($idProduit=valider("idProduit"))
+                $tab=getDim($idProduit);
                 echo(json_encode($tab));
             break;
             

@@ -43,9 +43,22 @@ function getProduit($id)
     return parcoursRs(SQLSelect($SQL));
 }
 
-function getPrix($id)
+function getPrix($id,$qteMin,$qteMax)
 {
-    $SQL="SELECT * FROM prix WHERE refFerrures='$id'";
+    $SQL="SELECT * FROM prix WHERE refFerrures='$id' 
+    AND qteMin='$qteMin' AND qteMax='$qteMax'";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getQte($id)
+{
+    $SQL="SELECT DISTINCT qteMin,qteMax FROM prix WHERE refFerrures='$id' ORDER BY qteMin ASC";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getDim($id)
+{
+    $SQL="SELECT DISTINCT dimMin,dimMax FROM prix WHERE refFerrures='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
 
