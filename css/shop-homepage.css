@@ -7,7 +7,7 @@
 body {
   	padding-top: 56px;
 	margin-top: 50px;
-
+	background-color: whitesmoke;
 }
 
 #logo {
@@ -21,6 +21,11 @@ body {
 	display: block;
 	margin: 10px; 
 }
+
+.fond {
+	background: linear-gradient(#EAECEE, lightgrey);
+}
+/*couleur de la bannière : #353a40*/
 
 .article{
 	display: block;
@@ -282,10 +287,15 @@ td {
 	background-color: gainsboro;
 }
 
-#mat, #fin, #plan, .intervalles, .prixU, .prixOpt {
+#mat, #fin, #plan, .intervalles, .prixUnit, .prixOpt, .qteU {
 	background-color: white;
+}
+
+.qteU, .prixUnit {
+	padding-right: 50px;
 }
 
 .test{
 	margin: 20px ; 
 }
+
