@@ -26,11 +26,36 @@ else $admin=0;
 var admin=<?php echo $admin; ?>;
 var jCompte = $('<div class="attente"></div>');
 var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
+									var id=$(this).prop("id");
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Accepter&idUser="+$(this).prop("id")+"&admin="+admin,
                     					type : "PUT",
-                    					success:function (){
+                    					success:function (oRep){
 											console.log("Inscrit");
+											console.log(oRep);
+											$.ajax({
+												url: "libs/dataBdd.php",
+												data:{"action":"CompteAttente","admin":admin,"idUser":id},
+												type : "GET",
+												success:function (oRep){
+											 		console.log(oRep);
+											 		for (var i = 0; i <oRep.length; i++) {
+											 			sendMail(oRep[i].mdp,oRep[i].mail);
+											 		}
+
+											 		$("#"+id).hide('slow', function() { 
+															$(this).remove();
+															$("#btn").remove();
+														});
+
+												},
+												error : function(jqXHR, textStatus)
+												{
+													console.log("erreur");
+
+												},
+												dataType: "json"
+											});//fin 2e requete
                 						}//fin succes
                 					});//fin 1er requete
                 					$(this).parent().hide('slow', function() { 
@@ -58,7 +83,6 @@ var jBtnAccepter=$('<input type="button" id="btn" value="Tout accepter"/>').clic
 	                url: "libs/dataBdd.php?action=Accepter&idUser="+id+"&admin="+admin,
 	                type : "PUT",
 	                success:function (oRep){
-	                	console.log("orep");
 	                	console.log(oRep);
 	                	$.ajax({
 			                url: "libs/dataBdd.php",
@@ -125,7 +149,7 @@ function sendMail(mdp,mailD) {
 	var email = "no-reply@decima.fr";
 	var subject = "Mot de passe du compte ";
 
-	var body = "Votre compte à été valider votre mot de passe est : "+mdp;
+	var body = "Votre compte à été validé, votre mot de passe est : "+mdp;
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',
@@ -133,7 +157,7 @@ function sendMail(mdp,mailD) {
 		dataType: 'json',
 
 		data: {
-			name: "no-reply",
+			name: "decima-ne-pas-repondre",
 			email: email,
 			subject: subject,
 			body: body,

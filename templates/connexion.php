@@ -168,7 +168,7 @@ function sendMail() {
 	console.log(surname);
 	console.log(firstname);
 
-	var expediteur = "no-reply";
+	var expediteur = "decima-ne-pas-repondre";
 	var email = "no-reply@decima.fr";
 	var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
 	var body = "Veuillez valider ou refuser la creation du compte sur votre page administrateur";
@@ -179,7 +179,7 @@ function sendMail() {
 		dataType: 'json',
 
 		data: {
-			name: "no-reply",
+			name: "decima-ne-pas-repondre",
 			email: email,
 			subject: subject,
 			body: body,

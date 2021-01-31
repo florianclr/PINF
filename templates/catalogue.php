@@ -13,7 +13,7 @@
 // -------- MODELES JQUERY --------------//
 
   var jArticle = $('<div class="col-lg-4 col-md-6 mb-4">')
-                  .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body">');
+                  .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body fond">');
       
   var jWarning = $('<div>Aucun résultat ne correspond à votre recherche</div>');
               
