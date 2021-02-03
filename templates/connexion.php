@@ -75,11 +75,11 @@ function createPopUp(){
 	 $("#connexion").append(popupCreate.clone(true));
      $("#popup").dialog({
          modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
-		 height: 300,
+		 height: 330,
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-               	sendMail();
+               	sendMail();  // envoi d'un mail
              },
              "Annuler": function() {
                	$(this).dialog("close"); // ferme la pop up 
@@ -201,10 +201,8 @@ function sendMail() {
 		    type : "POST",
 		    success:function (){
 				console.log("Nouveau compte créé");}
-			});
-
+		});
 		
-
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
 		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
@@ -235,14 +233,14 @@ function sendMail() {
 		});
 	}
 
+	else
+		$("#popup").append($("<label id='creationFailed'>Veuillez remplir tous les champs</label>"));
 }
 
 function validateEmail($email) {
-  var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,6})?$/;
-  return emailReg.test( $email );
+  	var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,6})?$/;
+  	return emailReg.test( $email );
 }
-
-
 
 </script>
 

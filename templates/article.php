@@ -24,6 +24,8 @@ $produit = valider("produit");
   var jTable3=$('<div id="T3"><table id="options"></table></div>');
 
   var jCheckBox=$('<td><input type="checkbox"/></td>');
+  
+  var compt = 1;
 
 	// T1
 	$.ajax({
@@ -67,15 +69,25 @@ $produit = valider("produit");
         if(oRep[0].dimMin!=null && oRep[0].dimMax!=null ){
 
 			$("#qte").append($('<td></td>').html("PU / Quantité"));
-          for (var i = 0; i <oRep.length; i++) {
-            $("#T2 tbody").append($('<tr></tr>').append($('<td></td>').html(oRep[i].dimMin+" à "+oRep[i].dimMax+" m")).attr("id",i));
-          }//fin for 
+			
+          	for (var i = 0; i <oRep.length; i++) {
+            	$("#T2 tbody").append($('<tr></tr>').append($('<td></td>').html(oRep[i].dimMin+" à "+oRep[i].dimMax+" m")).attr("id",i));
+            	compt++;
+          	}//fin for 
+				
         }//fin if
 
         else {
         	$("#qte").append($('<td></td>').html("Quantité"));
-          $("#T2 tbody").append($('<tr id="0"></tr>').append($('<td></td>').html("PU")));
+          	$("#T2 tbody").append($('<tr id="0"></tr>').append($('<td></td>').html("PU")));
+          	compt++;
         }
+        
+        console.log("compt="+compt);
+        while (compt > 0) {
+			$(".contenu").append($("</br></br>"));
+			compt--;	
+		}
 
       },
       error : function(jqXHR, textStatus) {
@@ -90,7 +102,7 @@ $produit = valider("produit");
     data:{"action":"Qte","idProduit":produit},
     type : "GET",
     success: function(oRep){
-      console.log("test");
+      //console.log("test");
         console.log(oRep);
         if(oRep.length!=0){
           $("#description").html(oRep[0].description);
@@ -112,11 +124,10 @@ $produit = valider("produit");
                   success: function(oRep){
                       console.log(oRep);
                       for(var j=0;j<oRep.length;j++){
-                        console.log(j);
-                        console.log(oRep[j].prixU);
+                        //console.log(j);
+                        //console.log(oRep[j].prixU);
                         $('#'+j).append($('<td class="prixUnit"></td>').html(oRep[j].prixU+" €"));
                       }
-
                   },
                   error : function(jqXHR, textStatus) {
                     console.log("erreur");
@@ -126,6 +137,7 @@ $produit = valider("produit");
             
               
             }//fin for
+            
           
         }//fin if 
     },
@@ -145,6 +157,7 @@ $produit = valider("produit");
         console.log(oRep);
         if(oRep.length!=0){
           $("#description").html(oRep[0].description);
+          
           $(".contenu").append(jTable3.clone(true));
           for (var i = 0; i< oRep.length; i++) {
              $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
