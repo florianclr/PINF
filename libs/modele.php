@@ -5,54 +5,24 @@ include_once("maLibSQL.pdo.php");
 Dans ce fichier, on définit diverses fonctions permettant de récupérer des données utiles pour notre TP d'identification. Deux parties sont à compléter, en suivant les indications données dans le support de TP
 */
 
-
 /********* PARTIE 1 : prise en main de la base de données *********/
-
-
 // inclure ici la librairie faciliant les requêtes SQL
-
-
-function creerCompte($nom, $prenom, $mdp, $mail, $telephone, $admin)
-{
-	$SQL="INSERT INTO utilisateur (nom, prenom, mdp, mail, telephone, admin)  VALUES ('$nom', '$prenom', '$mdp', '$mail', '$telephone', '$admin')";
-	SQLInsert($SQL);
-} 
-
-function accepterCompte($mdp, $idUser)
-{
-   $SQL="UPDATE utilisateur SET mdp='$mdp' WHERE id='$idUser'";
-	return SQLUpdate($SQL);
-}
-
-function refuserCompte($idUser)
-{
-   $SQL="DELETE FROM utilisateur WHERE id='$idUser'";
-	return SQLDelete($SQL);
-}
-
-function getCompte($id)
-{
-	if($id==null){
-		$SQL="SELECT * FROM utilisateur WHERE mdp=''";
-    return parcoursRs(SQLSelect($SQL));
-	}
-	else {
-		$SQL="SELECT * FROM utilisateur WHERE id='$id'";
-    return parcoursRs(SQLSelect($SQL));
-	}
-    
-}
-
-function rechercherFerrures($mot)
-{
-
-    $SQL="SELECT * FROM ferrures WHERE tags LIKE '%$mot%'";
-    return parcoursRs(SQLSelect($SQL));
-}
 
 function listerCategories()
 {
 	$SQL="SELECT * FROM catalogue";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function listerMatieres()
+{
+	$SQL="SELECT * FROM matiere";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function listerFinitions()
+{
+	$SQL="SELECT * FROM finition";
 	return parcoursRs(SQLSelect($SQL));
 }
 
@@ -77,14 +47,26 @@ function listerArticles($categorie,$nombre)
 
 function getProduit($id)
 {
-
     $SQL="SELECT ferrures.*, matiere.nomM, finition.nomF FROM ferrures,finition,matiere WHERE finition.id=ferrures.refFinition AND matiere.id=ferrures.refMatiere AND ferrures.id='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
 
-function getPrix($id)
+function getPrix($id,$qteMin,$qteMax)
 {
-    $SQL="SELECT * FROM prix WHERE refFerrures='$id'";
+    $SQL="SELECT * FROM prix WHERE refFerrures='$id' 
+    AND qteMin='$qteMin' AND qteMax='$qteMax'";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getQte($id)
+{
+    $SQL="SELECT DISTINCT qteMin,qteMax FROM prix WHERE refFerrures='$id' ORDER BY qteMin ASC";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getDim($id)
+{
+    $SQL="SELECT DISTINCT dimMin,dimMax FROM prix WHERE refFerrures='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
 
@@ -93,6 +75,39 @@ function getOptions($id)
     $SQL="SELECT * FROM `option` WHERE refFerrures='$id'";
     return parcoursRs(SQLSelect($SQL));
 }
+
+function rechercherFerrures($mot)
+{
+    $SQL="SELECT * FROM ferrures WHERE tags LIKE '%$mot%'";
+    return parcoursRs(SQLSelect($SQL));
+}
+
+function getCompte($id)
+{
+	if($id==null){
+		$SQL="SELECT * FROM utilisateur WHERE mdp IS NULL";
+    return parcoursRs(SQLSelect($SQL));
+	}
+	else {
+		$SQL="SELECT * FROM utilisateur WHERE id='$id'";
+    return parcoursRs(SQLSelect($SQL));
+	}
+
+}
+
+function accepterCompte($mdp, $idUser,$promouvoir)
+{
+   	$SQL="UPDATE utilisateur SET mdp='$mdp',admin='$promouvoir' WHERE id='$idUser'";
+	return SQLUpdate($SQL);
+}
+
+function refuserCompte($idUser)
+{
+   	$SQL="DELETE FROM utilisateur WHERE id='$idUser'";
+	return SQLDelete($SQL);
+}
+
+/****************************************************************************/
 
 function interdireUtilisateur($idUser)
 {
@@ -111,7 +126,7 @@ function verifUserBdd($login,$passe)
 	// renvoie faux si user inconnu
 	// renvoie l'id de l'utilisateur si succès
 
-	$SQL="SELECT id FROM utilisateur WHERE nom='$login' AND mdp='$passe'";
+	$SQL="SELECT id FROM utilisateur WHERE mail='$login' AND mdp='$passe'";
 
 	return SQLGetChamp($SQL);
 	// si on avait besoin de plus d'un champ
@@ -147,17 +162,6 @@ function deconnecterUtilisateur($idUser)
 	SQLUpdate($SQL);
 }
 
-function getInfo($idUser, $info)
-{
-	$SQL="SELECT $info FROM utilisateur WHERE id='$idUser'";
-	return SQLGetChamp($SQL);
-}
-
-function updateInfo($idUser, $info, $value)
-{
-	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
-	SQLUpdate($SQL);
-}
 function changerPasse($idUser,$passe)
 {
 	// cette fonction modifie le mot de passe d'un utilisateur
@@ -178,11 +182,71 @@ function retrograderUser($idUser)
 	// cette fonction fait de l'utilisateur un simple mortel
 }
 
+function getInfo($idUser, $info)
+{
+	$SQL="SELECT $info FROM utilisateur WHERE id='$idUser'";
+	return SQLGetChamp($SQL);
+}
+
+function updateInfo($idUser, $info, $value)
+{
+	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
+	SQLUpdate($SQL);
+}
+
+function creerCompte($nom, $prenom, $mail, $telephone)
+{
+	$SQL="INSERT INTO utilisateur (nom, prenom, mail, telephone)  VALUES ('$nom', '$prenom', '$mail', '$telephone')";
+	return SQLInsert($SQL);
+} 
+
 
 /********* PARTIE 3 *********/
 
-function listerUtilisateursConnectes()
-{
-	// Liste les utilisteurs connectes
-}
+
+	function ajouterPrix($prixU, $refFerrures,$qteMin,$qteMax,$dimMin, $dimMax)
+	{
+	    if($dimMin !=null && $dimMax !=null){
+	        $SQL="INSERT INTO prix (dimMin, dimMax, prixU, refFerrures, qteMin,qteMax) VALUES ('$dimMin','$dimMax','$prixU','$refFerrures','$qteMin','$qteMax')";
+	    }
+	    else {
+	        $SQL="INSERT INTO prix (prixU, refFerrures, qteMin, qteMax) VALUES ('$prixU','$refFerrures','$qteMin','$qteMax')";
+	    }
+
+	    return SQLInsert($SQL);
+	}
+
+	function ajouterDimension($min,$max, $refFerrures, $nom, $incluePrix)
+	{
+	    $SQL="INSERT INTO dimension (min, max, refFerrures, nom, incluePrix) VALUES ('$min','$max','$refFerrures','$nom','$incluePrix')";
+	    return SQLInsert($SQL);
+	}
+
+	function ajouterOption($nom, $prix, $refFerrures)
+	{
+	    $SQL="INSERT INTO `option` (nom, prix, refFerrures) VALUES ('$nom','$prix','$refFerrures')";
+	    return SQLInsert($SQL);
+	}
+
+	function creerFerrure1($refMatiere, $refFinition, $refcategories, $description,$titre,$tags)
+	{
+	    $SQL="INSERT INTO ferrures (refMatiere, refFinition, refcategories, description,titre,tags)  VALUES ('$refMatiere', '$refFinition', '$refcategories', '$description','$titre','$tags')";
+	    return SQLInsert($SQL);
+	}
+
+	function creerFerrure2($id,$image, $numeroPlan, $planPDF)
+	{
+	    $SQL="UPDATE ferrures SET image='$image', numeroPlan='$numeroPlan', planPDF='$planPDF' WHERE id='$id'";
+	    return SQLUpdate($SQL);
+	}
+
+	function supprimerFerrures($id)
+	{
+    $SQL="DELETE FROM dimension WHERE refFerrures='$id';
+          DELETE FROM ferruresDevis WHERE refFerrures='$id';
+          DELETE FROM `option` WHERE refFerrures='$id';
+          DELETE FROM prix WHERE refFerrures='$id';
+          DELETE FROM ferrures WHERE id='$id'";
+    return SQLDelete($SQL); 
+	}
 ?>

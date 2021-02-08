@@ -13,6 +13,14 @@ if (basename($_SERVER["PHP_SELF"]) != "index.php")
 	header("Location:../index.php");
 	die("");
 }
+if(valider("connecte","SESSION"))
+  if(valider("isAdmin","SESSION"))
+    $admin=1;
+  else $admin=0;
+else $admin=0;
+
+if(valider("connecte","SESSION"))$connecte=1;
+else $connecte=0;
 // Pose qq soucis avec certains serveurs...
 echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
 ?>
@@ -65,7 +73,9 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
       <!-- BARRE DES MENUS : TODO  MODIF CODE ET COMPRENDE BOSSTRAP -->
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
+        	<?php 
+        	if($connecte){
+        		echo '<li class="nav-item active">
             <a class="nav-link" href="index.php?view=catalogue">Catalogue
               <span class="sr-only">(current)</span>
             </a>
@@ -75,13 +85,22 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="#">Planning</a>
-          </li>
+          </li>';
+      			};
+        	 ?>
+        	
+          
           <li class="nav-item active">
             <a class="nav-link" href="index.php?view=connexion">Connexion/Compte</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Administration</a>
-          </li>
+           <?php 
+          if($admin){
+
+            echo '<li class="nav-item active">';
+            echo '<a class="nav-link" href="index.php?view=administration">Administration</a>';
+            echo "</li>";
+          }
+           ?>
         </ul>
       </div>
     </div>

@@ -7,7 +7,7 @@
 body {
   	padding-top: 56px;
 	margin-top: 50px;
-
+	background-color: whitesmoke;
 }
 
 #logo {
@@ -21,6 +21,11 @@ body {
 	display: block;
 	margin: 10px; 
 }
+
+.fond {
+	background: linear-gradient(#EAECEE, lightgrey);
+}
+/*couleur de la bannière : #353a40*/
 
 .article{
 	display: block;
@@ -181,6 +186,20 @@ body {
 	padding-right: 5px;
 }
 
+#demandOK {
+	margin-top: 30px;
+	margin-bottom: 40%;
+	margin-left: 30%;
+	margin-right: 30%;
+	text-align: center;
+	font-weight: bold;
+	font-size: large;
+	color: green;
+	background-color: white;
+	border: 2px solid green;
+	box-shadow: 0px 0px 3px #000;
+}
+
 /******************************** ADMINISTRATION *********************************/
 
 #listeCompte {
@@ -191,6 +210,11 @@ body {
 	margin-left: 10%;
 	margin-right: 10%;
 	margin-top: 40px;
+}
+
+#btn {
+	margin: 20px;
+	margin-bottom: 20px;
 }
 
 .demande {
@@ -253,7 +277,8 @@ table {
 }
 
 #T3 {
-	margin-top: 325px;
+	margin-top: 15px;
+
 }
 
 td {
@@ -263,10 +288,15 @@ td {
 	background-color: gainsboro;
 }
 
-#mat, #fin, #plan, .intervalles, .prixU, .prixOpt {
+#mat, #fin, #plan, .intervalles, .prixUnit, .prixOpt, .qteU {
 	background-color: white;
+}
+
+.qteU, .prixUnit {
+	padding-right: 50px;
 }
 
 .test{
 	margin: 20px ; 
 }
+

@@ -21,7 +21,7 @@ Les formulaires de toutes les vues générées enverront leurs données vers la 
 	}*/
 
 	// S'il est vide, on charge la vue accueil par défaut
-	if (!$view) $view = "catalogue"; 
+	if (!$view) $view = "connexion"; 
 
 	// NB : il faut que view soit défini avant d'appeler l'entête
 
