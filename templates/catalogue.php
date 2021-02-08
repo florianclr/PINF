@@ -13,26 +13,29 @@
 
 // -------- MODELES JQUERY --------------//
 
+	var tab = ['mediumblue', 'darkred', 'yellowgreen', 'indigo', 'darkcyan'];
+
   var jArticle = $('<div class="col-lg-4 col-md-6 mb-4">')
                   .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body fond">');
       
                     
   var jCatgegorie = $('<div class=row></div>');
+  
+  var jWarning = $('<div>Aucun résultat ne correspond à votre recherche</div>');
 
   var jtitre =  $('<h2 class="titre"></h2>');
 
   var jLien = $('<a href="#">');
 
   var jMenu=$('<a herf="#" class="list-group-item">').click(function(){
-                                                $nomCategorie = $(this).html();
-                                                $(".col-lg-9").empty(); // on vide l'ancien contenu affiché
-                                                $(".col-lg-9").append(jtitre.html($nomCategorie).clone(true));
-                                                $(".col-lg-9").append(jCatgegorie
-                                                                    .attr("id",$nomCategorie)
-                                                                  //.append(jtitre.html(oRep[i].nomCategorie))
-                                                                  //.addClass("categorie")
-                                                                    .clone(true));
-                                                remplirCatgegorieV2();
+                $nomCategorie = $(this).html();
+                $couleurCategorie = $(this).css("color");
+                $(".col-lg-9").empty(); // on vide l'ancien contenu affiché
+                $(".col-lg-9").append(jtitre.html($nomCategorie).css("color", $couleurCategorie).clone(true));
+                $(".col-lg-9").append(jCatgegorie
+                              .attr("id",$nomCategorie)
+                              .clone(true));
+                remplirCatgegorieV2();
   });
 
   var iconTrash = $('<button class="trashButton">').append('<img src="./ressources/delete.png" class="trash">').click(function(){
@@ -95,8 +98,6 @@
                       $(".col-lg-9 .row").append(jArticle.clone(true).attr("id",oRep[i].id));
 
                       $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
-
-                      $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
                       $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -140,11 +141,7 @@
                                               
                 $(".col-lg-9 .row").append(jArticle.clone(true).attr("id",oRep[i].id));
 
-
                 $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
-
-                $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
-
                 $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -185,15 +182,21 @@
       type : "GET",
       success:function (oRep){
         console.log(oRep);
+        var couleurCat;
+        
         // création du menu avec les catégories en jquery
         for (var i=0 ; i<oRep.length ;i++) {
-
-          $(".list-group").append(jMenu.clone(true)
+        
+        	if (oRep[i].nomCategorie != "Tout")
+        		couleurCat = tab[(oRep[i].id)-1];
+        	else
+        		couleurCat = "black";
+					
+          $(".list-group").append(jMenu.css("color", couleurCat).clone(true)
             .html(oRep[i].nomCategorie));
-          
 
           if(oRep[i].nomCategorie != "Tout"){ 
-             $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).clone(true)); 
+             $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).css("color", couleurCat).clone(true)); 
              $(".col-lg-9").append(jCatgegorie
                                 .attr("id",oRep[i].nomCategorie)
                                 //.append(jtitre.html(oRep[i].nomCategorie))
@@ -210,7 +213,10 @@
 
 ///////////////////////////////// TODO : RENDRE LE CODE QUI SUIT PLUS OPTIMAL !!!! ///////////////////////////:
 
-  function remplirCatgegorieV1(){ // ACCEUIL
+  function remplirCatgegorieV1(){ // ACCUEIL
+  
+  var couleurBord;
+  
     $(".col-lg-9 .row").each(function(){  
                                       
                                       var nom = $(this).prop("id");
@@ -227,15 +233,14 @@
 
                                                 if(oRep.length != 0){ 
                                                   for (var i =0; i<3;i++){
+                                                  
+                                                   couleurBord = tab[(oRep[i].refcategories)-1];
 
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));
 
-
-                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
-
-                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
-
+                                                   $("#" + oRep[i].id +" .card-img-top").css("border", "3px solid "+couleurBord)
+                                                   																			.attr('src',"./images/"+oRep[i].image);
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -259,6 +264,9 @@
   }
 
   function remplirCatgegorieV2(){ // 1 CATEGORIE
+  
+  var couleurBord;
+  
     $(".col-lg-9 .row").each(function(){  
                                       
                                       var nom = $(this).prop("id");
@@ -275,16 +283,15 @@
                                                 console.log(oRep);
 
                                                 if(oRep.length != 0){ 
-                                                  for (var i =0; i<oRep.length;i++){
+                                                  for (var i = 0; i < oRep.length; i++){
+                                                  
+                                                   couleurBord = tab[(oRep[i].refcategories)-1];
 
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));
 
-
-                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
-
-                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
-
+                                                   $("#" + oRep[i].id +" .card-img-top").css("border", "3px solid "+couleurBord)
+                                                   																			.attr('src',"./images/"+oRep[i].image);
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id)
