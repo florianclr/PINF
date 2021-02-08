@@ -22,6 +22,10 @@ function listerMatieres()
 }
 
 function listerFinitions()
+{
+    $SQL="SELECT * FROM finition";
+    return parcoursRs(SQLSelect($SQL));
+}
 
 
 function listerCategories()
