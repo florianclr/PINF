@@ -31,6 +31,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 										var promouvoir="1";
 									else var promouvoir="0";
 									console.log(promouvoir);
+
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Accepter&idUser="+$(this).prop("id")+"&admin="+admin+"&promouvoir="+promouvoir,
                     					type : "PUT",
@@ -67,7 +68,9 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
                 					});
 				 				});
 
+
 var jBox=$('<label for="admin ">admin </label><input type="checkbox" name="admin" id="admin"/>');
+
 
 var jButtonNO = $('<input type="button" value="Refuser"/>').click(function() {
 				 					$.ajax({
@@ -133,7 +136,10 @@ $.ajax({
 				 				.append($('<div class="demande">Demande de <b>'+oRep[i].prenom+' '+oRep[i].nom+'</b></div>'))
 				 				.append(jButtonOK.clone(true).attr("id",oRep[i].id))
 				 				.append(jButtonNO.clone(true).attr("id",oRep[i].id))
+
 				 				.append(jBox.clone(true))
+
+
 				 			);//fin append
 							if ($("#btn").length == 0)
 								$("h4").after(jBtnAccepter.clone(true));

@@ -75,11 +75,15 @@ function createPopUp(){
 	 $("#connexion").append(popupCreate.clone(true));
      $("#popup").dialog({
          modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
-		 height: 300,
+		 height: 330,
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
+
                	sendMail();
+
+               	sendMail();  // envoi d'un mail
+
              },
              "Annuler": function() {
                	$(this).dialog("close"); // ferme la pop up 
@@ -148,6 +152,7 @@ function updateInfos(idUser) {
 }
 
 function sendMail() {
+
 
 	var surname = $("#surname").val().trim();
 	var firstname = $("#firstname").val().trim();
@@ -243,6 +248,99 @@ function validateEmail($email) {
 }
 
 
+
+	var surname = $("#surname").val().trim();
+	var firstname = $("#firstname").val().trim();
+	var mail = $("#mail").val().trim();
+	var tel = $("#tel").val().trim();
+
+	var ok = true;
+
+	if (surname == "") {
+		console.log("NOM PAS OK");
+		ok = false;
+		$("#surname").css("border", "1px solid red");
+	}
+	else
+		$("#surname").css("border", "");
+
+	if (firstname == "") {
+		console.log("PRENOM PAS OK");
+		ok = false;
+		$("#firstname").css("border", "1px solid red");
+	}
+	else
+		$("#firstname").css("border", "");
+
+	if (mail == "" || !validateEmail(mail)) {
+		console.log("MAIL PAS OK");
+		ok = false;
+		$("#mail").css("border", "1px solid red");
+	}
+	else
+		$("#mail").css("border", "");
+
+	if (tel == "") {
+		console.log("TEL PAS OK");
+		ok = false;
+		$("#tel").css("border", "1px solid red");
+	}
+	else
+		$("#tel").css("border", "");
+
+	console.log(surname);
+	console.log(firstname);
+	console.log(mail);
+	console.log(tel);
+
+	if (ok) {
+
+		$.ajax({
+		    url: "libs/dataBdd.php",
+		    data:{"action":"Compte","surname":surname,"firstname":firstname, "mail": mail, "tel": tel},
+		    type : "POST",
+		    success:function (){
+				console.log("Nouveau compte créé");}
+		});
+		
+		var expediteur = "decima-ne-pas-repondre";
+		var email = "no-reply@decima.fr";
+		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
+		var body = "Veuillez valider ou refuser la creation du compte sur votre page administrateur";
+
+		$.ajax({
+			url: 'PHPMailer/mail.php',
+			method: 'POST',
+			dataType: 'json',
+
+			data: {
+				name: "decima-ne-pas-repondre",
+				email: email,
+				subject: subject,
+				body: body,
+				mailD: "jeanne.sueur@ig2i.centralelille.fr"
+			},
+
+			success: function(response) {
+					$("#popup").dialog("close"); // ferme la pop up 
+	               	$("#popup").remove(); // supprime la pop up
+					$("#newAccount").replaceWith("<div id='demandOK'>Votre demande a été prise en compte</div>");
+			},
+
+			error: function(response) {	
+				console.log(response);
+			}
+		});
+	}
+
+	else
+		$("#popup").append($("<label id='creationFailed'>Veuillez remplir tous les champs</label>"));
+}
+
+function validateEmail($email) {
+  	var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,6})?$/;
+  	return emailReg.test( $email );
+}
 
 </script>
 

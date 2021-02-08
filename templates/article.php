@@ -24,6 +24,9 @@ $produit = valider("produit");
 
   var jTable3=$('<div id="T3"><table id="options"></table></div>');
 
+
+
+  var jCheckBox=$('<td><input type="checkbox"/></td>');
   
   var compt = 1;
 
@@ -161,7 +164,11 @@ $produit = valider("produit");
           $(".contenu").append(jTable3.clone(true));
           for (var i = 0; i< oRep.length; i++) {
              $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
+
              $("#"+oRep[i].id).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
+
+             $("#"+oRep[i].id).append(jCheckBox.clone(true).attr("id",oRep[i].id)).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
+
 
           }
         }

@@ -95,6 +95,8 @@
                       $(".col-lg-9 .row").append(jArticle.clone(true).attr("id",oRep[i].id));
 
                       $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
+
+                      $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
                       $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -138,7 +140,11 @@
                                               
                 $(".col-lg-9 .row").append(jArticle.clone(true).attr("id",oRep[i].id));
 
+
                 $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
+
+                $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
+
                 $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -225,7 +231,11 @@
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));
 
+
                                                    $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
+
+                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
+
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id)
@@ -270,7 +280,11 @@
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));
 
+
                                                    $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
+
+                                                   $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image+".jpeg");
+
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id)
