@@ -5,6 +5,7 @@ $produit = valider("produit");
 
 
 <script type="text/javascript">
+
   var tab = ['mediumblue', 'darkred', 'yellowgreen', 'indigo', 'darkcyan'];
 
   var produit="<?php echo $produit; ?>";
@@ -22,11 +23,14 @@ $produit = valider("produit");
 
   var jTable2=$('<div id="T2"><table><tr id="qte"></tr></table></div>');
 
+  var jLabel=$('<br> <div id="label">Options possibles :</div>');
+
   var jTable3=$('<div id="T3"><table id="options"></table></div>');
 
-
-
-  var jCheckBox=$('<td><input type="checkbox"/></td>');
+  var jButton = $('<input type="button" id="addDevis" value="Ajouter la ferrure à un devis"/>');
+  
+  var jPopup = $("<div id='popUpDevis' title='Ajouter la ferrure au devis'>")
+				.append(jImg.clone(true)); 
   
   var compt = 1;
 
@@ -105,7 +109,6 @@ $produit = valider("produit");
     data:{"action":"Qte","idProduit":produit},
     type : "GET",
     success: function(oRep){
-      //console.log("test");
         console.log(oRep);
         if(oRep.length!=0){
           $("#description").html(oRep[0].description);
@@ -127,8 +130,6 @@ $produit = valider("produit");
                   success: function(oRep){
                       console.log(oRep);
                       for(var j=0;j<oRep.length;j++){
-                        //console.log(j);
-                        //console.log(oRep[j].prixU);
                         $('#'+j).append($('<td class="prixUnit"></td>').html(oRep[j].prixU+" €"));
                       }
                   },
@@ -158,19 +159,24 @@ $produit = valider("produit");
     type : "GET",
     success: function(oRep){
         console.log(oRep);
+        compt = 0;
+        
         if(oRep.length!=0){
           $("#description").html(oRep[0].description);
           
+          $(".contenu").append(jLabel.clone(true));
           $(".contenu").append(jTable3.clone(true));
           for (var i = 0; i< oRep.length; i++) {
              $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
-
              $("#"+oRep[i].id).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
-
-             $("#"+oRep[i].id).append(jCheckBox.clone(true).attr("id",oRep[i].id)).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
-
-
+             compt++;
           }
+          
+          console.log("compt="+compt);
+          while (compt > 0) {
+		  	$(".contenu").append($("</br></br>"));
+			compt--;	
+		  }
         }
 
     },
@@ -179,9 +185,33 @@ $produit = valider("produit");
     },
     dataType: "json"
     });
-
-   
-
+    
+	$(document).ready(function(){
+		$(".contenu").append(jButton.clone(true).click(function() {
+			$(".contenu").append(jPopup.clone(true));
+			$("#popUpDevis").dialog({
+				 modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
+				 height: 600,
+				 width: 600,
+				 buttons: { // on ajoute des boutons à la pop up 
+				     "Ajouter au devis": function(){
+				     },
+				     "Quitter": function() {
+				       	$(this).dialog("close"); // ferme la pop up 
+				       	$(this).remove(); // supprime la pop up
+				     },
+				 },
+				 close: function() { // lorsqu'on appuie sur la croix pour fermer la pop-up 
+				    console.log("Fermeture du pop-up");
+				    $(this).remove(); // supprime la pop up 
+				 }
+			}); 
+		}));
+	});
+	
+	function createPopUp(){
+	 
+}
 
 </script>
 <body>
@@ -196,6 +226,7 @@ $produit = valider("produit");
   <!-- Bootstrap core JavaScript -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
 
 </body>
 

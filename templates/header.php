@@ -42,7 +42,7 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
-  <link href="css/shop-homepage.css" rel="stylesheet">  <!-- => contient notre css -->
+  <link href="css/homepage.css" rel="stylesheet">  <!-- => contient notre css -->
 
   <link href="jquery-ui/jquery-ui.css" rel="stylesheet" />
   <link href="jquery-ui/jquery-ui.structure.css" rel="stylesheet" />
