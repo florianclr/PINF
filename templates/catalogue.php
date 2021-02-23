@@ -2,6 +2,7 @@
 
 <?php
   $admin = valider("isAdmin","SESSION");  
+  $idUser = valider("idUser","SESSION");
 ?>
 
 
@@ -13,7 +14,23 @@
 
 // -------- MODELES JQUERY --------------//
 
-	var tab = ['mediumblue', 'darkred', 'yellowgreen', 'indigo', 'darkcyan'];
+  var tab = [];
+
+  $.ajax({
+	url: "libs/dataBdd.php",
+    	data:{"action":"Categories"},
+    	type : "GET",
+    	success: function(oRep){
+      		console.log(oRep);
+      		for (var i = 0; i < oRep.length; i++) {
+        		tab.push(oRep[i].couleur);
+      		}
+    	},
+    error : function(jqXHR, textStatus) {
+      	console.log("erreur");
+    },
+    dataType: "json"
+  });
 
   var jArticle = $('<div class="col-lg-4 col-md-6 mb-4">')
                   .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body fond">');
@@ -50,7 +67,19 @@
                                                       			 buttons: { // on ajoute des boutons à la pop up 
 															        "OUI": function(){
 															        	console.log($(this).data("idFerrure"));
-															        	// REQUEST 
+															        	$.ajax({
+                                          url: "libs/dataBdd.php?action=Ferrure&id="+$(this).data("idFerrure"),
+                                          type : "DELETE",
+                                          success : function(oRep){
+                                            console.log("Ferrure supprimée!!");
+                                            console.log(oRep);
+                                             $("#popup").dialog( "close" ); // ferme la pop up
+                                          },
+                                          error : function(oRep){
+                                            console.log("ERREUR"); 
+                                          },
+                                          dataType: "json"
+                                        });
 															        },
 															        "NON": function() {
 															          $(this).dialog( "close" ); // ferme la pop up 
@@ -156,7 +185,6 @@
       
             }//fin for
       if (oRep.length == 0) {
-        console.log("pas trouvé");
         $(".col-lg-9 .row").append(jWarning.clone(true).attr("id","warning"));
       }
     } // fin oRep != null
@@ -165,16 +193,66 @@
             })//fin ajax
         })//fin click
       )//fin append 
+      
+    var jAddCategorie=$('<div class="buttonsCenter"><input type="button" id="addC" value="Ajouter une catégorie"/></div>').click(function(){
+    $('body').append(jPopupCategorie.clone(true));
+    $("#newC").dialog({
+      modal: true, 
+      height: 300,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Créer": function(){
+        console.log($('#nomC').val());
+
+      $.ajax({
+        url: "libs/dataBdd.php",
+        data:{"action":"CreerCategorie","nomC":$('#nomC').val(),"admin":admin,"couleur":$('#couleur').val()},
+        type : "POST",
+        success:function (oRep){
+          console.log(oRep);
+          $("#newC").dialog( "close" ); // ferme la pop up 
+        $("#newC").remove(); // supprime la pop up
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+
+        },
+        "Annuler": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+    });
+
+  });
+  
+  var jPopupCategorie=$('<div id="newC"> <p>nom de la catégorie : </p>').append('<input type="text" id="nomC"/>').append('<p>couleur de la catégorie : </p>').append('<input type="color" id="couleur" name="head" value="#e66465">');
+  
+  var jPopupDevis=$('<div id="newD"> <p>nom du Client : </p>').append('<input type="text" id="nomClient"/>').append('<p> Numéro du devis</p>').append('<input type="text" id="numD">').append('<p> Nom du projet</p>').append('<input type="text" id="nomP"/>');
 
 //-------- VAR GLOBALE ----- //
 
  var admin ="<?php echo $admin; ?>";
+ var idUser ="<?php echo $idUser; ?>";
  console.log("admin =>" + admin); 
 
 //------------ CRÉATION DE LA PAGE D'ACCEUIL LORSQUE QUE LE CATALOGUE EST CHARGÉ-----------//  
    $(document).ready(function(){
 
    	$(".col-lg-3").append(jRecherche.clone(true));
+   	if(admin==1)
+    	$(".col-lg-3").append(jAddCategorie.clone(true));
+    	
+    $(".col-lg-3").append(jAddDevis.clone(true));
     
     $.ajax({
       url: "libs/dataBdd.php",
@@ -315,6 +393,47 @@
                                             });
       });  
   }
+  
+  var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value="Créer un devis"/></div>').click(function(){
+    $('body').append(jPopupDevis.clone(true));
+    $("#newD").dialog({
+      modal: true, 
+      height: 300,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Créer": function(){
+
+        $.ajax({
+        url: "libs/dataBdd.php",
+        data:{"action":"CreerDevis","nomClient":$('#nomClient').val(),"numD":$('#numD').val(),"nomP":$('#nomP').val(),"refCa":idUser},
+        type : "POST",
+        success:function (oRep){
+          console.log(oRep);
+           $("#newD").dialog( "close" ); // ferme la pop up
+           $("#newC").remove(); // supprime la pop up 
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+
+        },
+        "Annuler": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up 
+      console.log("close!!!!");
+      $(this).remove(); // supprime la pop up 
+      }
+    });
+
+  });
 
   </script>
 
