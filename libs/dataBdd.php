@@ -11,6 +11,7 @@ header("Access-Control-Allow-Headers: *");
 $method = $_SERVER["REQUEST_METHOD"];
 $request = false ; 
 
+$idUserCo = valider("idUser","SESSION");
 if ($action = valider("action"))
 {
 
@@ -55,36 +56,32 @@ if ($action = valider("action"))
 			break;
 
 			case 'GET_Categories' :
-
 				$tab=listerCategories();
 				echo(json_encode($tab));
 			break;
 
 			case 'GET_Matieres' :
-
 				$tab=listerMatieres();
 				echo(json_encode($tab));
 			break;
 
 			case 'GET_Finitions' :
-
 				$tab=listerFinitions();
 				echo(json_encode($tab));
 			break;
 
 			case 'GET_Articles' :
+				if($categorie = valider("categorie") && $nombre = valider("nombre")){ 
+					$tab=listerArticles($categorie,$nombre);
+				}
 
-			if($categorie = valider("categorie") && $nombre = valider("nombre")){ 
-				$tab=listerArticles($categorie,$nombre);
-			}
+				else if ($categorie = valider("categorie")){
+					$tab=listerArticles($categorie,null);
+				}
 
-			else if ($categorie = valider("categorie")){
-				$tab=listerArticles($categorie,null);
-			}
-
-			else
-				$tab = listerArticles(null,null); // on veut toutes les ferures
-				echo(json_encode($tab));
+				else
+					$tab = listerArticles(null,null); // on veut toutes les ferures
+					echo(json_encode($tab));
 			break;
 
 			case 'GET_Produit' :
@@ -221,6 +218,7 @@ if ($action = valider("action"))
             		$tab = ajouterOption($nom, $prix, $refFerrure);
             		echo(json_encode($tab));
             	}
+            break;
 
             case 'POST_Prix' :
             	if($qteMin=valider("qteMin"))
@@ -247,6 +245,65 @@ if ($action = valider("action"))
             		echo(json_encode($tab));
             	}
             break ; 
+            
+            case'GET_TabPrix':
+                if($idProduit=valider("idProduit")){
+                    $tab = getTabPrix($idProduit);
+                    echo(json_encode($tab));
+                }
+            break;
+            
+            case 'POST_CreerCategorie' :
+                if($admin=valider("admin"))
+                if($nomC=valider("nomC"))
+                if($couleur=valider("couleur"))
+                    $tab = creerCategorie($nomC,$couleur);
+                    echo(json_encode($tab));
+            break ;
+            
+            case 'POST_CreerDevis' :
+                if($nomClient=valider("nomClient"))
+                if($numD=valider("numD"))
+                if($nomP=valider("nomP"))
+                if($refCa=valider("refCa")){
+                    $date=date("Y-m-d");
+                    $tab = creerDevis($numD,$refCa,$nomP,$nomClient,$date,1);
+                    echo(json_encode($tab));
+                }
+            break ;
+            
+            case 'PUT_Commander' :
+                if($idD=valider("idDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo) {
+                    $tab=CommanderDevis(1,$idD);
+                }
+                echo(json_encode($tab));
+            break;
+            
+            case 'DELETE_FerrureDevis' :
+                if($idF=valider("idFerrureDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                    $tab=suppFerrureDevis($idF);
+                echo(json_encode($tab));
+            break;
+            
+            case 'GET_listerDevis' :
+                if($devis=valider("idDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                     $tab = listerDevis($devis);
+                echo(json_encode($tab));
+            break ;
+            
+            case 'GET_listerFerruresDevis' :
+                if($devis=valider("idDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                     $tab = listerFerruresDevis($devis);
+                echo(json_encode($tab));
+            break ;
 
 		}
 }

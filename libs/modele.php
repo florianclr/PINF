@@ -8,7 +8,6 @@ Dans ce fichier, on définit diverses fonctions permettant de récupérer des do
 /********* PARTIE 1 : prise en main de la base de données *********/
 // inclure ici la librairie faciliant les requêtes SQL
 
-
 function listerCategories()
 {
 	$SQL="SELECT * FROM catalogue";
@@ -22,13 +21,6 @@ function listerMatieres()
 }
 
 function listerFinitions()
-{
-    $SQL="SELECT * FROM finition";
-    return parcoursRs(SQLSelect($SQL));
-}
-
-
-function listerCategories()
 {
 	$SQL="SELECT * FROM finition";
 	return parcoursRs(SQLSelect($SQL));
@@ -67,15 +59,6 @@ function getPrix($id,$qteMin,$qteMax)
 }
 
 function getQte($id)
-
-{
-    $SQL="SELECT DISTINCT qteMin,qteMax FROM prix WHERE refFerrures='$id' ORDER BY qteMin ASC";
-    return parcoursRs(SQLSelect($SQL));
-}
-
-function getDim($id)
-{
-
 {
     $SQL="SELECT DISTINCT qteMin,qteMax FROM prix WHERE refFerrures='$id' ORDER BY qteMin ASC";
     return parcoursRs(SQLSelect($SQL));
@@ -112,15 +95,9 @@ function getCompte($id)
 
 }
 
-
 function accepterCompte($mdp, $idUser,$promouvoir)
 {
    	$SQL="UPDATE utilisateur SET mdp='$mdp',admin='$promouvoir' WHERE id='$idUser'";
-
-function accepterCompte($mdp, $idUser)
-{
-   	$SQL="UPDATE utilisateur SET mdp='$mdp' WHERE id='$idUser'";
-
 	return SQLUpdate($SQL);
 }
 
@@ -211,21 +188,6 @@ function getInfo($idUser, $info)
 	return SQLGetChamp($SQL);
 }
 
-
-
-function updateInfo($idUser, $info, $value)
-{
-	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
-	SQLUpdate($SQL);
-}
-
-function creerCompte($nom, $prenom, $mail, $telephone)
-{
-	$SQL="INSERT INTO utilisateur (nom, prenom, mail, telephone)  VALUES ('$nom', '$prenom', '$mail', '$telephone')";
-	return SQLInsert($SQL);
-} 
-
-
 function updateInfo($idUser, $info, $value)
 {
 	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
@@ -286,5 +248,49 @@ function creerCompte($nom, $prenom, $mail, $telephone)
           DELETE FROM prix WHERE refFerrures='$id';
           DELETE FROM ferrures WHERE id='$id'";
     return SQLDelete($SQL); 
+	}
+	
+	function getTabPrix($id){
+        $SQL="SELECT dimMin,dimMax,prixU,qteMin,qteMax FROM `prix` WHERE refFerrures = '$id' ORDER BY qteMin ASC" ; 
+        return parcoursRs(SQLSelect($SQL));
+    }
+    
+    function creerCategorie($nomC,$couleur)
+	{
+		$SQL="INSERT INTO catalogue (nomCategorie,couleur)  VALUES ('$nomC','$couleur')";
+		return SQLInsert($SQL);
+	}
+	
+	function creerDevis($numDevis,$refCA,$nomProjet,$nomClient,$dateCreation,$etat)
+	{
+    	$SQL="INSERT INTO devis (numeroDevis,refCA,nomProjet,nomClient,dateCreation,etat)  VALUES ('$numDevis','$refCA','$nomProjet','$nomClient','$dateCreation','$etat')";
+    	return SQLInsert($SQL);
+	}
+	
+	function CommanderDevis($etat,$id)
+	{
+       	$SQL="UPDATE devis SET etat='$etat' WHERE id='$id'";
+    	return SQLUpdate($SQL);
+	}
+	
+	function suppFerrureDevis($idF)
+	{
+       	$SQL="DELETE FROM ferruresDevis WHERE id='$idF'";
+    	return SQLDelete($SQL);
+	}
+	
+	function listerDevis($id)
+	{
+		if($id!=null)$SQL="SELECT * FROM devis WHERE id='$id'";
+
+		else $SQL="SELECT * FROM devis";
+
+		return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function listerFerruresDevis($idDevis)
+	{
+		$SQL="SELECT * FROM ferruresDevis WHERE refDevis='$idDevis'";
+		return parcoursRs(SQLSelect($SQL));
 	}
 ?>
