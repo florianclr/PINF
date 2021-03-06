@@ -293,4 +293,15 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		$SQL="SELECT * FROM ferruresDevis WHERE refDevis='$idDevis'";
 		return parcoursRs(SQLSelect($SQL));
 	}
+
+	function listerDimensionsFerrure($idF) {
+		$SQL="SELECT * FROM `dimension` WHERE refFerrures='$idF'"; 
+        return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function listerCouleursFerrure() {
+		$SQL="SELECT * FROM `couleursFerrures`"; 
+        return parcoursRs(SQLSelect($SQL));
+	}
+
 ?>

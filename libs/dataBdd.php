@@ -305,6 +305,17 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break ;
 
+			case 'GET_listerDimensionsFerrure' :
+                if($idProduit=valider("idProduit"))
+                     $tab = listerDimensionsFerrure($idProduit);
+                echo(json_encode($tab));
+            break ;
+            
+            case 'GET_listerCouleursFerrure' :
+                $tab = listerCouleursFerrure();
+                echo(json_encode($tab));
+            break ;
+
 		}
 }
 
