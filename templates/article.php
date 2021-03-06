@@ -49,7 +49,6 @@ $produit = valider("produit");
   
   var jQuantiteOpt = $('<input type="number" id="qteOpt" value="1" min="1"/>');
 
-
   var jCheckBox=$('<td></td>').append($('<input id="checkOpt" type="checkbox"/>').click(function() {
               if ($(this).prop("checked") == true) {
                 $(this).parent().append(jQuantiteOpt.clone(true));
@@ -92,6 +91,8 @@ $produit = valider("produit");
       $("#popUpDevis #options tr").each(function(){
         $(this).prepend(jCheckBox.clone(true)); 
       });
+      listerDimensions();
+      listerCouleurs();
 
       $("#popUpDevis").dialog({
          modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
@@ -257,24 +258,93 @@ function genTabOption(){
     });
     return;   
 }
+
+function listerDimensions() {
+  $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"listerDimensionsFerrure","idProduit":produit},
+    type : "GET",
+    success: function(oRep){
+        console.log(oRep);
+        $("#popUpDevis").append($('<div id="titleDim">Dimensions :</div>'));
+        $("#popUpDevis").append($('<div id="dimFond"></div>'));
+        
+        for (var i = 0; i < oRep.length; i++) {
+             $("#dimFond").append($('<div id="dim"></div>').html(oRep[i].nom+' = '));
+             $("#dim").attr("id", "dim"+(i+1));
+             if (i != 0)
+             	$("#dim"+(i+1)).css("margin-left", "40px");
+             	
+             $("#dim"+(i+1)).append($('<input type="number" id="choixDim"/>'));
+             $("#choixDim").attr("id", "choixDim"+(i+1)); 
+             $("#choixDim"+(i+1)).attr("value", oRep[i].min);
+             $("#choixDim"+(i+1)).attr("min", oRep[i].min);
+             $("#choixDim"+(i+1)).attr("max", oRep[i].max);
+             $("#choixDim"+(i+1)).css("margin-right", "5px");
+             $("#dim"+(i+1)).append("mm");
+             $("#dim"+(i+1)).css("display", "inline");
+    	}
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+    });   
+}
+
+function listerCouleurs() {
+  $.ajax({
+    url: "libs/dataBdd.php",
+    data:{"action":"listerCouleursFerrure"},
+    type : "GET",
+    success: function(oRep){
+        console.log(oRep);
+        $("#popUpDevis").append($('<div id="titleCol">Couleur choisie :</div>'));
+        $("#popUpDevis").append($('<div id="colFond"></div>'));
+        
+        for (var i = 0; i < oRep.length; i++) {
+             $("#colFond").append($('<input type="radio" id="choixCol" name="couleur"/>'));
+             $("#choixCol").attr("id", "choixCol"+(i+1)); 
+             $("#choixCol"+(i+1)).attr("value", "choixCol"+(i+1));
+             if (i != 0)
+             	$("#choixCol"+(i+1)).css("margin-left", "40px");
+             	
+             $("#colFond").append($('<label id="labelCol"></label>'));
+             $("#labelCol").attr("id", "labelCol"+(i+1)); 
+             $("#labelCol"+(i+1)).attr("for", "choixCol"+(i+1));
+             $("#labelCol"+(i+1)).css("margin-left", "5px");
+             $("#labelCol"+(i+1)).html(oRep[i].couleur);
+    	}
+    	finirCommande();
+    },
+    error : function(jqXHR, textStatus) {
+      console.log("erreur");  
+    },
+    dataType: "json"
+    });   
+}
+
+function finirCommande() {
+	$("#popUpDevis").append($('<div id="titlePrix">PRIX TOTAL HT :</div>'));
+	$("#titlePrix").css("font-size","x-large");
+	// TODO: faire le calcul du prix ici et l'afficher, mis à jour à chaque changement
+	$("#titlePrix").append("€");
+	
+	// TODO: afficher un menu déroulant de tous les devis pour en sélectionner un
+}
   
   // CHARGEMENT PAGE
 $(document).ready(function(){
     genInfos();
-    //genTabPrix();
-    //genTabOption();
-  });
+});
 
-	function createPopUp(){
-	 
-}
 
 </script>
 <body>
 
    <br/><br/>
     <div class="container">    
-      <div class="product"></div> <!-- TODO:MODIF NOM -->
+      <div class="product"></div>
       <div class="row">
       <div class="contenu"></div>  
       </div>
