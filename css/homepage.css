@@ -329,6 +329,11 @@ table {
 	margin-bottom: -2px;
 }
 
+#indic {
+	font-style: italic;
+	font-size: small;
+}
+
 #titleDim, #titleCol, #titlePrix {
 	margin-top: 40px;
 }
