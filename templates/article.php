@@ -24,6 +24,11 @@ $produit = valider("produit");
     dataType: "json"
   });
 
+  var prixTot = 0;
+  var prixDisplay = 0;
+  var qte;
+  var ancienCoeff = 1;
+
   var produit="<?php echo $produit; ?>";
   console.log(produit);
 
@@ -44,21 +49,78 @@ $produit = valider("produit");
   var jTable3=$('<table id="options"></table>');
 
   var jPopup = $("<div id='popUpDevis' title='Ajouter la ferrure au devis'>");
-
-  var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>');
   
-  var jQuantiteOpt = $('<input type="number" id="qteOpt" value="1" min="1"/>');
+  var jQuantiteOpt = $('<input type="number" id="qteOpt" value="1" min="1"/>').change(function() {
+  
+  				var nouveauCoeff;
+  
+  				if (parseInt($("#qteOpt").val(), 10) <= 0)
+      				console.log("VALEUR NEGATIVE");
+      				
+      			if (parseInt($("#qteOpt").val(), 10) > parseInt(qte, 10))
+      				console.log("VALEUR TROP GRANDE");
+      			else {
+        			prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
+              		nouveauCoeff = $(this).val();
+              		console.log(nouveauCoeff);
+              		console.log(ancienCoeff);
+              		
+              		// augmente quantité
+              		if (nouveauCoeff > ancienCoeff) {
+              			console.log("tes+");
+              			prixDisplay += prixTot*(nouveauCoeff-ancienCoeff);
+              		}
+                	
+					// diminue quantité	
+                	if (nouveauCoeff < ancienCoeff) {
+                		console.log("tes-");
+                		prixDisplay -= prixTot*(ancienCoeff-nouveauCoeff);
+              		}
+              		ancienCoeff = nouveauCoeff;
+              		
+              		console.log("maj prix avec un input :");
+                	console.log(prixDisplay);
+      			}
+  });
+
+  var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>').keyup(function() {
+  
+  				if ($("#qteFerrure").val() <= 0)
+      				console.log("VALEUR NEGATIVE");
+      			else {
+        			qte = $("#qteFerrure").val();
+        			console.log(qte);
+      			}
+  });
 
   var jCheckBox=$('<td></td>').append($('<input id="checkOpt" type="checkbox"/>').click(function() {
+
               if ($(this).prop("checked") == true) {
                 $(this).parent().append(jQuantiteOpt.clone(true));
-                qte = $("#qteFerrure").val();
-              $("#qteOpt").attr('max', qte);
+              	$("#qteOpt").attr('max', qte);
+              	
+              	prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);	
+              	prixDisplay += prixTot;
+              	ancienCoeff = 1;
+              	/*$(this).parent().find('input[type="number"]').change(function() {
+              		nouveauCoeff = $(this).parent().find('input[type="number"]').val();
+              		
+              	});*/
+              	
               }
-              else if ($(this).prop("checked") == false)
+              else if ($(this).prop("checked") == false) {
                 var inputSupr = $(this).parent().find('input[type="number"]'); // on cherche dans le parent un input number 
+                nouveauCoeff = $(this).parent().find('input[type="number"]').val();
                 $(inputSupr).remove();
-             }));
+                
+                prixTot = nouveauCoeff*parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
+              
+                prixDisplay -= prixTot;
+                console.log("prix total :");
+                console.log(prixDisplay);
+              }
+              
+  }));
 
   var compt = 1;
 
@@ -80,6 +142,7 @@ $produit = valider("produit");
 	  $(".card-img-top").css("max-width", largeur);
     // Quantité choisie
       $("#popUpDevis").append(jQuantite.clone(true));
+      // prix correspondant
     // tabelau prix copie
       $("#popUpDevis").append(jclonePrix); 
       $("#popUpDevis").append("<br><br>"); 
@@ -87,6 +150,7 @@ $produit = valider("produit");
       $("#popUpDevis").append(jLabel.clone(true)); 
     // Tableau options copie
       $("#popUpDevis").append(jcloneOption);
+      $("#popUpDevis").append($('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>'));
     // pour chaque option on ajoute une checkbox pour l'inclure ou pas ds le prix
       $("#popUpDevis #options tr").each(function(){
         $(this).prepend(jCheckBox.clone(true)); 
@@ -241,12 +305,14 @@ function genTabOption(){
              $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
              $("#"+oRep[i].id).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
              compt++;
-          }
+        }
           
-          console.log("compt="+compt);
-          while (compt > 0) {
-        $("#options").after($("</br>"));
-      compt--;  
+        console.log("compt="+compt);
+        while (compt > 0) {
+       	$("#options").after($("</br>"));
+      	compt--;  
+      	
+      	
       }
         }
          return ; 
@@ -266,23 +332,42 @@ function listerDimensions() {
     type : "GET",
     success: function(oRep){
         console.log(oRep);
+        
         $("#popUpDevis").append($('<div id="titleDim">Dimensions :</div>'));
         $("#popUpDevis").append($('<div id="dimFond"></div>'));
         
         for (var i = 0; i < oRep.length; i++) {
+        
              $("#dimFond").append($('<div id="dim"></div>').html(oRep[i].nom+' = '));
              $("#dim").attr("id", "dim"+(i+1));
+             $("#dim"+(i+1)).css("margin-right", "100px");
              if (i != 0)
-             	$("#dim"+(i+1)).css("margin-left", "40px");
+             	$("#dim"+(i+1)).css("margin-top", "10px");
              	
              $("#dim"+(i+1)).append($('<input type="number" id="choixDim"/>'));
              $("#choixDim").attr("id", "choixDim"+(i+1)); 
              $("#choixDim"+(i+1)).attr("value", oRep[i].min);
              $("#choixDim"+(i+1)).attr("min", oRep[i].min);
              $("#choixDim"+(i+1)).attr("max", oRep[i].max);
+             $("#choixDim"+(i+1)).css("width", "70px");
              $("#choixDim"+(i+1)).css("margin-right", "5px");
+             if (i != 0)
+             	$("#choixDim"+(i+1)).css("margin-top", "10px");
+             
              $("#dim"+(i+1)).append("mm");
              $("#dim"+(i+1)).css("display", "inline");
+             
+             // affichage valeurs min et max pour guider l'utilisateur
+             $("#dimFond").append($('<div id="dimIndic"></div>'));
+             $("#dimIndic").attr("id", "dimIndic"+(i+1));
+             $("#dimIndic"+(i+1)).append("[");
+             $("#dimIndic"+(i+1)).append(oRep[i].min);
+             $("#dimIndic"+(i+1)).append(" ; ");
+             $("#dimIndic"+(i+1)).append(oRep[i].max);
+             $("#dimIndic"+(i+1)).append("]</br>");
+             $("#dimIndic"+(i+1)).css("display", "inline");
+             if (i != 0)
+             	$("#dimIndic"+(i+1)).css("margin-top", "10px");
     	}
     },
     error : function(jqXHR, textStatus) {
@@ -325,10 +410,13 @@ function listerCouleurs() {
 }
 
 function finirCommande() {
+	var prix;
 	$("#popUpDevis").append($('<div id="titlePrix">PRIX TOTAL HT :</div>'));
-	$("#titlePrix").css("font-size","x-large");
 	// TODO: faire le calcul du prix ici et l'afficher, mis à jour à chaque changement
-	$("#titlePrix").append("€");
+			
+		// prix = 
+		$("#titlePrix").append("€");
+	
 	
 	// TODO: afficher un menu déroulant de tous les devis pour en sélectionner un
 }
