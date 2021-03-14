@@ -1,16 +1,20 @@
 
 
 <?php
-  $admin = valider("isAdmin","SESSION");  
-  $idUser = valider("idUser","SESSION");
+  	$admin = valider("isAdmin","SESSION");  
+  	$idUser = valider("idUser","SESSION");
+
+	if (!valider("connecte","SESSION")) {
+  		header("Location:index.php?view=connexion");
+  		die("");
+	}
 ?>
 
-
-  <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
- <script type="text/javascript">
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
 
 // -------- MODELES JQUERY --------------//
 

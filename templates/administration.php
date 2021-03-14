@@ -9,11 +9,15 @@
 	// on sélectionne une rubrique différente du site dans le menu
 	//$(".sr-only").html("(current)");
 
-if(valider("connecte","SESSION"))
-	if(valider("isAdmin","SESSION"))
-		$admin=1;
-	else $admin=0;
-else $admin=0;
+
+	if(valider("connecte","SESSION"))
+		if(valider("isAdmin","SESSION"))
+			$admin=1;
+		else $admin=0;
+	else {
+		header("Location:index.php?view=connexion");
+  		die("");
+	}
 
 ?>
 <!-- Bootstrap core JavaScript -->
@@ -31,7 +35,6 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 										var promouvoir="1";
 									else var promouvoir="0";
 									console.log(promouvoir);
-
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Accepter&idUser="+$(this).prop("id")+"&admin="+admin+"&promouvoir="+promouvoir,
                     					type : "PUT",
@@ -68,9 +71,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
                 					});
 				 				});
 
-
 var jBox=$('<label for="admin ">admin </label><input type="checkbox" name="admin" id="admin"/>');
-
 
 var jButtonNO = $('<input type="button" value="Refuser"/>').click(function() {
 				 					$.ajax({
@@ -136,10 +137,7 @@ $.ajax({
 				 				.append($('<div class="demande">Demande de <b>'+oRep[i].prenom+' '+oRep[i].nom+'</b></div>'))
 				 				.append(jButtonOK.clone(true).attr("id",oRep[i].id))
 				 				.append(jButtonNO.clone(true).attr("id",oRep[i].id))
-
 				 				.append(jBox.clone(true))
-
-
 				 			);//fin append
 							if ($("#btn").length == 0)
 								$("h4").after(jBtnAccepter.clone(true));
@@ -162,7 +160,7 @@ function sendMail(mdp,mailD) {
 	var email = "no-reply@decima.fr";
 	var subject = "Mot de passe du compte ";
 
-	var body = "Votre compte à été validé, votre mot de passe est : "+mdp;
+	var body = "Votre compte à été validé, votre mot de passe est : "+mdp+"\n votre login est : "+mailD +"\n pour vous connecter rendez-vous sur http://185.30.209.4/PINF/ pour vous connecter";
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',

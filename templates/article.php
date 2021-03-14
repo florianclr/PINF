@@ -1,6 +1,11 @@
 
- <?php
-$produit = valider("produit");
+<?php
+	$produit = valider("produit");
+	
+	if (!valider("connecte","SESSION")) {
+  		header("Location:index.php?view=connexion");
+  		die("");
+	}
 ?>
 
 
@@ -24,10 +29,11 @@ $produit = valider("produit");
     dataType: "json"
   });
 
-  var prixTot = 0;
-  var prixDisplay = 0;
+  var prixTot = 0, prixDisplay = 0;
+  var prixTemp = 0;
   var qte;
   var ancienCoeff = 1;
+  var isPrixInclude = '';
 
   var produit="<?php echo $produit; ?>";
   console.log(produit);
@@ -83,13 +89,14 @@ $produit = valider("produit");
       			}
   });
 
-  var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>').keyup(function() {
+  var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>').change(function() {
   
   				if ($("#qteFerrure").val() <= 0)
       				console.log("VALEUR NEGATIVE");
       			else {
         			qte = $("#qteFerrure").val();
         			console.log(qte);
+        			calculPrix();
       			}
   });
 
@@ -333,42 +340,50 @@ function listerDimensions() {
     success: function(oRep){
         console.log(oRep);
         
-        $("#popUpDevis").append($('<div id="titleDim">Dimensions :</div>'));
-        $("#popUpDevis").append($('<div id="dimFond"></div>'));
-        
-        for (var i = 0; i < oRep.length; i++) {
-        
-             $("#dimFond").append($('<div id="dim"></div>').html(oRep[i].nom+' = '));
-             $("#dim").attr("id", "dim"+(i+1));
-             $("#dim"+(i+1)).css("margin-right", "100px");
-             if (i != 0)
-             	$("#dim"+(i+1)).css("margin-top", "10px");
-             	
-             $("#dim"+(i+1)).append($('<input type="number" id="choixDim"/>'));
-             $("#choixDim").attr("id", "choixDim"+(i+1)); 
-             $("#choixDim"+(i+1)).attr("value", oRep[i].min);
-             $("#choixDim"+(i+1)).attr("min", oRep[i].min);
-             $("#choixDim"+(i+1)).attr("max", oRep[i].max);
-             $("#choixDim"+(i+1)).css("width", "70px");
-             $("#choixDim"+(i+1)).css("margin-right", "5px");
-             if (i != 0)
-             	$("#choixDim"+(i+1)).css("margin-top", "10px");
-             
-             $("#dim"+(i+1)).append("mm");
-             $("#dim"+(i+1)).css("display", "inline");
-             
-             // affichage valeurs min et max pour guider l'utilisateur
-             $("#dimFond").append($('<div id="dimIndic"></div>'));
-             $("#dimIndic").attr("id", "dimIndic"+(i+1));
-             $("#dimIndic"+(i+1)).append("[");
-             $("#dimIndic"+(i+1)).append(oRep[i].min);
-             $("#dimIndic"+(i+1)).append(" ; ");
-             $("#dimIndic"+(i+1)).append(oRep[i].max);
-             $("#dimIndic"+(i+1)).append("]</br>");
-             $("#dimIndic"+(i+1)).css("display", "inline");
-             if (i != 0)
-             	$("#dimIndic"+(i+1)).css("margin-top", "10px");
-    	}
+		if (oRep.length != 0) {
+			$("#popUpDevis").append($('<div id="titleDim">Dimensions :</div>'));
+			$("#popUpDevis").append($('<div id="dimFond"></div>'));
+			
+			for (var i = 0; i < oRep.length; i++) {
+				 if (oRep[i].incluePrix == 1) {
+				 	isPrixInclude = oRep[i].nom;
+				 }
+			
+				 $("#dimFond").append($('<div id="dim"></div>').html(oRep[i].nom+' = '));
+				 $("#dim").attr("id", "dim"+(i+1));
+				 $("#dim"+(i+1)).css("margin-right", "100px");
+				 if (i != 0)
+				 	$("#dim"+(i+1)).css("margin-top", "10px");
+				 	
+				 $("#dim"+(i+1)).append($('<input type="number" id="choixDim"/>'));
+				 $("#choixDim").attr("id", "choixDim"+(i+1)); 
+				 $("#choixDim"+(i+1)).addClass(oRep[i].nom);
+				 $("#choixDim"+(i+1)).attr("value", oRep[i].min);
+				 $("#choixDim"+(i+1)).attr("min", oRep[i].min);
+				 $("#choixDim"+(i+1)).attr("max", oRep[i].max);
+				 $("#choixDim"+(i+1)).css("width", "70px");
+				 $("#choixDim"+(i+1)).css("margin-right", "5px");
+				 if (i != 0)
+				 	$("#choixDim"+(i+1)).css("margin-top", "10px");
+				 
+				 $("#dim"+(i+1)).append("mm");
+				 $("#dim"+(i+1)).css("display", "inline");
+				 
+				 // affichage valeurs min et max pour guider l'utilisateur
+				 $("#dimFond").append($('<div id="dimIndic"></div>'));
+				 $("#dimIndic").attr("id", "dimIndic"+(i+1));
+				 $("#dimIndic"+(i+1)).append("[");
+				 $("#dimIndic"+(i+1)).append(oRep[i].min);
+				 $("#dimIndic"+(i+1)).append(" ; ");
+				 $("#dimIndic"+(i+1)).append(oRep[i].max);
+				 $("#dimIndic"+(i+1)).append("]</br>");
+				 $("#dimIndic"+(i+1)).css("display", "inline");
+				 if (i != 0)
+				 	$("#dimIndic"+(i+1)).css("margin-top", "10px");
+			}
+			console.log(isPrixInclude);
+		}
+		calculPrix();
     },
     error : function(jqXHR, textStatus) {
       console.log("erreur");  
@@ -419,6 +434,45 @@ function finirCommande() {
 	
 	
 	// TODO: afficher un menu déroulant de tous les devis pour en sélectionner un
+}
+
+function calculPrix() {
+	qte = $("#qteFerrure").val();
+	// dim =
+
+	if (isPrixInclude != '') {
+		// TODO: dimension inclue dans le prix
+		/*$.ajax({
+			url: "libs/dataBdd.php",
+			data:{"action":"calculerPrix","idProduit":produit,"quantite":qte,"dimension":dim},
+			type : "GET",
+			success: function(oRep){
+				console.log(oRep);
+			},
+			error : function(jqXHR, textStatus) {
+			  console.log("erreur");  
+			},
+			dataType: "json"
+		});*/
+	}
+	else {
+		// aucune dimension inclue dans le prix
+		$.ajax({
+			url: "libs/dataBdd.php",
+			data:{"action":"calculerPrix","idProduit":produit,"quantite":qte,"dimension":"0"},
+			type : "GET",
+			success: function(oRep){
+				prixDisplay -= prixTemp;
+				prixTemp = parseInt(oRep,10);
+				prixDisplay += parseInt(oRep,10);
+				console.log(prixDisplay);
+			},
+			error : function(jqXHR, textStatus) {
+			  console.log("erreur");  
+			},
+			dataType: "json"
+		});
+	}
 }
   
   // CHARGEMENT PAGE

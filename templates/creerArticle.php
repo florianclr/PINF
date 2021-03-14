@@ -1,6 +1,11 @@
 <?php
-$idArticle = valider("idArticle"); // TODO : rendre un peu plus securiser
-$idCategorie = valider("idCategorie")
+	$idArticle = valider("idArticle");
+	$idCategorie = valider("idCategorie")
+
+	if (!valider("connecte","SESSION")) {
+  		header("Location:index.php?view=connexion");
+  		die("");
+	}
 ?>
 
 	 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
