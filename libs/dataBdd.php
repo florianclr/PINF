@@ -315,6 +315,18 @@ if ($action = valider("action"))
                 $tab = listerCouleursFerrure();
                 echo(json_encode($tab));
             break ;
+            
+            case 'GET_calculerPrix' :
+            	if($quantite=valider("quantite"))
+            	if($idProduit=valider("idProduit")) {
+            		$dimension=valider("dimension");
+            		if ($dimension=0)
+            			$dimension=null;
+            		
+            		$tab = calculerPrix($quantite,$idProduit,$dimension);
+                }
+                echo(json_encode($tab));
+            break ;
 
 		}
 }

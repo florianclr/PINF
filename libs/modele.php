@@ -303,5 +303,14 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		$SQL="SELECT * FROM `couleursFerrures`"; 
         return parcoursRs(SQLSelect($SQL));
 	}
+	
+	function calculerPrix($quantite,$idProduit,$dimension) {
+		if ($dimension == null)
+			$SQL="SELECT prixU FROM `prix` WHERE refFerrures='$idProduit' AND qteMin <= '$quantite' and qteMax >= '$quantite'";
+		else
+			$SQL="SELECT prixU FROM `prix` WHERE refFerrures='$idProduit' AND qteMin <= '$quantite' and qteMax >= '$quantite' AND dimMin <= '$dimension' AND dimMax >= '$dimension'";
+		
+        return SQLGetChamp($SQL);
+	}
 
 ?>
