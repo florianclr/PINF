@@ -12,6 +12,8 @@ $method = $_SERVER["REQUEST_METHOD"];
 $request = false ; 
 
 $idUserCo = valider("idUser","SESSION");
+$admin = valider("isAdmin","SESSION"); 
+
 if ($action = valider("action"))
 {
 
@@ -289,13 +291,27 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
             
-            case 'GET_listerDevis' :
+            case 'GET_Devis' :
                 if($devis=valider("idDevis"))
                 if($idUser=valider("idUser"))
-                if($idUser==$idUserCo)
-                     $tab = listerDevis($devis);
-                echo(json_encode($tab));
+                if($idUser==$idUserCo){ 
+                    $tab = getInfosDevis($devis);
+                    echo(json_encode($tab));
+            }
             break ;
+            
+            case'GET_DevisUser';
+            if($idUser=valider("idUser")){
+
+                if($admin == 0){ 
+                     $tab = getDevisUser($idUser);
+                }
+                else{
+                     $tab = getDevisUser(null);
+                }      
+                echo(json_encode($tab));
+            }
+            break; 
             
             case 'GET_listerFerruresDevis' :
                 if($devis=valider("idDevis"))
@@ -304,6 +320,49 @@ if ($action = valider("action"))
                      $tab = listerFerruresDevis($devis);
                 echo(json_encode($tab));
             break ;
+            
+            case 'GET_nomUsers' :
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                if($admin == 1){ 
+                    $tab = getNomUsers();
+                    echo(json_encode($tab));
+            	}
+            break ;
+            
+            case 'PUT_MajEtat' :
+                if($etat=valider("etat"))
+                if($id=valider("idDevis"))
+                if($admin==1)
+                	$tab=majEtat($etat,$id);
+                echo(json_encode($tab));
+            break;
+
+            case 'PUT_MajCommentaire' :
+                if($commentaire=valider("commentaire"))
+                if($id=valider("idDevis"))
+                if($admin==1)
+                	$tab=addCommentaire($commentaire,$id);
+                echo(json_encode($tab));
+            break;
+
+            case 'PUT_majDateLivraison' :
+                if($date=valider("date"))
+                if($id=valider("idDevis"))
+                if($admin==1)
+                	$tab=majDateLivraison($date,$id);
+                echo(json_encode($tab));
+            break;
+
+            case 'PUT_Commander' :
+                if($idD=valider("idDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                    $tab=majEtat("DEMANDE_COMMANDE",$idD);
+                echo(json_encode($tab));
+            break;
+            
+            /****************************************************/
 
 			case 'GET_listerDimensionsFerrure' :
                 if($idProduit=valider("idProduit"))

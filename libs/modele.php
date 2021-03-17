@@ -5,9 +5,6 @@ include_once("maLibSQL.pdo.php");
 Dans ce fichier, on définit diverses fonctions permettant de récupérer des données utiles pour notre TP d'identification. Deux parties sont à compléter, en suivant les indications données dans le support de TP
 */
 
-/********* PARTIE 1 : prise en main de la base de données *********/
-// inclure ici la librairie faciliant les requêtes SQL
-
 function listerCategories()
 {
 	$SQL="SELECT * FROM catalogue";
@@ -109,16 +106,6 @@ function refuserCompte($idUser)
 
 /****************************************************************************/
 
-function interdireUtilisateur($idUser)
-{
-	// cette fonction affecte le booléen "blacklist" à vrai pour l'utilisateur concerné 
-}
-
-function autoriserUtilisateur($idUser)
-{
-	// cette fonction affecte le booléen "blacklist" à faux pour l'utilisateur concerné 
-}
-
 function verifUserBdd($login,$passe)
 {
 	// Vérifie l'identité d'un utilisateur 
@@ -141,13 +128,6 @@ function isAdmin($idUser)
 	return SQLGetChamp($SQL); 
 }
 
-/********* PARTIE 2 *********/
-
-function mkUser($pseudo, $passe,$admin=false,$couleur="black")
-{
-	// Cette fonction crée un nouvel utilisateur et renvoie l'identifiant de l'utilisateur créé
-}
-
 function connecterUtilisateur($idUser)
 {
 	// cette fonction affecte le booléen "connecte" à vrai pour l'utilisateur concerné 
@@ -160,26 +140,6 @@ function deconnecterUtilisateur($idUser)
 	// cette fonction affecte le booléen "connecte" à faux pour l'utilisateur concerné 
 	$SQL ="UPDATE utilisateur SET connecte='0' WHERE id='$idUser'"; 
 	SQLUpdate($SQL);
-}
-
-function changerPasse($idUser,$passe)
-{
-	// cette fonction modifie le mot de passe d'un utilisateur
-}
-
-function changerPseudo($idUser,$pseudo)
-{
-	// cette fonction modifie le pseudo d'un utilisateur
-}
-
-function promouvoirAdmin($idUser)
-{
-	// cette fonction fait de l'utilisateur un administrateur
-}
-
-function retrograderUser($idUser)
-{
-	// cette fonction fait de l'utilisateur un simple mortel
 }
 
 function getInfo($idUser, $info)
@@ -199,9 +159,6 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	$SQL="INSERT INTO utilisateur (nom, prenom, mail, telephone)  VALUES ('$nom', '$prenom', '$mail', '$telephone')";
 	return SQLInsert($SQL);
 } 
-
-
-/********* PARTIE 3 *********/
 
 
 	function ajouterPrix($prixU, $refFerrures,$qteMin,$qteMax,$dimMin, $dimMax)
@@ -267,32 +224,49 @@ function creerCompte($nom, $prenom, $mail, $telephone)
     	return SQLInsert($SQL);
 	}
 	
-	function CommanderDevis($etat,$id)
-	{
-       	$SQL="UPDATE devis SET etat='$etat' WHERE id='$id'";
-    	return SQLUpdate($SQL);
-	}
-	
-	function suppFerrureDevis($idF)
-	{
-       	$SQL="DELETE FROM ferruresDevis WHERE id='$idF'";
-    	return SQLDelete($SQL);
-	}
-	
-	function listerDevis($id)
-	{
-		if($id!=null)$SQL="SELECT * FROM devis WHERE id='$id'";
-
-		else $SQL="SELECT * FROM devis";
-
-		return parcoursRs(SQLSelect($SQL));
-	}
-	
 	function listerFerruresDevis($idDevis)
 	{
 		$SQL="SELECT * FROM ferruresDevis WHERE refDevis='$idDevis'";
 		return parcoursRs(SQLSelect($SQL));
 	}
+	
+	function getDevisUser($idUser){
+		if($idUser != null)
+			$SQL="SELECT * FROM `devis` WHERE refCA='$idUser' ORDER BY etat"; 
+		else
+			$SQL="SELECT * FROM `devis` ORDER BY etat"; 
+		return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function getInfosDevis($idDevis){
+		$SQL="SELECT * FROM `devis` WHERE id='$idDevis'"; 
+		return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function getNomUsers() {
+    	$SQL="SELECT DISTINCT(nom),prenom,utilisateur.id FROM devis, utilisateur WHERE utilisateur.id=devis.refCA";
+    	return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function majEtat($etat, $idDevis)
+	{
+       	$SQL="UPDATE devis SET etat='$etat' WHERE id='$idDevis'";
+    	return SQLUpdate($SQL);
+	}
+
+    function addCommentaire($commentaire, $idDevis)
+	{
+       $SQL="UPDATE devis SET commentaire='$commentaire' WHERE id='$idDevis'";
+		return SQLUpdate($SQL);
+	}
+
+    function majDateLivraison($date, $idDevis)
+	{
+       $SQL="UPDATE devis SET dateLivraison='$date' WHERE id='$idDevis'";
+    	return SQLUpdate($SQL);
+	}
+	
+	/***********************************************************/
 
 	function listerDimensionsFerrure($idF) {
 		$SQL="SELECT * FROM `dimension` WHERE refFerrures='$idF'"; 
