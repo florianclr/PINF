@@ -1,6 +1,6 @@
 <?php
 	$idArticle = valider("idArticle");
-	$idCategorie = valider("idCategorie")
+	$idCategorie = valider("idCategorie");
 
 	if (!valider("connecte","SESSION")) {
   		header("Location:index.php?view=connexion");

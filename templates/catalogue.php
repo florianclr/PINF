@@ -64,12 +64,12 @@
                                                       		$('body').append(popupSuppression.clone(true)
                                                       			.data("idFerrure",$(this).data("idFerrure"))); 
 
-                                                      		$("#popup").dialog({
+                                                      		$("#popupSuppr").dialog({
                                                       			 modal: true, 
-                                                      			 height: 200,
+                                                      			 height: 265,
       															 width: 400,
                                                       			 buttons: { // on ajoute des boutons à la pop up 
-															        "OUI": function(){
+															        "Oui": function(){
 															        	console.log($(this).data("idFerrure"));
 															        	$.ajax({
                                           url: "libs/dataBdd.php?action=Ferrure&id="+$(this).data("idFerrure"),
@@ -77,7 +77,7 @@
                                           success : function(oRep){
                                             console.log("Ferrure supprimée!!");
                                             console.log(oRep);
-                                             $("#popup").dialog( "close" ); // ferme la pop up
+                                             $("#popupSuppr").dialog( "close" ); // ferme la pop up
                                           },
                                           error : function(oRep){
                                             console.log("ERREUR"); 
@@ -85,7 +85,7 @@
                                           dataType: "json"
                                         });
 															        },
-															        "NON": function() {
+															        "Non": function() {
 															          $(this).dialog( "close" ); // ferme la pop up 
 															          $(this).remove(); // supprime la pop up
 															        },
@@ -107,7 +107,7 @@
                   	}) // fin function 
                   );// fin append
 
-  var popupSuppression = $('<div id="popup" title="Confirmer la suppression"> <h4> Etes vous sûr de vouloir supprimer la ferrure ?</h4>');
+  var popupSuppression = $('<div id="popupSuppr" title="Confirmer la suppression"><h4 id="warningConfirm">Voulez-vous vraiment supprimer cette ferrure ?</h4><p>Cette action est irréversible</p>');
 
   var jRecherche=$('<div id="recherche">')
       .append($('<input type="text" id="mot"/>')).keydown(function(contexte){
@@ -239,9 +239,9 @@
 
   });
   
-  var jPopupCategorie=$('<div id="newC"> <p>nom de la catégorie : </p>').append('<input type="text" id="nomC"/>').append('<p>couleur de la catégorie : </p>').append('<input type="color" id="couleur" name="head" value="#e66465">');
+  var jPopupCategorie=$('<div id="newC" title="Ajouter une catégorie"><div id="nomCol">Nom de la catégorie :</div>').append('<input type="text" id="nomC"/>').append('<div id="colCat">Couleur de la catégorie :</div>').append('<input type="color" id="couleur" name="head" value="#E66465">');
   
-  var jPopupDevis=$('<div id="newD"> <p>nom du Client : </p>').append('<input type="text" id="nomClient"/>').append('<p> Numéro du devis</p>').append('<input type="text" id="numD">').append('<p> Nom du projet</p>').append('<input type="text" id="nomP"/>');
+  var jPopupDevis=$('<div id="newD" title="Création d\'un devis"><div id="nomCli">Nom du client : </div>').append('<input type="text" id="nomClient"/>').append('<div id="numDev">Numéro du devis :</div>').append('<input type="text" id="numD">').append('<div id="nomPro">Nom du projet :</div>').append('<input type="text" id="nomP"/>');
 
 //-------- VAR GLOBALE ----- //
 
@@ -402,7 +402,7 @@
     $('body').append(jPopupDevis.clone(true));
     $("#newD").dialog({
       modal: true, 
-      height: 300,
+      height: 380,
       width: 400,
       buttons: { // on ajoute des boutons à la pop up 
         "Créer": function(){

@@ -71,7 +71,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
                 					});
 				 				});
 
-var jBox=$('<label for="admin ">admin </label><input type="checkbox" name="admin" id="admin"/>');
+var jBox=$('<input type="checkbox" name="admin" id="admin"/><label for="admin ">admin</label>');
 
 var jButtonNO = $('<input type="button" value="Refuser"/>').click(function() {
 				 					$.ajax({

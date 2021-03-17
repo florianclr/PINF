@@ -79,11 +79,7 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-
-               	sendMail();
-
                	sendMail();  // envoi d'un mail
-
              },
              "Annuler": function() {
                	$(this).dialog("close"); // ferme la pop up 

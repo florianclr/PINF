@@ -8,7 +8,7 @@
 	}
 ?>
 
-
+<link href="css/produit.css" rel="stylesheet"> 
 <script type="text/javascript">
 
   var tab = [];
@@ -34,6 +34,7 @@
   var qte;
   var ancienCoeff = 1;
   var isPrixInclude = '';
+  var areOpt = 1;
 
   var produit="<?php echo $produit; ?>";
   console.log(produit);
@@ -138,8 +139,6 @@
       var jclonePrix = $("#prix").clone(true);
       var jcloneOption = $("#options").clone(true);
       var jcloneImg = $(".card-img-top").clone(true);
-      console.log(jcloneImg);
-      //console.log(jclonePrix); 
       $(".contenu").prepend(jPopup.clone(true));
     // Réaffichage de l'image de la ferrure
       $("#popUpDevis").append(jcloneImg);
@@ -151,17 +150,19 @@
       $("#popUpDevis").append(jQuantite.clone(true));
       // prix correspondant
     // tabelau prix copie
-      $("#popUpDevis").append(jclonePrix); 
-      $("#popUpDevis").append("<br><br>"); 
+      $("#popUpDevis").append(jclonePrix);
+      $("#popUpDevis").append("<br><br>");
     // label tab options
-      $("#popUpDevis").append(jLabel.clone(true)); 
-    // Tableau options copie
-      $("#popUpDevis").append(jcloneOption);
-      $("#popUpDevis").append($('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>'));
-    // pour chaque option on ajoute une checkbox pour l'inclure ou pas ds le prix
-      $("#popUpDevis #options tr").each(function(){
-        $(this).prepend(jCheckBox.clone(true)); 
-      });
+    	if (areOpt == 1) {
+      		$("#popUpDevis").append(jLabel.clone(true)); 
+    		// Tableau options copie
+      		$("#popUpDevis").append(jcloneOption);
+      		$("#popUpDevis").append($('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>'));
+    		// pour chaque option on ajoute une checkbox pour l'inclure ou pas ds le prix
+      		$("#popUpDevis #options tr").each(function(){
+        		$(this).prepend(jCheckBox.clone(true));
+      		});
+      }
       listerDimensions();
       listerCouleurs();
 
@@ -190,8 +191,6 @@ function genInfos() {
   $.ajax({
     url: "libs/dataBdd.php",
     data:{"action":"Produit","idProduit":produit},
-    //data:{"action":"Prix","idProduit":produit},
-    //data:{"action":"Options","idProduit":produit},
     type : "GET",
     success: function(oRep){
         var couleurFond = tab[(oRep[0].refcategories)-1];
@@ -274,7 +273,7 @@ function genTabPrix(){
               nbqte ++ ; 
             }//fin for
 
-          oRep.sort(function(a,b){ // on trie le tabeleau des paragraphes en fonction des ordres 
+          oRep.sort(function(a,b){ // on trie le tableau des paragraphes en fonction des ordres 
             return parseFloat(a.dimMin) - parseFloat(b.dimMin) ; 
          });  
           console.log(oRep);
@@ -308,21 +307,24 @@ function genTabOption(){
         compt = 0;
         
         if(oRep.length!=0){
-          for (var i = 0; i< oRep.length; i++) {
-             $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
-             $("#"+oRep[i].id).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
-             compt++;
-        }
+          	for (var i = 0; i< oRep.length; i++) {
+		         $("#options").append($('<tr></tr>').attr("id",oRep[i].id));
+		         $("#"+oRep[i].id).append($('<td></td>').html(oRep[i].nom)).append($('<td class="prixOpt"></td>').html(oRep[i].prix+" €"));
+		         compt++;
+        	}
           
-        console.log("compt="+compt);
-        while (compt > 0) {
-       	$("#options").after($("</br>"));
-      	compt--;  
-      	
-      	
-      }
+		    console.log("compt="+compt);
+		    while (compt > 0) {
+			   	$("#options").after($("</br>"));
+			  	compt--;  
+     	 	}
         }
-         return ; 
+        else {
+        	areOpt = 0;
+        	$("#label").remove();
+        }
+        	
+        return ; 
     },
     error : function(jqXHR, textStatus) {
       console.log("erreur");
