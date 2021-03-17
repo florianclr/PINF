@@ -92,6 +92,20 @@ body {
 	background-color: #353a40;
 }
 
+#newC, #newD, #popupSuppr {
+	text-align: center;
+}
+
+#warningConfirm {
+	margin-top: 20px;
+	font-weight: bold;
+	color: red;
+}
+
+#colCat, #nomCol, #nomPro, #nomCli, #numDev {
+	margin-top: 20px;
+}
+
 /*------------------------------------ICONS-----------------------------------------*/
 /*TODO : CORRIGER ZOOM ICON !!!*/
 .trashButton{
@@ -231,6 +245,10 @@ body {
 	margin-bottom: 20px;
 }
 
+#admin {
+	margin-right: 5px;
+}
+
 .demande {
 	display: inline;
 	margin-right: 30px;
@@ -246,144 +264,5 @@ body {
 	background-color: black;
 	padding: 10px;
 	color: white;
-}
-
-/******************************** FICHE PRODUIT **********************************/
-
-#titleProduct {
-	display: block;
-	background-color: black;
-	color: white;
-	border: 1px solid black;
-	box-shadow: 0px 0px 3px #000;
-	font-size: x-large;
-	font-weight: bold;
-	padding: 6px;
-	margin-bottom: 50px;
-}
-
-#imgProduct {
-	width: 400px; 
-	margin-right: auto;
-	margin-left: auto;
-	margin-bottom: 40px;
-}
-
-h5 {
-	background-color: lightgrey;
-	border: 1px solid black;
-	box-shadow: 0px 0px 3px #000;
-	font-size: large;
-	font-weight: bold;
-	padding: 3px;
-	padding-right: 585px;
-}
-
-#description {
-	margin-bottom: 50px;
-}
-
-#label, #titleDim, #titleCol, #titlePrix {
-	font-weight: bold;
-	color: darkred;
-	margin-bottom: 10px;
-}
-
-table {
-	position: relative;
-}
-
-#addDevis {
-	margin-bottom: 70px;
-	font-size: x-large;
-	padding-left: 50px;
-	padding-right: 50px;
-	color: white;
-	background-color: #353a40;
-}
-
-.card-img-top {
-	margin-left: auto;
-	margin-right: auto;
-	display: flex;
-}
-
-#quantite {
-	margin-top: 15px;
-	margin-bottom: 10px;
-	text-align: center;
-	font-weight: bold;
-	color: darkred;
-}
-
-#qteFerrure {
-	width: 70px;
-	padding-left: 2px;
-}
-
-#qteOpt, .choixDim {
-	width: 70px;
-	height: 25px;
-	margin-left: 5px;
-	margin-right: -75px;
-	margin-bottom: -2px;
-}
-
-#indic {
-	font-style: italic;
-	font-size: small;
-}
-
-#titleDim, #titleCol, #titlePrix {
-	margin-top: 40px;
-}
-
-#titlePrix {
-	font-size: x-large;
-	color: black;
-}
-
-#dimFond {
-	background-color: lightblue;
-	padding: 8px;
-	text-align: center;
-}
-
-#colFond {
-	background-color: #ECFFB3;
-	padding: 8px;
-	text-align: center;
-}
-
-td {
-	padding: 10px;
-	padding-right: 150px;
-	border: 1px solid lightgrey;
-	background-color: gainsboro;
-}
-
-#mat, #fin, #plan, .prixUnit, .prixOpt, .qteU {
-	background-color: white;
-}
-
-.qteU, .prixUnit {
-	padding-right: 50px;
-}
-
-/******************************** DEVIS **********************************/
-
-.imgSuppArtDevis {
-    max-width: 40px;
-     max-height: 40px; 
-}
-
-.tabDevis {
-    background-color: white;
-    width: 10px;
-    padding-right: 10px;
-}
-
-#devis{
-    position: relative;
 }
 
