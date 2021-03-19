@@ -1,6 +1,7 @@
 
 <?php
 	$produit = valider("produit");
+	$couleurCat=valider("categorie");
 	
 	if (!valider("connecte","SESSION")) {
   		header("Location:index.php?view=connexion");
@@ -11,33 +12,36 @@
 <link href="css/produit.css" rel="stylesheet"> 
 <script type="text/javascript">
 
+  var produit="<?php echo $produit; ?>";
+  console.log(produit);
+  var couleurCat="<?php echo $couleurCat; ?>";
+  var couleurFond;
   var tab = [];
 
   $.ajax({
-	url: "libs/dataBdd.php",
-    	data:{"action":"Categories"},
-    	type : "GET",
-    	success: function(oRep){
-      		console.log(oRep);
-      		for (var i = 0; i < oRep.length; i++) {
-        		tab.push(oRep[i].couleur);
-      		}
-    	},
+      url: "libs/dataBdd.php",
+      data:{"action":"CouleurCategories","categorie":couleurCat},
+      type : "GET",
+      success: function(oRep){
+        console.log(oRep);
+        couleurFond=oRep[0].couleur;
+
+      },
     error : function(jqXHR, textStatus) {
-      	console.log("erreur");
+        console.log("erreur");
     },
     dataType: "json"
   });
 
   var prixTot = 0, prixDisplay = 0;
   var prixTemp = 0;
-  var qte;
+  var qte = 1;
+  var dim = 0;
   var ancienCoeff = 1;
   var isPrixInclude = '';
   var areOpt = 1;
 
-  var produit="<?php echo $produit; ?>";
-  console.log(produit);
+  
 
   var jImg=$('<div class="card h-100" id="imgProduct"><img class="card-img-top" alt=""/></div>');
 
@@ -60,13 +64,31 @@
   var jQuantiteOpt = $('<input type="number" id="qteOpt" value="1" min="1"/>').change(function() {
   
   				var nouveauCoeff;
+  				console.log("ancienCoeff="+ancienCoeff);
   
-  				if (parseInt($("#qteOpt").val(), 10) <= 0)
+  				if (parseInt($(this).val(), 10) <= 0) {
       				console.log("VALEUR NEGATIVE");
+      				$("#indic").append("<div id='warning'>La quantité de l'option est négative ou nulle</div>");
+		  			prixDisplay = prixTemp;
+		  			$('input:checkbox[id="checkOpt"]').prop("checked", false);
+        			$('input:checkbox[id="checkOpt"]').each(function() {
+        				$("#qteOpt").remove();
+        			});
+        			$("#majPrix").html(prixDisplay);
+      			}
       				
-      			if (parseInt($("#qteOpt").val(), 10) > parseInt(qte, 10))
+      			if (parseInt($(this).val(), 10) > parseInt(qte, 10)) {
       				console.log("VALEUR TROP GRANDE");
-      			else {
+      				$("#indic").append("<div id='warning'>La quantité de l'option est supérieure à la quantité globale choisie</div>");
+		  			prixDisplay = prixTemp;
+		  			$('input:checkbox[id="checkOpt"]').prop("checked", false);
+        			$('input:checkbox[id="checkOpt"]').each(function() {
+        				$("#qteOpt").remove();
+        			});
+        			$("#majPrix").html(prixDisplay);
+      			}
+      			
+      			else if (parseInt($(this).val(), 10) <= parseInt(qte, 10) && parseInt($(this).val(), 10) > 0) {
         			prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
               		nouveauCoeff = $(this).val();
               		console.log(nouveauCoeff);
@@ -75,13 +97,21 @@
               		// augmente quantité
               		if (nouveauCoeff > ancienCoeff) {
               			console.log("tes+");
-              			prixDisplay += prixTot*(nouveauCoeff-ancienCoeff);
+              			if (prixDisplay == prixTemp) {
+              				prixDisplay += prixTot*nouveauCoeff;
+		          			// prixDisplay += prixTot*(nouveauCoeff-ancienCoeff);
+		          			$("#majPrix").html(prixDisplay);
+		          		}
+		          		else
+		          			prixDisplay += prixTot*(nouveauCoeff-ancienCoeff);
+		          			$("#majPrix").html(prixDisplay);
               		}
                 	
 					// diminue quantité	
                 	if (nouveauCoeff < ancienCoeff) {
                 		console.log("tes-");
                 		prixDisplay -= prixTot*(ancienCoeff-nouveauCoeff);
+                		$("#majPrix").html(prixDisplay);
               		}
               		ancienCoeff = nouveauCoeff;
               		
@@ -92,43 +122,74 @@
 
   var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>').change(function() {
   
-  				if ($("#qteFerrure").val() <= 0)
-      				console.log("VALEUR NEGATIVE");
+  				if ($("#qteFerrure").val() <= 0) {
+  					console.log("VALEUR NEGATIVE");
+  					$('input:checkbox[id="checkOpt"]').prop("checked", false);
+        			$("#qteOpt").remove();
+  					$("#warning").remove();
+      				$("#quantite").append("<div id='warning'>La quantité est négative ou nulle</div>");
+      				$("#majPrix").html(0);
+      			}
       			else {
         			qte = $("#qteFerrure").val();
-        			console.log(qte);
+        			$('input:checkbox[id="checkOpt"]').prop("checked", false);
+        			$("#qteOpt").remove();
+        			$("#warning").remove();
         			calculPrix();
       			}
   });
 
   var jCheckBox=$('<td></td>').append($('<input id="checkOpt" type="checkbox"/>').click(function() {
+  
+  			  var inputSupr;
 
               if ($(this).prop("checked") == true) {
+              	$("#warning").remove();
                 $(this).parent().append(jQuantiteOpt.clone(true));
               	$("#qteOpt").attr('max', qte);
               	
               	prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);	
               	prixDisplay += prixTot;
+              	console.log(prixDisplay);
               	ancienCoeff = 1;
-              	/*$(this).parent().find('input[type="number"]').change(function() {
-              		nouveauCoeff = $(this).parent().find('input[type="number"]').val();
-              		
-              	});*/
+              	$("#majPrix").html(prixDisplay);
               	
               }
               else if ($(this).prop("checked") == false) {
-                var inputSupr = $(this).parent().find('input[type="number"]'); // on cherche dans le parent un input number 
+                inputSupr = $(this).parent().find('input[type="number"]'); // on cherche dans le parent un input number 
                 nouveauCoeff = $(this).parent().find('input[type="number"]').val();
                 $(inputSupr).remove();
                 
-                prixTot = nouveauCoeff*parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
-              
-                prixDisplay -= prixTot;
-                console.log("prix total :");
-                console.log(prixDisplay);
+                if (nouveauCoeff <= qte && nouveauCoeff > 0) {
+                	prixTot = nouveauCoeff*parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
+                	prixDisplay -= prixTot;
+                	console.log("prix total :");
+                	console.log(prixDisplay);
+                	$("#majPrix").html(prixDisplay);
+                }
+                	
               }
               
   }));
+  
+  var jDimension = $('<input type="number" id="choixDim"/>').change(function() {
+
+  			$("#warning").remove();
+  			
+  			if (parseFloat($(this).val()) <= parseFloat($(this).prop("max")) && parseFloat($(this).val()) >= parseFloat($(this).prop("min"))) {
+  				if (isPrixInclude != '') {
+			  		dim = $("."+isPrixInclude).val();
+			  		calculPrix();
+			  	}
+		  	}
+		  	else {
+		  		console.log("nooon");
+		  		if (isPrixInclude != '')
+		  			$("#majPrix").html(0);
+		  		$("#dimFond").append("<div id='warning'>La dimension n'est pas inclue dans l'intervalle possible</div>");
+		  	}
+  		
+  });
 
   var compt = 1;
 
@@ -148,6 +209,7 @@
 	  $(".card-img-top").css("max-width", largeur);
     // Quantité choisie
       $("#popUpDevis").append(jQuantite.clone(true));
+      $("#popUpDevis").append('<div id="indicQ">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
       // prix correspondant
     // tabelau prix copie
       $("#popUpDevis").append(jclonePrix);
@@ -157,7 +219,7 @@
       		$("#popUpDevis").append(jLabel.clone(true)); 
     		// Tableau options copie
       		$("#popUpDevis").append(jcloneOption);
-      		$("#popUpDevis").append($('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>'));
+      		$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
     		// pour chaque option on ajoute une checkbox pour l'inclure ou pas ds le prix
       		$("#popUpDevis #options tr").each(function(){
         		$(this).prepend(jCheckBox.clone(true));
@@ -193,7 +255,6 @@ function genInfos() {
     data:{"action":"Produit","idProduit":produit},
     type : "GET",
     success: function(oRep){
-        var couleurFond = tab[(oRep[0].refcategories)-1];
         console.log(oRep);
         console.log(couleurFond);
         
@@ -357,7 +418,7 @@ function listerDimensions() {
 				 if (i != 0)
 				 	$("#dim"+(i+1)).css("margin-top", "10px");
 				 	
-				 $("#dim"+(i+1)).append($('<input type="number" id="choixDim"/>'));
+				 $("#dim"+(i+1)).append(jDimension.clone(true));
 				 $("#choixDim").attr("id", "choixDim"+(i+1)); 
 				 $("#choixDim"+(i+1)).addClass(oRep[i].nom);
 				 $("#choixDim"+(i+1)).attr("value", oRep[i].min);
@@ -382,9 +443,13 @@ function listerDimensions() {
 				 $("#dimIndic"+(i+1)).css("display", "inline");
 				 if (i != 0)
 				 	$("#dimIndic"+(i+1)).css("margin-top", "10px");
+				 	
+				 if (i == oRep.length-1)
+				 	$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
 			}
 			console.log(isPrixInclude);
 		}
+			
 		calculPrix();
     },
     error : function(jqXHR, textStatus) {
@@ -427,35 +492,33 @@ function listerCouleurs() {
 }
 
 function finirCommande() {
-	var prix;
-	$("#popUpDevis").append($('<div id="titlePrix">PRIX TOTAL HT :</div>'));
-	// TODO: faire le calcul du prix ici et l'afficher, mis à jour à chaque changement
-			
-		// prix = 
-		$("#titlePrix").append("€");
-	
+	$("#popUpDevis").append($('<div id="titlePrix">PRIX TOTAL HT : <div id="majPrix"></div></div>'));
+	$("#titlePrix").append(" €");
 	
 	// TODO: afficher un menu déroulant de tous les devis pour en sélectionner un
 }
 
 function calculPrix() {
-	qte = $("#qteFerrure").val();
-	// dim =
-
 	if (isPrixInclude != '') {
-		// TODO: dimension inclue dans le prix
-		/*$.ajax({
+		if (dim == 0)
+			dim = $("."+isPrixInclude).val();
+		
+		$.ajax({
 			url: "libs/dataBdd.php",
 			data:{"action":"calculerPrix","idProduit":produit,"quantite":qte,"dimension":dim},
 			type : "GET",
 			success: function(oRep){
-				console.log(oRep);
+				prixDisplay -= prixTemp;
+				prixTemp = parseInt(oRep,10)*qte;
+				prixDisplay += parseInt(oRep,10)*qte;
+				console.log(prixDisplay);
+				$("#majPrix").html(prixDisplay);
 			},
 			error : function(jqXHR, textStatus) {
-			  console.log("erreur");  
+			  console.log("erreur");
 			},
 			dataType: "json"
-		});*/
+		});
 	}
 	else {
 		// aucune dimension inclue dans le prix
@@ -465,12 +528,13 @@ function calculPrix() {
 			type : "GET",
 			success: function(oRep){
 				prixDisplay -= prixTemp;
-				prixTemp = parseInt(oRep,10);
-				prixDisplay += parseInt(oRep,10);
+				prixTemp = parseInt(oRep,10)*qte;
+				prixDisplay += parseInt(oRep,10)*qte;
 				console.log(prixDisplay);
+				$("#majPrix").html(prixDisplay);
 			},
 			error : function(jqXHR, textStatus) {
-			  console.log("erreur");  
+			  console.log("erreur");
 			},
 			dataType: "json"
 		});

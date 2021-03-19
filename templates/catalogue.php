@@ -20,22 +20,6 @@
 
   var tab = [];
 
-  $.ajax({
-	url: "libs/dataBdd.php",
-    	data:{"action":"Categories"},
-    	type : "GET",
-    	success: function(oRep){
-      		console.log(oRep);
-      		for (var i = 0; i < oRep.length; i++) {
-        		tab.push(oRep[i].couleur);
-      		}
-    	},
-    error : function(jqXHR, textStatus) {
-      	console.log("erreur");
-    },
-    dataType: "json"
-  });
-
   var jArticle = $('<div class="col-lg-4 col-md-6 mb-4">')
                   .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body fond">');
       
@@ -83,6 +67,10 @@
                                             console.log("ERREUR"); 
                                           },
                                           dataType: "json"
+                                        });
+                                        
+                                        $("#"+$(this).data("idFerrure")).hide('slow', function() { 
+                                          $("#"+$(this).data("idFerrure")).remove();
                                         });
 															        },
 															        "Non": function() {
@@ -215,7 +203,11 @@
         success:function (oRep){
           console.log(oRep);
           $("#newC").dialog( "close" ); // ferme la pop up 
-        $("#newC").remove(); // supprime la pop up
+        	$("#newC").remove(); // supprime la pop up
+        	tab=[];
+        	$(".list-group").empty();
+        	$(".col-lg-9").empty();
+        	remplirMenu(); 
 
         },// fin succes
         error : function(jqXHR, textStatus) {
@@ -258,39 +250,7 @@
     	
     $(".col-lg-3").append(jAddDevis.clone(true));
     
-    $.ajax({
-      url: "libs/dataBdd.php",
-      data:{"action":"Categories"},
-      type : "GET",
-      success:function (oRep){
-        console.log(oRep);
-        var couleurCat;
-        
-        // création du menu avec les catégories en jquery
-        for (var i=0 ; i<oRep.length ;i++) {
-        
-        	if (oRep[i].nomCategorie != "Tout")
-        		couleurCat = tab[(oRep[i].id)-1];
-        	else
-        		couleurCat = "black";
-					
-          $(".list-group").append(jMenu.css("color", couleurCat).clone(true)
-            .html(oRep[i].nomCategorie));
-
-          if(oRep[i].nomCategorie != "Tout"){ 
-             $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).css("color", couleurCat).clone(true)); 
-             $(".col-lg-9").append(jCatgegorie
-                                .attr("id",oRep[i].nomCategorie)
-                                //.append(jtitre.html(oRep[i].nomCategorie))
-                                //.addClass("categorie")
-                                .clone(true)); 
-            // TODO : SI ADMIN OPTION POUR CRÉER UNE CATÉGORIE !!
-          }// fin if 
-        }// fin for
-          remplirCatgegorieV1(); 
-      },// fin succes
-      dataType: "json"
-    });// fin requête ajax
+    remplirMenu();
   });// fin de la fontion de chargement
 
 ///////////////////////////////// TODO : RENDRE LE CODE QUI SUIT PLUS OPTIMAL !!!! ///////////////////////////:
@@ -301,6 +261,7 @@
   
     $(".col-lg-9 .row").each(function(){  
                                       
+                                      var couleur= $(this).prev().css("color");
                                       var nom = $(this).prop("id");
                                       console.log("remplissage !!" + nom);  
                                       var lien = $(this);
@@ -316,7 +277,7 @@
                                                 if(oRep.length != 0){ 
                                                   for (var i =0; i<3;i++){
                                                   
-                                                   couleurBord = tab[(oRep[i].refcategories)-1];
+                                                   couleurBord = couleur;
 
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));
@@ -325,7 +286,7 @@
                                                    																			.attr('src',"./images/"+oRep[i].image);
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
-                                                                                    .attr("href","./index.php?view=article&produit="+oRep[i].id)
+                                                                                    .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
                                                                                     .attr("id",oRep[i].id)
                                                                                     );
                                                    // TODO : AJOUTER FLÈCHE !!!
@@ -438,6 +399,60 @@
     });
 
   });
+  
+  function remplirMenu() {
+
+    $.ajax({
+      url: "libs/dataBdd.php",
+      data:{"action":"Categories"},
+      type : "GET",
+      success: function(oRep){
+          console.log(oRep);
+          for (var i = 0; i < oRep.length; i++) {
+            tab.push(oRep[i].couleur);
+          }
+          console.log(tab);
+      },
+    error : function(jqXHR, textStatus) {
+        console.log("erreur");
+    },
+    dataType: "json"
+  });
+
+    $.ajax({
+      url: "libs/dataBdd.php",
+      data:{"action":"Categories"},
+      type : "GET",
+      success:function (oRep){
+        console.log(oRep);
+        var couleurCat;
+        
+        // création du menu avec les catégories en jquery
+        for (var i=0 ; i<oRep.length ;i++) {
+        
+          if (oRep[i].nomCategorie != "Tout"){
+            couleurCat = tab[(oRep.length+i)-(oRep.length)];
+          }
+          else
+            couleurCat = "black";
+          if(oRep[i].nomCategorie != "Tout")
+          $(".list-group").append(jMenu.css("color", couleurCat).clone(true)
+            .html(oRep[i].nomCategorie));
+
+          if(oRep[i].nomCategorie != "Tout"){ 
+             $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).css("color", couleurCat).clone(true)); 
+             $(".col-lg-9").append(jCatgegorie
+                                .attr("id",oRep[i].nomCategorie)
+                                .clone(true));
+          }// fin if 
+        }// fin for
+        $(".list-group").append(jMenu.css("color", "black").clone(true)
+            .html("Tout"));
+          remplirCatgegorieV1(); 
+      },// fin succes
+      dataType: "json"
+    });// fin requête ajax
+  }
 
   </script>
 
