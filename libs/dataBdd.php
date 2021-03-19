@@ -58,9 +58,15 @@ if ($action = valider("action"))
 			break;
 
 			case 'GET_Categories' :
-				$tab=listerCategories();
+				$tab=listerCategories(null);
 				echo(json_encode($tab));
 			break;
+			
+			case 'GET_CouleurCategories' :
+                if($categorie=valider("categorie"))
+                $tab=listerCategories($categorie);
+                echo(json_encode($tab));
+            break;
 
 			case 'GET_Matieres' :
 				$tab=listerMatieres();
@@ -379,9 +385,10 @@ if ($action = valider("action"))
             	if($quantite=valider("quantite"))
             	if($idProduit=valider("idProduit")) {
             		$dimension=valider("dimension");
-            		if ($dimension=0)
-            			$dimension=null;
             		
+            		if ($dimension==0)
+            			$dimension=null;
+            			
             		$tab = calculerPrix($quantite,$idProduit,$dimension);
                 }
                 echo(json_encode($tab));

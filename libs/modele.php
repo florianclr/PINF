@@ -5,10 +5,16 @@ include_once("maLibSQL.pdo.php");
 Dans ce fichier, on définit diverses fonctions permettant de récupérer des données utiles pour notre TP d'identification. Deux parties sont à compléter, en suivant les indications données dans le support de TP
 */
 
-function listerCategories()
+function listerCategories($cat)
 {
-	$SQL="SELECT * FROM catalogue";
-	return parcoursRs(SQLSelect($SQL));
+    if($cat!=null){
+        $SQL="SELECT couleur FROM catalogue WHERE nomCategorie='$cat'";
+        return parcoursRs(SQLSelect($SQL));
+    }
+    else {
+        $SQL="SELECT * FROM catalogue";
+        return parcoursRs(SQLSelect($SQL));
+    }
 }
 
 function listerMatieres()
