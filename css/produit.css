@@ -79,6 +79,14 @@ table {
 	margin-bottom: -2px;
 }
 
+#indicQ {
+	font-style: italic;
+	font-size: small;
+	text-align: center;
+	margin-top: -5px;
+	margin-bottom: 15px;
+}
+
 #indic {
 	font-style: italic;
 	font-size: small;
@@ -118,4 +126,8 @@ td {
 
 .qteU, .prixUnit {
 	padding-right: 50px;
+}
+
+#majPrix {
+	display: inline;
 }
