@@ -33,7 +33,7 @@ h5 {
 	margin-bottom: 50px;
 }
 
-#label, #titleDim, #titleCol, #titlePrix {
+#label {
 	font-weight: bold;
 	color: darkred;
 	margin-bottom: 10px;
@@ -93,7 +93,18 @@ table {
 }
 
 #titleDim, #titleCol, #titlePrix {
+	font-weight: bold;
+	color: darkred;
+	margin-bottom: 10px;
 	margin-top: 40px;
+}
+
+#titleDev {
+	font-weight: bold;
+	color: darkred;
+	margin-bottom: 10px;
+	margin-top: 20px;
+	margin-right: 5px;
 }
 
 #titlePrix {
@@ -111,6 +122,11 @@ table {
 	background-color: #ECFFB3;
 	padding: 8px;
 	text-align: center;
+}
+
+#listeDevis {
+	padding: 3px;
+	padding-right: 20px;
 }
 
 td {
