@@ -157,7 +157,7 @@ function getInfo($idUser, $info)
 function updateInfo($idUser, $info, $value)
 {
 	$SQL="UPDATE utilisateur SET $info='$value' WHERE id='$idUser'";
-	SQLUpdate($SQL);
+	return SQLUpdate($SQL);
 }
 
 function creerCompte($nom, $prenom, $mail, $telephone)
@@ -291,6 +291,12 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 			$SQL="SELECT prixU FROM `prix` WHERE refFerrures='$idProduit' AND qteMin <= '$quantite' and qteMax >= '$quantite' AND dimMin <= '$dimension' AND dimMax >= '$dimension'";
 		
         return SQLGetChamp($SQL);
+	}
+
+	function ajouterAuDevis($refFerrures, $refDevis, $quantite, $a,$b,$c,$prix,$couleur)
+	{
+		$SQL="INSERT INTO ferruresDevis (refFerrures,refDevis,quantite,a,b,c,prix,couleur) VALUES ('$refFerrures','$refDevis','$quantite','$a','$b','$c','$prix','$couleur')";
+		return SQLInsert($SQL);
 	}
 
 ?>

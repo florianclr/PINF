@@ -145,7 +145,8 @@ if ($action = valider("action"))
 				if ($value = valider("value"))
 				if ($info = valider("info"))
 
-				updateInfo($_SESSION['idUser'], $info, $value);
+				$tab=updateInfo($_SESSION['idUser'], $info, $value);
+                echo(json_encode($tab));
 			break;
 
 			case 'GET_CompteAttente' :
@@ -393,6 +394,22 @@ if ($action = valider("action"))
                 }
                 echo(json_encode($tab));
             break ;
+            
+            case 'POST_AjouterAuDevis' :
+            	if($idUser=valider("idUser"))
+                if($idUser==$idUserCo)
+                if($refFerrures=valider("refFerrures"))
+                if($refDevis=valider("refDevis"))
+                if($prix=valider("prix"))
+		        if($couleur=valider("couleur"))
+                if($quantite=valider("quantite")) {
+		            $a=valider("a");
+		            $b=valider("b");
+		            $c=valider("c");
+		            $tab=ajouterAuDevis($refFerrures, $refDevis, $quantite, $a,$b,$c,$prix,$couleur);
+		            echo(json_encode($tab));
+                }
+            break;
 
 		}
 }
