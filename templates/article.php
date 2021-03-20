@@ -2,6 +2,7 @@
 <?php
 	$produit = valider("produit");
 	$couleurCat=valider("categorie");
+	$idUser = valider("idUser","SESSION"); 
 	
 	if (!valider("connecte","SESSION")) {
   		header("Location:index.php?view=connexion");
@@ -13,8 +14,8 @@
 <script type="text/javascript">
 
   var produit="<?php echo $produit; ?>";
-  console.log(produit);
   var couleurCat="<?php echo $couleurCat; ?>";
+  var idUser = "<?php echo $idUser; ?>";
   var couleurFond;
   var tab = [];
 
@@ -40,8 +41,6 @@
   var ancienCoeff = 1;
   var isPrixInclude = '';
   var areOpt = 1;
-
-  
 
   var jImg=$('<div class="card h-100" id="imgProduct"><img class="card-img-top" alt=""/></div>');
 
@@ -183,13 +182,14 @@
 			  	}
 		  	}
 		  	else {
-		  		console.log("nooon");
 		  		if (isPrixInclude != '')
 		  			$("#majPrix").html(0);
 		  		$("#dimFond").append("<div id='warning'>La dimension n'est pas inclue dans l'intervalle possible</div>");
 		  	}
   		
   });
+  
+  var jDevis = $('<select name="devis" id="listeDevis"></select>');
 
   var compt = 1;
 
@@ -234,6 +234,98 @@
          width: 800,
          buttons: { // on ajoute des boutons à la pop up 
              "Ajouter au devis": function(){
+             	var flagA = 1, flagB = 1, flagC = 1;
+             	var flag = 1;
+             	var dimA, dimB, dimC;
+             	var couleurF;
+             
+				if ($("#listeDevis option:selected").text() != '--') {
+					// vérif des dimensions
+					/*
+					console.log($("#listeDevis option:selected").val());
+					console.log("prixDisplay="+prixDisplay);
+					console.log("qte="+qte);
+					console.log("produit="+produit);
+					console.log("isPrixInclude="+isPrixInclude);
+					*/
+					
+					if ($(".a").val() != undefined && $(".a").val() != '' && parseFloat($(".a").val()) >= parseFloat($(".a").prop("min")) && parseFloat($(".a").val()) <= parseFloat($(".a").prop("max")))
+						dimA = $(".a").val();
+					else {
+						if (parseFloat($(".a").val()) < parseFloat($(".a").prop("min")) || parseFloat($(".a").val()) > parseFloat($(".a").prop("max"))) {
+							console.log("a en dehors de l'intervalle !!!!");
+							flagA = 0;
+						}
+						else if ($(".a").length != 0) {
+							console.log("Renseigner a !!!!");
+							flagA = 0;
+						}
+						else
+							dimA = -1;
+					}
+						
+					if ($(".b").val() != undefined && $(".b").val() != '' && parseFloat($(".b").val()) >= parseFloat($(".b").prop("min")) && parseFloat($(".b").val()) <= parseFloat($(".b").prop("max")))
+						dimB = $(".b").val();
+					else {
+						if (parseFloat($(".b").val()) < parseFloat($(".b").prop("min")) || parseFloat($(".b").val()) > parseFloat($(".b").prop("max"))) {
+							console.log("b en dehors de l'intervalle !!!!");
+							flagB = 0;
+						}
+						else if ($(".b").length != 0) {
+							console.log("Renseigner b !!!!");
+							flagB = 0;
+						}
+						else
+							dimB = -1;
+					}
+						
+					if ($(".c").val() != undefined && $(".c").val() != '' && parseFloat($(".c").val()) >= parseFloat($(".c").prop("min")) && parseFloat($(".c").val()) <= parseFloat($(".c").prop("max")))
+						dimC = $(".c").val();
+					else {
+						if (parseFloat($(".c").val()) < parseFloat($(".c").prop("min")) || parseFloat($(".c").val()) > parseFloat($(".c").prop("max"))) {
+							console.log("c en dehors de l'intervalle !!!!");
+							flagC = 0;
+						}
+						else if ($(".c").length != 0) {
+							console.log("Renseigner c !!!!");
+							flagC = 0;
+						}
+						else
+							dimC = -1;
+					}
+					
+					console.log(dimA);
+					console.log(dimB);
+					console.log(dimC);
+					
+					// vérif des couleurs
+					if ($("input[type=radio]:checked").val() != undefined)
+						couleurF = $("input[type=radio]:checked").val();
+					else {
+						console.log("Choisir une couleur!!!!!!!!!!!!");
+						flag = 0;
+					}
+				}
+				else {
+					console.log("Choisir un devis!!!!!!!!!!!!!!!!!!!!");
+					flag = 0;
+				}
+				
+				if (flag == 1 && flagA == 1 && flagB == 1 && flagC == 1) {
+					$.ajax({
+						url: "libs/dataBdd.php",
+						data:{"action":"AjouterAuDevis","idUser":idUser, "refFerrures":produit, "refDevis":$("#listeDevis option:selected").val(), "quantite":qte, "a":dimA, "b":dimB, "c":dimC, "prix": prixDisplay, "couleur":couleurF},
+						type : "POST",
+						success: function(oRep){
+							console.log(oRep);
+						},
+						error : function(jqXHR, textStatus) {
+						  console.log("erreur");  
+						},
+						dataType: "json"
+					});
+				}
+					
              },
              "Quitter": function() {
                 $(this).dialog("close"); // ferme la pop up 
@@ -472,7 +564,7 @@ function listerCouleurs() {
         for (var i = 0; i < oRep.length; i++) {
              $("#colFond").append($('<input type="radio" id="choixCol" name="couleur"/>'));
              $("#choixCol").attr("id", "choixCol"+(i+1)); 
-             $("#choixCol"+(i+1)).attr("value", "choixCol"+(i+1));
+             $("#choixCol"+(i+1)).attr("value", oRep[i].id);
              if (i != 0)
              	$("#choixCol"+(i+1)).css("margin-left", "40px");
              	
@@ -492,10 +584,32 @@ function listerCouleurs() {
 }
 
 function finirCommande() {
-	$("#popUpDevis").append($('<div id="titlePrix">PRIX TOTAL HT : <div id="majPrix"></div></div>'));
+	$("#popUpDevis").append('<div id="titlePrix">PRIX TOTAL HT : <div id="majPrix"></div></div>');
 	$("#titlePrix").append(" €");
 	
-	// TODO: afficher un menu déroulant de tous les devis pour en sélectionner un
+	// select devis
+	$("#popUpDevis").append('<label for="devis" id="titleDev">Choisissez un devis préexistant : </label>');
+	$("#popUpDevis").append(jDevis.clone(true));
+	
+	$.ajax({
+		url: "libs/dataBdd.php",
+		data:{"action":"DevisUser","idUser":idUser},
+		type : "GET",
+		success: function(oRep){
+			console.log(oRep);
+			
+			// label par défaut
+			$("#listeDevis").append($("<option selected='selected'></option>").text("--"));
+		
+			for (var i = 0; i < oRep.length; i++) {
+				$("#listeDevis").append($("<option></option>").attr("value", oRep[i].id).text(oRep[i].nomProjet));
+			}
+		},
+		error : function(jqXHR, textStatus) {
+			console.log("erreur");
+		},
+		dataType: "json"
+	});	
 }
 
 function calculPrix() {

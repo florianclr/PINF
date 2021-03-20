@@ -98,9 +98,9 @@ function updateInfos(idUser) {
 	if ($connecte)
 	{
 		?>
-		var passe = '<?php echo json_encode($passe);?>';
-		var mail = '<?php echo json_encode($mail);?>';
-		var tel = '<?php echo json_encode($tel);?>';
+		var passe = '<?php echo $passe;?>';
+		var mail = '<?php echo $mail;?>';
+		var tel = '<?php echo $tel;?>';
 
 		var newPasse = $.trim($("#passe").val());
 		var newMail = $.trim($("#mail").val());
@@ -113,34 +113,37 @@ function updateInfos(idUser) {
 		if (passe != newPasse)
 		{
 			$.ajax({
-	                url: "libs/dataBdd.php",
-	                data:{"action":"Info","info":"mdp","value":newPasse},
-	                type : "GET",
-	                success:function (){
-					console.log("Mot de passe changé");}
-				});
+                    url: "libs/dataBdd.php?action=Info&info=mdp&value="+newPasse,
+                    type : "PUT",
+                    success: function (oRep){
+                    	console.log(oRep);
+                    },
+                    dataType: "json"
+                });
 		}
 
 		if (mail != newMail)
 		{
 			$.ajax({
-	                url: "libs/dataBdd.php",
-	                data:{"action":"Info","info":"mail","value":newMail},
-	                type : "GET",
-	                success:function (oRep){
-					console.log(oRep);}
-				});
+                    url: "libs/dataBdd.php?action=Info&info=mail&value="+newMail,
+                    type : "PUT",
+                    success: function (oRep) {
+                    	console.log(oRep);
+                    },
+                    dataType: "json"
+                });
 		}
 
 		if (tel != newTel)
 		{
 			$.ajax({
-	                url: "libs/dataBdd.php",
-	                data:{"action":"Info","info":"telephone","value":newTel},
-	                type : "GET",
-	                success:function (){
-					console.log("Tél changé");}
-				});
+                    url: "libs/dataBdd.php?action=Info&info=telephone&value="+newTel,
+                    type : "PUT",
+                    success:function (oRep){
+                    	console.log(oRep);
+                    },
+                    dataType: "json"
+                });
 		}
 		<?php
 	}
