@@ -230,7 +230,7 @@
 
       $("#popUpDevis").dialog({
          modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
-         height: 800,
+         height: 1200,
          width: 800,
          buttons: { // on ajoute des boutons à la pop up 
              "Ajouter au devis": function(){
@@ -239,8 +239,8 @@
              	var dimA, dimB, dimC;
              	var couleurF;
              
-				if ($("#listeDevis option:selected").text() != '--') {
-					// vérif des dimensions
+             	qte = $("#qteFerrure").val();
+				if ($("#listeDevis option:selected").text() != '--' && qte > 0) {
 					/*
 					console.log($("#listeDevis option:selected").val());
 					console.log("prixDisplay="+prixDisplay);
@@ -249,15 +249,20 @@
 					console.log("isPrixInclude="+isPrixInclude);
 					*/
 					
+					// vérif des dimensions
 					if ($(".a").val() != undefined && $(".a").val() != '' && parseFloat($(".a").val()) >= parseFloat($(".a").prop("min")) && parseFloat($(".a").val()) <= parseFloat($(".a").prop("max")))
 						dimA = $(".a").val();
 					else {
 						if (parseFloat($(".a").val()) < parseFloat($(".a").prop("min")) || parseFloat($(".a").val()) > parseFloat($(".a").prop("max"))) {
-							console.log("a en dehors de l'intervalle !!!!");
+							// a en dehors de l'intervalle
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagA = 0;
 						}
 						else if ($(".a").length != 0) {
-							console.log("Renseigner a !!!!");
+							// a = champ vide
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagA = 0;
 						}
 						else
@@ -268,11 +273,15 @@
 						dimB = $(".b").val();
 					else {
 						if (parseFloat($(".b").val()) < parseFloat($(".b").prop("min")) || parseFloat($(".b").val()) > parseFloat($(".b").prop("max"))) {
-							console.log("b en dehors de l'intervalle !!!!");
+							// b en dehors de l'intervalle
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagB = 0;
 						}
 						else if ($(".b").length != 0) {
-							console.log("Renseigner b !!!!");
+							// b = champ vide
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagB = 0;
 						}
 						else
@@ -283,11 +292,15 @@
 						dimC = $(".c").val();
 					else {
 						if (parseFloat($(".c").val()) < parseFloat($(".c").prop("min")) || parseFloat($(".c").val()) > parseFloat($(".c").prop("max"))) {
-							console.log("c en dehors de l'intervalle !!!!");
+							// c en dehors de l'intervalle
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagC = 0;
 						}
 						else if ($(".c").length != 0) {
-							console.log("Renseigner c !!!!");
+							// c = champ vide
+							$("#warning2").remove();
+							$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 							flagC = 0;
 						}
 						else
@@ -302,12 +315,16 @@
 					if ($("input[type=radio]:checked").val() != undefined)
 						couleurF = $("input[type=radio]:checked").val();
 					else {
-						console.log("Choisir une couleur!!!!!!!!!!!!");
+						// couleur non renseignée
+						$("#warning2").remove();
+						$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 						flag = 0;
 					}
 				}
 				else {
-					console.log("Choisir un devis!!!!!!!!!!!!!!!!!!!!");
+					// devis non renseigné ou qte < 0
+					$("#warning2").remove();
+					$("#popUpDevis").append("<div id='warning2'>Impossible d'ajouter la ferrure à un devis</div>");
 					flag = 0;
 				}
 				
@@ -318,6 +335,12 @@
 						type : "POST",
 						success: function(oRep){
 							console.log(oRep);
+                			$("#popUpDevis").remove(); // supprime la pop up
+							$("#ajoutOK").remove();
+                			$(".contenu").append('<div id="ajoutOK">La ferrure a bien été ajoutée au devis</div>');
+                			prixTemp = 0;
+                			prixTot = 0;
+                			prixDisplay = 0;
 						},
 						error : function(jqXHR, textStatus) {
 						  console.log("erreur");  

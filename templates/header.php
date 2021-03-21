@@ -84,7 +84,7 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
             <a class="nav-link" href="index.php?view=devis">Devis</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Planning</a>
+            <a class="nav-link" href="index.php?view=planning">Planning</a>
           </li>';
       			};
         	 ?>

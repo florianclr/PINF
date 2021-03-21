@@ -311,7 +311,7 @@
   var couleurBord;
   
     $(".col-lg-9 .row").each(function(){  
-                                      
+                                      var couleur= $(this).prev().css("color");
                                       var nom = $(this).prop("id");
                                       if (nom == "Tout")
                                         nom = null ; // si catgéogirie est null alors on va vercher toute les catégorie
@@ -328,7 +328,7 @@
                                                 if(oRep.length != 0){ 
                                                   for (var i = 0; i < oRep.length; i++){
                                                   
-                                                   couleurBord = tab[(oRep[i].refcategories)-1];
+                                                   couleurBord = couleur;
 
                                                    $(lien).append(jArticle.clone(true)
                                                           .attr("id",oRep[i].id));

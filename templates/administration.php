@@ -9,15 +9,23 @@
 	// on sélectionne une rubrique différente du site dans le menu
 	//$(".sr-only").html("(current)");
 
+$idUser = valider("idUser","SESSION");
 
-	if(valider("connecte","SESSION"))
-		if(valider("isAdmin","SESSION"))
-			$admin=1;
-		else $admin=0;
-	else {
-		header("Location:index.php?view=connexion");
-  		die("");
-	}
+if(valider("connecte","SESSION")){
+
+  	if(valider("isAdmin","SESSION"))
+    	$admin=isAdmin($idUser);
+
+    else {
+      header("Location:index.php?view=catalogue");
+      die("");
+    }
+}
+
+else {
+    header("Location:index.php?view=connexion");
+    die("");
+}
 
 ?>
 <!-- Bootstrap core JavaScript -->
@@ -27,7 +35,9 @@
 
 <script type="text/javascript">
 
+var idUser=<?php echo $idUser; ?>;
 var admin=<?php echo $admin; ?>;
+var nom;
 var jCompte = $('<div class="attente"></div>');
 var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 									var id=$(this).prop("id");
@@ -153,14 +163,97 @@ $.ajax({
 				 
 			},
 			dataType: "json"
-			});
+});
+
+var popupMail = $('<div id="popupM" title="Confirmer le changement"><h4 id="warningConfirm">Voulez-vous vraiment changer le destinataire des mails ?</h4>');
+
+var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinataire : </label> <select id="listeMail"></select>')
+    .click(function () {
+
+        var id = $(this).val();
+        nom = $("#listeMail option:selected").text();
+        
+        $('body').append(popupMail.clone(true));
+        $("#popupM").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Oui": function(){
+		    $.ajax({
+		      url: "libs/dataBdd.php?action=Destinataire&idUserD="+id+"&idUser="+idUser,
+		      type : "PUT",
+		      success:function (oRep){
+		          console.log(oRep);
+		          $("#popupM").dialog( "close" ); // ferme la pop up 
+		          $("#popupM").remove(); // supprime la pop up
+		          $("#mail").remove();
+							$('#mailActuel').html('Le destinataire actuel des mails est <b>'+nom+'</b>');
+							$('#chgtDestOK').css('display','block');
+		      },// fin succes
+		      error : function(jqXHR, textStatus) {
+		        console.log("erreur");
+		      },
+
+		      dataType: "json"
+		    });// fin requête ajax
+
+
+        },
+        "Non": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+
+    });
+
+    });
+
+var jOptionSelect = $('<option></option>');
+$(document).ready(function(){
+
+		$.ajax({
+		    url: "libs/dataBdd.php",
+		    data:{"action":"UserAdmin"},
+		    type : "GET",
+		    success: function(oRep){
+		        console.log(oRep);
+		        
+		        if (admin == 2) {
+				      $('#mail').append(JMenu.clone(true));
+				      for (var i = 0; i < oRep.length; i++) {
+				          if(oRep[i].admin == 1)
+				          	$('#listeMail').append(jOptionSelect.clone(true).html(oRep[i].nom+" "+oRep[i].prenom).val(oRep[i].id));
+				          if(oRep[i].admin == 2) {
+				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].nom+" "+oRep[i].prenom+'</b>');
+				          }
+				      }
+						}
+						else {
+							for (var i = 0; i < oRep.length; i++) {
+				          if(oRep[i].admin == 2) {
+				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].nom+" "+oRep[i].prenom+'</b>');
+				          }
+				      }
+						}
+		    },
+		  error : function(jqXHR, textStatus) {
+		      console.log("erreur");
+		  },
+		  dataType: "json"
+		});
+});
 
 function sendMail(mdp,mailD) {
 
 	var email = "no-reply@decima.fr";
 	var subject = "Mot de passe du compte ";
 
-	var body = "Votre compte à été validé, votre mot de passe est : "+mdp+"\n votre login est : "+mailD +"\n pour vous connecter rendez-vous sur http://185.30.209.4/PINF/ pour vous connecter";
+	var body = "Votre compte a été validé, votre mot de passe est : "+mdp+"\n et votre login est : "+mailD +"\n. Pour vous connecter, rendez vous sur http://185.30.209.4/PINF/";
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',
@@ -190,6 +283,11 @@ function sendMail(mdp,mailD) {
 
 <body>
 <div id="listeCompte"></div>
+<div id="chgtDestOK">Le destinataire des mails a bien été changé</div>
+<div id="infoSA">
+	<div id="mailActuel"></div>
+	<div id="mail"></div>
+</div>
 </br></br></br></br></br>
 </body>
 
