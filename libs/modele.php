@@ -73,6 +73,12 @@ function getDim($id)
     return parcoursRs(SQLSelect($SQL));
 }
 
+function getDims($id)
+{
+    $SQL="SELECT DISTINCT * FROM dimension WHERE refFerrures='$id'";
+    return parcoursRs(SQLSelect($SQL));
+}
+
 function getOptions($id)
 {
     $SQL="SELECT * FROM `option` WHERE refFerrures='$id'";
@@ -85,16 +91,20 @@ function rechercherFerrures($mot)
     return parcoursRs(SQLSelect($SQL));
 }
 
-function getCompte($id)
+function getCompte($id,$etat)
 {
-	if($id==null){
-		$SQL="SELECT * FROM utilisateur WHERE mdp IS NULL";
-    return parcoursRs(SQLSelect($SQL));
-	}
-	else {
-		$SQL="SELECT * FROM utilisateur WHERE id='$id'";
-    return parcoursRs(SQLSelect($SQL));
-	}
+    if($etat==1){
+        $SQL="SELECT * FROM utilisateur WHERE mdp IS NULL";
+    	return parcoursRs(SQLSelect($SQL));
+    }
+    if($etat==2) {
+        $SQL="SELECT * FROM utilisateur WHERE id='$id'";
+    	return parcoursRs(SQLSelect($SQL));
+    }
+    if($etat==3) {
+        $SQL="SELECT * FROM utilisateur WHERE admin='1' OR admin='2'";
+    	return parcoursRs(SQLSelect($SQL));
+    }
 
 }
 
@@ -108,6 +118,13 @@ function refuserCompte($idUser)
 {
    	$SQL="DELETE FROM utilisateur WHERE id='$idUser'";
 	return SQLDelete($SQL);
+}
+
+function destinataire($idUser,$idUserD)
+{
+    $SQL="UPDATE utilisateur SET admin='2' WHERE id='$idUserD';
+          UPDATE utilisateur SET admin='1' WHERE id='$idUser';";
+    return SQLUpdate($SQL);
 }
 
 /****************************************************************************/
@@ -272,6 +289,14 @@ function creerCompte($nom, $prenom, $mail, $telephone)
     	return SQLUpdate($SQL);
 	}
 	
+	function deleteFerrureDevis($idFerrureDevis,$idDevis) {
+
+        $SQL="UPDATE devis SET PrixTotal=PrixTotal-(SELECT prix FROM ferruresDevis WHERE id='$idFerrureDevis') WHERE id='$idDevis';
+               DELETE FROM ferruresDevis WHERE id='$idFerrureDevis'";
+        return SQLUpdate($SQL); 
+
+    }
+	
 	/***********************************************************/
 
 	function listerDimensionsFerrure($idF) {
@@ -293,10 +318,42 @@ function creerCompte($nom, $prenom, $mail, $telephone)
         return SQLGetChamp($SQL);
 	}
 
-	function ajouterAuDevis($refFerrures, $refDevis, $quantite, $a,$b,$c,$prix,$couleur)
+	function ajouterAuDevis($refFerrures, $refDevis, $quantite, $a, $b, $c, $prix,$couleur)
 	{
-		$SQL="INSERT INTO ferruresDevis (refFerrures,refDevis,quantite,a,b,c,prix,couleur) VALUES ('$refFerrures','$refDevis','$quantite','$a','$b','$c','$prix','$couleur')";
-		return SQLInsert($SQL);
+		$SQL="INSERT INTO ferruresDevis (refFerrures,refDevis,quantite,a,b,c,prix,couleur) VALUES ('$refFerrures','$refDevis','$quantite','$a','$b','$c','$prix','$couleur');
+			UPDATE devis SET PrixTotal=PrixTotal+$prix WHERE id='$refDevis'";
+		
+		return SQLUpdate($SQL);
 	}
+	
+	/***********************************************************/
+	
+	function getDevisEnAttente() {
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NULL AND etat IN('COMMANDE_VALIDÉE','EN_FABRICATION','FABRIQUÉ')";
+		return parcoursRs(SQLSelect($SQL));
+	}
+
+	function getDevisPlanifies() {
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL";
+		return parcoursRs(SQLSelect($SQL));
+	}
+
+	function planifierDevis($id, $date) {
+		$SQL="UPDATE devis SET dateLivraison='$date' WHERE id='$id'";
+		return SQLUpdate($SQL);
+	}
+
+    function annulerDevis($idDevis) {
+   		$SQL="UPDATE devis SET dateLivraison=NULL WHERE id='$idDevis'";
+		return SQLDelete($SQL);
+	}	
+
+    function getMailClient($idDevis) {
+        $SQL="SELECT mail 
+        FROM utilisateur, devis 
+        WHERE utilisateur.id = devis.refCA
+        	AND devis.id='$idDevis'";
+        return SQLGetChamp($SQL);
+    }
 
 ?>

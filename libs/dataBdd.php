@@ -20,9 +20,8 @@ if ($action = valider("action"))
 	$request .= $method . "_" . $action ; 
 	//die($request); 
 
-	switch($request)
-		{	
-			case 'GET_Connexion' : 
+	switch($request) {	
+		case 'GET_Connexion' : 
 									if ($login = valider("login"))
 									if ($passe = valider("passe")){
 
@@ -141,6 +140,12 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
             
+            case 'GET_Dims' :
+                if($idProduit=valider("idProduit"))
+                $tab=getDims($idProduit);
+                echo(json_encode($tab));
+            break;
+            
             case 'PUT_Info' :
 				if ($value = valider("value"))
 				if ($info = valider("info"))
@@ -152,21 +157,15 @@ if ($action = valider("action"))
 			case 'GET_CompteAttente' :
                 if($admin=valider("admin")){
                 	if($idUser=valider("idUser")){
-                		$tab=getCompte($idUser);
+                		$tab=getCompte($idUser, 2);
                 		echo(json_encode($tab));
                 	}
                 	else{
-                		$tab=getCompte(null);
+                		$tab=getCompte(null, 1);
                 		echo(json_encode($tab));
                 	}
                 }
 
-            break;
-
-			case 'GET_CompteAttente' :
-                if($admin=valider("admin"))
-                $tab=getCompte();
-                echo(json_encode($tab));
             break;
 
 			case 'PUT_Accepter' :
@@ -185,6 +184,24 @@ if ($action = valider("action"))
                 }
                 echo(json_encode($tab));
             break;
+            
+            case 'PUT_Destinataire' :
+                if($admin==2){
+                if($idUser=valider("idUser"))
+                if($idUserD=valider("idUserD"))
+                $tab=destinataire($idUser,$idUserD);
+                echo(json_encode($tab));
+                }
+            break;
+            
+			case 'GET_UserAdmin' :
+                if($admin==1 || $admin==2){
+		            $tab=getCompte(null,3);
+		            echo(json_encode($tab));
+                }
+            break;
+            
+            /***********************************************************/
 
             case 'DELETE_Ferrure' : 
             	if($idFerrure=valider("id"))
@@ -281,23 +298,6 @@ if ($action = valider("action"))
                 }
             break ;
             
-            case 'PUT_Commander' :
-                if($idD=valider("idDevis"))
-                if($idUser=valider("idUser"))
-                if($idUser==$idUserCo) {
-                    $tab=CommanderDevis(1,$idD);
-                }
-                echo(json_encode($tab));
-            break;
-            
-            case 'DELETE_FerrureDevis' :
-                if($idF=valider("idFerrureDevis"))
-                if($idUser=valider("idUser"))
-                if($idUser==$idUserCo)
-                    $tab=suppFerrureDevis($idF);
-                echo(json_encode($tab));
-            break;
-            
             case 'GET_Devis' :
                 if($devis=valider("idDevis"))
                 if($idUser=valider("idUser"))
@@ -331,7 +331,7 @@ if ($action = valider("action"))
             case 'GET_nomUsers' :
                 if($idUser=valider("idUser"))
                 if($idUser==$idUserCo)
-                if($admin == 1){ 
+                if($admin == 1 || $admin == 2){ 
                     $tab = getNomUsers();
                     echo(json_encode($tab));
             	}
@@ -340,7 +340,7 @@ if ($action = valider("action"))
             case 'PUT_MajEtat' :
                 if($etat=valider("etat"))
                 if($id=valider("idDevis"))
-                if($admin==1)
+                if($admin==1 || $admin==2)
                 	$tab=majEtat($etat,$id);
                 echo(json_encode($tab));
             break;
@@ -348,7 +348,7 @@ if ($action = valider("action"))
             case 'PUT_MajCommentaire' :
                 if($commentaire=valider("commentaire"))
                 if($id=valider("idDevis"))
-                if($admin==1)
+                if($admin==1 || $admin==2)
                 	$tab=addCommentaire($commentaire,$id);
                 echo(json_encode($tab));
             break;
@@ -356,7 +356,7 @@ if ($action = valider("action"))
             case 'PUT_majDateLivraison' :
                 if($date=valider("date"))
                 if($id=valider("idDevis"))
-                if($admin==1)
+                if($admin==1 || $admin==2)
                 	$tab=majDateLivraison($date,$id);
                 echo(json_encode($tab));
             break;
@@ -366,6 +366,15 @@ if ($action = valider("action"))
                 if($idUser=valider("idUser"))
                 if($idUser==$idUserCo)
                     $tab=majEtat("DEMANDE_COMMANDE",$idD);
+                echo(json_encode($tab));
+            break;
+
+			case 'DELETE_FerrureDevis' :
+                if($idF=valider("idFerrureDevis"))
+                if($idUser=valider("idUser"))
+                if($idDevis=valider("idDevis"))
+                if($idUser==$idUserCo)
+                    $tab=deleteFerrureDevis($idF,$idDevis);
                 echo(json_encode($tab));
             break;
             
@@ -406,8 +415,43 @@ if ($action = valider("action"))
 		            $a=valider("a");
 		            $b=valider("b");
 		            $c=valider("c");
-		            $tab=ajouterAuDevis($refFerrures, $refDevis, $quantite, $a,$b,$c,$prix,$couleur);
+		            	
+		            $tab=ajouterAuDevis($refFerrures, $refDevis, $quantite, $a, $b, $c,$prix,$couleur);
 		            echo(json_encode($tab));
+                }
+            break;
+            
+            /****************************************************/
+            
+            case 'GET_DevisEnAttente' :
+                $tab = getDevisEnAttente();
+                echo(json_encode($tab));
+            break;
+
+            case 'GET_DevisPlanifies' :
+                $tab = getDevisPlanifies();
+                echo(json_encode($tab));
+            break;
+
+            case 'POST_PlanifierDevis' :
+                if($id=valider("id"))
+                if($date=valider("date"))
+                $tab = planifierDevis($id, $date);
+                echo(json_encode($tab));
+            break;
+
+
+            case 'GET_AnnulerDevis' :
+                if($devis=valider("idDevis")) {
+                    $tab = annulerDevis($devis);
+                    echo(json_encode($tab));
+                }
+            break;
+
+            case 'GET_MailClient' :
+                if($devis=valider("idDevis")) {
+                    $tab = getMailClient($devis);
+                    echo(json_encode($tab));
                 }
             break;
 
