@@ -189,6 +189,10 @@ body {
 	margin-right: 20%;
 }
 
+#labelDisplayPasse {
+	font-style: italic;
+}
+
 #newAccount {
 	display: none;
 	text-align: center;
