@@ -37,15 +37,8 @@ $idDevis = valider("idDevis");
  	//----- MODELE JQUERY -----//
 
  	var jTd =$("<div class='st_column _rank'></div>");
+	var jTdSmall =$("<div class='st_column _btnDevis'></div>");
  	var jTr =$("<tr></tr>");
- 	
-  var jButtonChgtEtat=$('<input id="mailEtat" type="button" value="Informer le propriétaire du changement d\'etat"></input>').click(function(){
-    // TODO: mail !!!
-    var etat = $("#etat select").val();
-    console.log(etat); 
-    $(this).remove(); 
-    //$("#source").prependTo("#destination");
-  });
 
   var jButtonChgtDate=$('<input id="mailDate" type="button" value="Informer le propriétaire du changement de date de livraison"></input>').click(function(){
     // TODO: mail !!!
@@ -60,8 +53,8 @@ $idDevis = valider("idDevis");
     '<option value="EN_CRÉATION">EN_CRÉATION</option>'+
     '<option value="DEMANDE_COMMANDE">DEMANDE_COMMANDE</option>'+
     '<option value="COMMANDE_VALIDÉE">COMMANDE_VALIDÉE</option>'+
-    '<option value="EN_COURS_DE_FABRICATION">EN_COURS_DE_FABRICATION</option>'+
-    '<option value="RÉALISE">RÉALISE</option>'+
+    '<option value="EN_FABRICATION">EN_FABRICATION</option>'+
+    '<option value="FABRIQUÉ">FABRIQUÉ</option>'+
     '<option value="LIVRÉ">LIVRÉ</option>'+
     '<option value="ARCHIVÉ">ARCHIVÉ</option>'+
     '</select>"').change(function(){
@@ -95,23 +88,35 @@ $idDevis = valider("idDevis");
 
   var jTextarea = $('<textarea id="commentaire" name="commentaire" rows="4" cols="50" id="coms"></textarea>');
 
-  var jButtonCom = $('<input type="button" value="edit commentaire" id="btnCom">').click(function(){
+  var jButtonCom = $('<input type="button" value="Envoyer un mail (état + commentaire)" id="btnCom">').click(function(){
     var commentaire = $("#commentaire").val(); 
-    console.log(commentaire)
+    var etat = $("#etat option:selected").val(); 
+    var numDevis=$("#numDevis").html();
+    var nomProjet=$("#nomProjet").html();
+    console.log(commentaire);
+    
     $.ajax({
         url: "libs/dataBdd.php?action=MajCommentaire&idDevis="+idDevis+"&commentaire="+commentaire,
         type : "PUT",
         success: function(oRep){
-          console.log(oRep)
+          console.log(oRep);
         },
         error : function(jqXHR, textStatus) {
           console.log("erreur");
         },
         dataType: "json"
     });
+    
+    var subject="information sur votre devis [ "+numDevis+" ] [ "+nomProjet+" ]";
+    if(commentaire=="Aucun commentaire")
+      var body="Votre devis est en "+etat;
+    else 
+    	var body="Votre devis est en "+etat+" commentaire : "+commentaire;
+    mailClient(idDevis, subject, body);
+    
   });
 
-  var jDate = $('<input type="text" id="datepicker">');
+  var jDate = $('<dd> <input type="text" id="datepicker"></dd>');
 
  	var jButton = $('<input type="button" id="commander" value="Passer la commande"/>').click(function () {
   		var btn = $(this); 
@@ -135,42 +140,46 @@ $idDevis = valider("idDevis");
 
 var jTitre =$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
-var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Nom Ferrure</td><td>Quantité</td><td>Prix</td></tr></table>');
+var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Prix</td></tr></table>');
 
-var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix Total</td><td></td><td></td><td id='prixTot'></td></tr>"); 
+var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td id='prixTot'></td></tr>"); 
 
 var jImg=$('<img  class="imgSuppArtDevis" src="./ressources/moins.png"/>').click(function(){
-	console.log($(this).prop("id"));
+	
+	var prix=parseInt($(this).parent().parent().find('td').eq(3).html());
+  	var ancienPrix=parseInt($("#prixTot").html());
 
-	$.ajax({
-			    url: "libs/dataBdd.php?action=FerrureDevis&idFerrureDevis="+$(this).prop("id")+"&idUser="+idUser,
-			    type : "DELETE",
-			    success: function(oRep){
-			    	console.log(oRep);
-			      			
-			    },
-			    error : function(jqXHR, textStatus) {
-			      console.log("erreur");
-			    },
-			    dataType: "json"
-			    });
+
+  $.ajax({
+          url: "libs/dataBdd.php?action=FerrureDevis&idFerrureDevis="+$(this).prop("id")+"&idUser="+idUser+"&idDevis="+idDevis,
+          type : "DELETE",
+          success: function(oRep){
+            console.log(oRep);
+            var nvPrix=ancienPrix-prix;
+            console.log(nvPrix);
+            $("#prixTot").html(nvPrix+"€");
+          },
+          error : function(jqXHR, textStatus) {
+            console.log("erreur");
+          },
+          dataType: "json"
+          });
 
 	$(this).parent().parent().hide('slow', function() { 
-                						$(this).remove();
-             					});
-
+              $(this).remove();
+    });
 });
 
 var jHeaderTab = $('<header class="st_table_header">' +
       '<h2 class="title_tab"></h2>' +
       '<div class="st_row">' +
-        '<div class="st_column _rank">Numeros Devis</div>' +
-        '<div class="st_column _name">Nom projet</div>' +
-        '<div class="st_column _surname">Nom client</div>' +
-        '<div class="st_column _year">Date creation</div>' +
-        '<div class="st_column _section">Etat</div>' +
-        '<div class="st_column _dateLivraison"> Date Livraison</div>' +
-        '<div class="st_column _dateLivraison"></div>' +
+        '<div class="st_column _rank">Numéro du devis</div>' +
+        '<div class="st_column _name">Nom du projet</div>' +
+        '<div class="st_column _surname">Nom du client</div>' +
+        '<div class="st_column _year">Date de création</div>' +
+        '<div class="st_column _section">État</div>' +
+        '<div class="st_column _dateLivraison">Date de livraison</div>' +
+        '<div class="st_column _btnDevis"></div>' +
       '</div>' +
       '</header>');
 
@@ -210,14 +219,15 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
               	// INSERTION DEVIS DANS LE TABLEAU
                     for (var i = 0; i < oRep.length; i++) { 
                     	if(oRep[i].dateLivraison == null)
-                    		dateLivraison = "indéfinis"; 
+                    		dateLivraison = "indéfini"; 
                     	else 
                     		dateLivraison = oRep[i].dateLivraison;
 
                     	if(oRep[i].etat != etat){
                     		etat = oRep[i].etat ;
                     		tabAct = "tab"+ nbTab;
-                    		$(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ nbTab +'" id="' + tabAct + '">').clone(true));
+                    		// $(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ nbTab +'" id="' + tabAct + '">').clone(true));
+                    		$(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ oRep[i].etat +'" id="' + tabAct + '">').clone(true));
                     		$("#" + tabAct).append(jHeaderTab.clone(true));
                     		$("#" + tabAct +" .title_tab").html(etat); 
                     		if(admin == 1){// ajout d'une colone pour afficher le créateur du devis 
@@ -240,7 +250,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                     	jligne = jligne.append(jTd.clone(true).append(oRep[i].dateCreation))
                     			.append(jTd.clone(true).append(oRep[i].etat))
                     			.append(jTd.clone(true).append(dateLivraison))
-                    			.append(jTd.clone(true).append(jlien.html("Voir devis").attr("id",oRep[i].id).clone(true)));	
+                    			.append(jTdSmall.clone(true).append(jlien.html("Voir le devis").attr("id",oRep[i].id).clone(true)));	
 
                     	var ref = $("#" + tabAct).append(jligne.clone(true)).clone(true);
 
@@ -304,28 +314,43 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                     $("#numDevis").html(oRep[0].numeroDevis);
                     $("#dateCreation").html(oRep[0].dateCreation);
 
-                    console.log("TESTDATE")
+                    console.log("TESTDATE");
                        console.log(oRep[0].dateLivraison); 
 
-                    if(admin==0){
-                      $("#datepicker").replaceWith($("<p></p>").html(oRep[0].dateLivraison));
+                    if(admin==0 ||admin==1 && oRep[0].etat=="ARCHIVÉ"){
+                      $("#datepicker").replaceWith($('<p id="dateLivraison"></p>').html(oRep[0].dateLivraison));
                     }
 
-                    else if( oRep[0].dateLivraison != null ){ 
-                       console.log("TESTDATE")
-                       console.log(oRep[0].dateLivraison); 
-                       var date = oRep[0].dateLivraison ; 
-                       var tabDate = date.split('-' );
-                       console.log(tabDate); 
-                       $("#datepicker").datepicker("setDate", new Date(tabDate[0],tabDate[1]-1,tabDate[2]));
-                    }
-                    else if( oRep[0].dateLivraison == null ){ 
-                    	$("#datepicker").val("");
+					if(oRep[0].etat=="COMMANDE_VALIDÉE" || oRep[0].etat=="EN_FABRICATION") {
+                      if( oRep[0].dateLivraison != null  ){ 
+                        $("#dateLivraison").replaceWith(jDate.clone(true));
+                        datePicker();
+                         console.log("TESTDATE2");
+                         console.log(oRep[0].dateLivraison); 
+                         var date = oRep[0].dateLivraison ; 
+                         var tabDate = date.split('-' );
+                         console.log(tabDate); 
+                         $("#datepicker").datepicker("setDate", new Date(tabDate[0],tabDate[1]-1,tabDate[2]));
+                      }
+                      else if( oRep[0].dateLivraison == null ){ 
+                        console.log("TESTDATE3");
+                        $("#dateLivraison").replaceWith(jDate.clone(true));
+                        datePicker();
+                      	$("#datepicker").val("");
+                      }
                     }
 
                     if(admin == 1){
+                      console.log(oRep[0].etat);
+                      if(oRep[0].etat == "ARCHIVÉ"){
+                        $("#etat").empty();
+                        $("#etat").prepend("ARCHIVÉ");
+                      }
+                      else{
+                        $("#etat").empty();
                       $("#etat").prepend(jSelectEtat);
                       $('#etat select option[value="' + oRep[0].etat +'"]').prop('selected', true);
+                      }
                     }
                     else 
                       $("#etat").html(oRep[0].etat);
@@ -423,7 +448,14 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
   			$('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
 		});
 
-     $( "#datepicker" ).datepicker({
+    datePicker();
+
+     
+  });
+
+function datePicker() {
+
+  $( "#datepicker" ).datepicker({
       showOtherMonths: true,
       selectOtherMonths: true
     });
@@ -439,7 +471,9 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
             console.log(oRep);
             if( $("#mailDate").index() == -1){ 
               $(datepicker).after(jButtonChgtDate.clone(true));
-              $(dateLivraison).after("</br>");  
+              $("#dateLivraison").after("</br>"); 
+              
+              $('#etat option[value="EN_FABRICATION"]').prop('selected', true); 
           }
         },
         error : function(jqXHR, textStatus) {
@@ -448,8 +482,54 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
         dataType: "json"
     });
       })
-  });
 
+}
+
+function mailClient(idDevis, subject, body) {
+
+      console.log("Envoi d'un mail au client du devis " + idDevis);
+
+      $.ajax({
+              url: "libs/dataBdd.php",
+              data:{"action":"MailClient","idDevis":idDevis},
+              type : "GET",
+              success:function (mailClient) {
+
+                console.log(mailClient);
+
+                var expediteur = "decima-ne-pas-repondre";
+                var email = "no-reply@decima.fr";
+
+                $.ajax({
+                    url: 'PHPMailer/mail.php',
+                    method: 'POST',
+                    dataType: 'json',
+
+                    data: {
+                      name: "decima-ne-pas-repondre",
+                      email: email,
+                      subject: subject,
+                      body: body,
+                      mailD: mailClient
+                    },
+
+                    success: function(response) {
+                    },
+
+                    error: function(response) { 
+                      console.log(response);
+                  }
+                
+                  });
+                },
+
+                error: function(jqXHR, textStatus) {
+                    console.log("erreur");
+                    },
+                    dataType: "json"
+              });
+
+  }
  	// --- CHARGEMENT PAGE -- //
  	$(document).ready(function(){
  		console.log(idUser); 
@@ -458,23 +538,12 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
  	})
 
 
+
     </script>
 
   <body>
   <main class="st_viewport">
   <div class="st_wrap_table" data-table_id="0">
-   <!--  <header class="st_table_header">
-      <h2>Table header one</h2>
-      <div class="st_row">
-        <div class="st_column _rank">Numeros Devis</div>
-        <div class="st_column _name">Nom projet</div>
-        <div class="st_column _surname">Nom client</div>
-        <div class="st_column _year">Date creation</div>
-        <div class="st_column _section">Etat</div>
-        <div class="st_column _dateLivraison"> Date Livraison</div>
-        <div class="st_column _dateLivraison"></div>
-      </div>
-    </header> -->
 
   </div>
   
@@ -494,7 +563,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
           
         </dd>
         <dt>
-          Numero de Devis
+          Numéro de devis
         </dt>
         <dd id="numDevis">
           
@@ -512,20 +581,20 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
           <input type="text" id="datepicker">     
         </dd>
         <dt>
-          Etat
+          État
         </dt>
         <dd id="etat">
           
         </dd>
         <dt>
-          Commentaires 
+          Mail 
         </dt>
         <dd id="com">
          <p id=coms></p>
         </dd>
 
         <dt id="TEST">
-          Articles devis
+          Articles du devis
         </dt>
         <dd id="articles">
          

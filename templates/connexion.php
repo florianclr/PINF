@@ -20,9 +20,6 @@ if(valider("connecte","SESSION")) {
 	$passe = getInfo($_SESSION["idUser"], "mdp");
 	$mail = getInfo($_SESSION["idUser"], "mail");
 	$tel = getInfo($_SESSION["idUser"], "telephone");
-	// echo $passe;
-	// echo $mail;
-	// echo $tel;
 } 
 else 
 	$connecte = 0;
@@ -246,6 +243,15 @@ function validateEmail($email) {
   return emailReg.test( $email );
 }
 
+$(document).ready(function() {
+	$("#displayPasse").click(function() {
+		if ($("#displayPasse").prop("checked") == true)
+			$("#passe").attr("type", "text");
+		else if ($("#displayPasse").prop("checked") == false)
+			$("#passe").attr("type", "password");
+	});
+});
+
 </script>
 
 <body onload="createButton();">
@@ -258,12 +264,17 @@ if ($connecte)
 	<div id="compte">
 			<h1 class="my-4">Mon compte</h1>
 			<h4>Mes informations</h4><br/>
-			Mot de passe : <input type="password" id="passe"  value="<?php echo $passe;?>"/><br/><br/>
+			Mot de passe : <input type="password" id="passe"  value="<?php echo $passe;?>"/>
+			<label for="displayPasse" id="labelDisplayPasse">
+				<input type="checkbox" id="displayPasse"/>
+				Afficher
+			</label>
+			<br/><br/>
 			Mail : <input type="text" id="mail" value="<?php echo $mail;?>"/><br/><br/>
 			Tél : <input type="text" id="tel"  value="<?php echo $tel;?>"/><br/><br/>
 			<input type="submit" name="action" value="Valider" onclick="updateInfos('<?php echo $_SESSION["idUser"];?>');"/><br/><br/>
 	</div>
-	<br/><br/>
+	<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <?php
 }
@@ -276,7 +287,8 @@ else
 	<div id="connexion">
 		<h1 class="my-4">Connexion</h1>
 		Login : <input type="text" id="login"  value="<?php echo $login;?>"/><br/><br/>
-		Mot de passe : <input type="password" id="passe" value="<?php echo $passe;?>"/><br/><br/><br/>
+		Mot de passe : <input type="password" id="passe" value="<?php echo $passe;?>"/>
+		<br/><br/><br/>
 		<input type="checkbox" <?php echo $checked;?> name="remember" id="remember" value="ok"/>
 		<label for="remember">Se souvenir de moi</label>
 		<br/><br/>
