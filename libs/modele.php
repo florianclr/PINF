@@ -285,7 +285,7 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 
     function majDateLivraison($date, $idDevis)
 	{
-       $SQL="UPDATE devis SET dateLivraison='$date' WHERE id='$idDevis'";
+       $SQL="UPDATE devis SET dateLivraison='$date', etat='EN_FABRICATION' WHERE id='$idDevis'";
     	return SQLUpdate($SQL);
 	}
 	
