@@ -71,6 +71,7 @@ body {
 
 #warning, #warning2 {
 	width: 100%;
+	padding: 5px;
   	margin-top: 10px;
 	text-align: center;
 	font-weight: bold;
@@ -92,13 +93,13 @@ body {
 	justify-content: center;
 }
 
-#addD, #addC {
+#addD, #addC, #addF, #addM {
 	margin-bottom: 20px;
 	color: white;
 	background-color: #353a40;
 }
 
-#newC, #newD, #popupSuppr {
+#newC, #newD, #popupSuppr, #newF, #newM {
 	text-align: center;
 }
 
@@ -108,7 +109,7 @@ body {
 	color: red;
 }
 
-#colCat, #nomCol, #nomPro, #nomCli, #numDev {
+#colCat, #nomCol, #nomPro, #nomCli, #numDev, #nomFin, #nomMat {
 	margin-top: 20px;
 }
 
@@ -158,6 +159,15 @@ body {
 	margin-right: 20%;
 }
 
+#compte :first-child {
+	background: linear-gradient(grey, #353A40);
+	font-weight: bold;
+	font-size: xx-large;
+	color: white;
+	padding: 10px;
+	box-shadow: 0px 0px 3px #000;
+}
+
 #newAccount {
 	text-align: center;
 	margin-top: 30px;
@@ -187,6 +197,15 @@ body {
 	padding: 20px;
 	margin-left: 20%;
 	margin-right: 20%;
+}
+
+#connexionLabel {
+	background: linear-gradient(grey, #353A40);
+	font-weight: bold;
+	font-size: xx-large;
+	color: white;
+	padding: 10px;
+	box-shadow: 0px 0px 3px #000;
 }
 
 #labelDisplayPasse {
@@ -250,6 +269,14 @@ body {
 	margin-top: 40px;
 }
 
+#listeCompte :first-child {
+	background: linear-gradient(#353A40, black);
+	font-weight: bold;
+	color: white;
+	padding: 10px;
+	box-shadow: 0px 0px 3px #000;
+}
+
 #btn {
 	margin: 20px;
 	margin-bottom: 20px;
@@ -280,7 +307,7 @@ body {
 	background-color: white;
 	border: 3px solid black;
 	text-align: center;
-	padding: 10px;
+	padding: 20px;
 	margin-left: 22%;
 	margin-right: 22%;
 	margin-top: 70px;
@@ -289,15 +316,28 @@ body {
 #newDest {
 	color: darkblue;
 	font-weight: bold;
+	margin-bottom: 40px;
 }
 
-#listeMail {
-	color: darkblue;
+.titreSection {
+	font-size: large;
+	font-weight: bold;
+	background: linear-gradient(#EAECEE, lightgrey);
+	margin-bottom: 15px;
+	box-shadow: 0px 0px 3px #000;
+	padding: 3px;
+}
+
+.listeAdministration {
 	padding: 2px;
 	padding-right: 20px;
 }
 
-#popupM {
+#listeMail {
+	color: darkblue;
+}
+
+.popupAdministration {
 	text-align: center;
 }
 
