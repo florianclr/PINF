@@ -17,18 +17,6 @@ function listerCategories($cat)
     }
 }
 
-function listerMatieres()
-{
-	$SQL="SELECT * FROM matiere";
-	return parcoursRs(SQLSelect($SQL));
-}
-
-function listerFinitions()
-{
-	$SQL="SELECT * FROM finition";
-	return parcoursRs(SQLSelect($SQL));
-}
-
 function listerArticles($categorie,$nombre)
 {
 
@@ -241,6 +229,18 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		return SQLInsert($SQL);
 	}
 	
+	function creerFinition($nomF)
+    {
+        $SQL="INSERT INTO finition (nomF)  VALUES ('$nomF')";
+        return SQLInsert($SQL);
+    }
+
+    function creerMatiere($nomM)
+    {
+        $SQL="INSERT INTO matiere (nomM)  VALUES ('$nomM')";
+        return SQLInsert($SQL);
+    }
+	
 	function creerDevis($numDevis,$refCA,$nomProjet,$nomClient,$dateCreation,$etat)
 	{
     	$SQL="INSERT INTO devis (numeroDevis,refCA,nomProjet,nomClient,dateCreation,etat)  VALUES ('$numDevis','$refCA','$nomProjet','$nomClient','$dateCreation','$etat')";
@@ -334,19 +334,19 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	}
 
 	function getDevisPlanifies() {
-		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL";
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL AND etat NOT IN('ARCHIVÉ','LIVRÉ')";
 		return parcoursRs(SQLSelect($SQL));
 	}
 
 	function planifierDevis($id, $date) {
-		$SQL="UPDATE devis SET dateLivraison='$date' WHERE id='$id'";
+		$SQL="UPDATE devis SET dateLivraison='$date', etat='EN_FABRICATION' WHERE id='$id'";
 		return SQLUpdate($SQL);
 	}
 
     function annulerDevis($idDevis) {
-   		$SQL="UPDATE devis SET dateLivraison=NULL WHERE id='$idDevis'";
+   		$SQL="UPDATE devis SET dateLivraison=NULL, etat='COMMANDE_VALIDÉE' WHERE id='$idDevis'";
 		return SQLDelete($SQL);
-	}	
+	}
 
     function getMailClient($idDevis) {
         $SQL="SELECT mail 
@@ -356,4 +356,96 @@ function creerCompte($nom, $prenom, $mail, $telephone)
         return SQLGetChamp($SQL);
     }
 
+	function getMail() {
+	   	$SQL="SELECT mail FROM utilisateur WHERE admin=2";
+		return SQLGetChamp($SQL);
+	}
+    
+    /***********************************************************/
+    
+    function listerMatieres() {
+		$SQL="SELECT * FROM matiere";
+		return parcoursRs(SQLSelect($SQL));
+	}
+	
+	function listerFinitions() {
+		$SQL="SELECT * FROM finition";
+		return parcoursRs(SQLSelect($SQL));
+	}
+
+	function listerNbFinition($idF) {
+		$SQL="SELECT COUNT(*) FROM ferrures,finition WHERE finition.id=ferrures.refFinition AND finition.id='$idF'";
+		return SQLGetChamp($SQL);
+	}
+
+	function listerNbMatiere($idM) {
+		$SQL="SELECT COUNT(*) FROM ferrures,matiere WHERE matiere.id=ferrures.refMatiere AND matiere.id='$idM'";
+		 return SQLGetChamp($SQL);
+	}
+
+	function supprimerMatiereFinition($id,$value) {
+		$SQL="DELETE FROM $value WHERE id='$id'";
+		return SQLDelete($SQL);
+	}
+	
+	/***********************************************************/
+	
+	function updateFerrure($categorie,$finiton,$matiere,$titre,$description,$tag,$idF)
+	{
+	    $SQL="UPDATE ferrures SET refcategories='$categorie',refFinition='$finiton', refMatiere='$matiere', titre='$titre', description='$description',tags='$tag' WHERE id='$idF'";
+	    SQLUpdate($SQL);
+	}
+
+	function updateImg($nom,$idF)
+	{
+    	$SQL="UPDATE ferrures SET image='$nom' WHERE id='$idF'";
+   		SQLUpdate($SQL);
+	}
+
+	function updatePdf($nom,$num,$idF)
+	{
+    	$SQL="UPDATE ferrures SET numeroPlan='$num',planPDF='$nom' WHERE id='$idF'";
+   		SQLUpdate($SQL);
+	}
+
+	function updatePrix($prixU,$qteMin,$qteMax,$id,$dimMin=null,$dimMax=null)
+	{
+    	if($dimMin != null && $dimMax != null)
+    		$SQL="UPDATE prix SET dimMin='$dimMin',dimMax='$dimMax', prixU='$prixU',qteMin='$qteMin',qteMax='$qteMax'  WHERE id='$id'";
+
+    	else
+    		$SQL="UPDATE prix SET prixU='$prixU',qteMin='$qteMin',qteMax='$qteMax'  WHERE id='$id'";
+
+    	SQLUpdate($SQL);
+	}
+
+	function updateOption($nom,$prix,$id)
+	{
+    	$SQL="UPDATE `option` SET nom='$nom', prix='$prix' WHERE id='$id'";
+    	SQLUpdate($SQL);
+	}
+
+	function updateDimension($min,$max,$idLigne,$nom,$incluePrix)
+	{
+    	$SQL="UPDATE dimension SET min='$min',max='$max',incluePrix='$incluePrix' WHERE id='$idLigne'";
+    	SQLUpdate($SQL);
+	}
+
+	function supprimerPrix($idP)
+	{
+       $SQL="DELETE FROM prix WHERE id='$idP'";
+    	return SQLDelete($SQL);
+	}
+
+	function supprimerOption($idO)
+	{
+	    $SQL="DELETE FROM `option` WHERE id='$idO'";
+	    return SQLDelete($SQL);
+	}
+
+	function supprimerDimension($idD)
+	{
+       $SQL="DELETE FROM dimension WHERE id='$idD'";
+    	return SQLDelete($SQL);
+	}
 ?>

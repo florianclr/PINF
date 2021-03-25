@@ -298,6 +298,20 @@ if ($action = valider("action"))
                 }
             break ;
             
+            case 'POST_CreerFinition' :
+                if($admin==1 || $admin==2)
+                if($nomF=valider("nomF"))
+                    $tab = creerFinition($nomF);
+                    echo(json_encode($tab));
+            break ;
+
+            case 'POST_CreerMatiere' :
+                if($admin==1 || $admin==2)
+                if($nomM=valider("nomM"))
+                    $tab=creerMatiere($nomM);
+                    echo(json_encode($tab));
+            break ;
+            
             case 'GET_Devis' :
                 if($devis=valider("idDevis"))
                 if($idUser=valider("idUser"))
@@ -455,6 +469,146 @@ if ($action = valider("action"))
                 }
             break;
 
+			case 'GET_Mail' :
+            	$tab = getMail();
+                echo(json_encode($tab));
+            break ;
+
+			/****************************************************/
+			
+			case 'GET_Finitions' :
+                $tab=listerFinitions();
+                echo(json_encode($tab));
+            break;
+            
+			case 'GET_Matieres' :
+                $tab=listerMatieres();
+                echo(json_encode($tab));
+            break;
+            
+			case 'DELETE_Matiere' :
+                if($admin==1 || $admin==2)
+                if($idM=valider("idMatiere"))
+                    $tab=supprimerMatiereFinition($idM,"matiere");
+                echo(json_encode($tab));
+            break;
+            
+			case 'DELETE_Finition' :
+              	if($admin==1 || $admin==2)
+                if($idF=valider("idFinition"))
+                  	$tab=supprimerMatiereFinition($idF,"finition");
+                echo(json_encode($tab));
+            break;
+
+			case 'GET_NbFinitions' :
+                if($admin==1 || $admin==2)
+                if($idF=valider("idFinition"))
+                $tab=listerNbFinition($idF);
+                echo(json_encode($tab));
+            break;
+
+            case 'GET_NbMatieres' :
+                if($admin==1 || $admin==2)
+                if($idM=valider("idMatiere"))
+                $tab=listerNbMatiere($idM);
+                echo(json_encode($tab));
+            break;
+
+			/***************************************************************/
+
+            case 'PUT_Ferrure' : 
+
+                if($admin==1 || $admin==2)
+                if($categorie=valider("categorie"))
+                if($finiton=valider("finition"))
+                if($matiere=valider("matiere"))
+                if($titre=valider("titre"))
+                if($description=valider("description"))
+                if($tags=valider("tags"))
+                if($idF=valider("idF")){ 
+                    $tab = updateFerrure($categorie,$finiton,$matiere,$titre,$description,$tags,$idF); 
+                    echo(json_encode($tab)); 
+                }
+
+            break ;
+
+            case 'PUT_Prix' : 
+                if($admin==1 || $admin==2)
+                if($prixU=valider("prixU"))
+                if($qteMin=valider("qteMin"))
+                if($qteMax=valider("qteMax"))
+                if($id=valider("id")){ 
+                    if($dimMin=valider("dimMin") && $dimMax=valider("dimMax"))
+                        $tab = updatePrix($prixU,$qteMin,$qteMax,$id,$dimMin,$dimMax); 
+                    else
+                        $tab = updatePrix($prixU,$qteMin,$qteMax,$id);
+                }
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'PUT_Option' : 
+                if($admin==1 || $admin==2)
+                if($nom=valider("nom"))
+                if($prix=valider("prix"))
+                if($id=valider("idLigne")){ 
+                    $tab = updateOption($nom,$prix,$id);
+                }
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'PUT_Image' : 
+                if($admin==1 || $admin==2)
+                if($nom=valider("nom"))
+                if($idF=valider("idF")){ 
+
+                    $tab = updateImg($nom,$idF); 
+                }
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'PUT_Pdf' : 
+                if($admin==1 || $admin==2)
+                if($nom=valider("nom"))
+                if($idF=valider("idF"))
+                if($plan=valider("plan")){ 
+
+                    $tab = updatePdf($nom,$plan,$idF); 
+                }
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'DELETE_Prix' : 
+                if($admin==1 || $admin==2)
+                if($idP=valider("id"))
+                    $tab = supprimerPrix($idP); 
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'DELETE_Option' : 
+                if($admin==1 || $admin==2)
+                if($idO=valider("id"))
+                    $tab = supprimerOption($idO); 
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'DELETE_Dimension' : 
+                if($admin==1 || $admin==2)
+                if($id=valider("id"))
+                    $tab = supprimerDimension($id); 
+                    echo(json_encode($tab)); 
+            break ;
+
+            case 'PUT_Dimension': 
+                if($admin==1 || $admin==2)
+                if($id=valider("idLigne"))
+                if($nom=valider("nom"))
+                if($dimMin=valider("min"))
+                if($dimMax=valider("max")){ 
+                    $incluePrix=valider("incluePrix");
+                    $tab = updateDimension($dimMin,$dimMax,$id,$nom,$incluePrix);
+                }
+                    echo(json_encode($tab)); 
+            break ;
 		}
 }
 
