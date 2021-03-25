@@ -8,7 +8,7 @@ $mode=valider("mode");
 if($mode=="img" || $mode=="preview")
   $target_dir = "./images/" ;
 
-else if($mode=="pdf")
+else if($mode=="pdf" || $mode="testPdf")
   $target_dir = "./plan/";
 
 $target_file = $target_dir . basename($_FILES["file"]["name"]);
@@ -36,36 +36,44 @@ if (file_exists($target_file)) {
 }
 
 // Check file size
-if ($_FILES["file"]["size"] > 1000000) {
+if ($_FILES["file"]["size"] > 10000000) {
   echo "Sorry, your file is too large.";
   $uploadOk = 0;
 }
 
 // vérifie les formats
-if($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+if($mode != "pdf" && $imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
 && $imageFileType != "gif" ) {
   echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
   $uploadOk = 0;
 }
-if ($mode == "pdf" &&  $imageFileType != "pdf") {
+if ( ($mode == "pdf" || $mode=="testPdf") &&  $imageFileType != "pdf") {
    echo "Sorry, only PDF files are allowed.";
    $uploadOk = 0;
 }
 
+if ($mode=="testPdf"){
+  echo $uploadOk ; 
+} 
+
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk == 0) {
-    echo "error" ;
+    echo "error upload" ;
 // if everything is ok, try to upload file
 } else {
 
   if($mode=="preview"){
     $target_file = $target_dir . "preview"; 
   }
+  if($mode != "testPdf"){ 
   if (move_uploaded_file($_FILES["file"]["tmp_name"],$target_file)) {
-  	  echo $target_file; 
+      echo 1 ; 
     //echo "The file ". htmlspecialchars( basename( $_FILES["file"]["name"])). "has been uploaded.";
   } else {
-    echo "error";
+		$test=move_uploaded_file($_FILES["file"]["tmp_name"],$target_file);
+		echo $test;
+    	echo "error PDF";
   }
+}
 }
 ?>
