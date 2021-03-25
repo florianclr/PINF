@@ -6,11 +6,12 @@
 
 $plan=valider("pdf");
 
-  header('Content-Disposition: Attachment;filename='.$plan.".pdf");
+  header('Content-Disposition: Attachment;filename='.$plan);
   // pour renommer la ressource du point de vue du navigateur
+  echo("test");
 
   // TODO : changer le chemin du fichier pdf
-  $name = '../plan/'.$plan.".pdf"; 
+  $name = '../plan/'.$plan; 
 
   header("Content-Type: application/pdf");  
   // de type pdf

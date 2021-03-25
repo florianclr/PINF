@@ -134,13 +134,162 @@ var jBtnAccepter=$('<input type="button" id="btn" value="Tout accepter"/>').clic
 	})//fin each
 });//fin click
 
+var jOptionSelect = $('<option></option>');
+
+
+var JMenuSelectF =$('<label for="listeFinition">Liste des finitions : </label> <select class="listeAdministration" id="listeFinition"> </select>')
+	.click(function () {
+
+		var idF=$(this).val();
+		var nbFinitions;
+		
+		
+		
+		$.ajax({
+        url: "libs/dataBdd.php?action=NbFinitions&idFinition="+idF,
+        type : "GET",
+        success:function (oRep){
+        	console.log(oRep);
+        	nbFinitions=oRep;
+        	$("#warning").remove();
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+		$('body').append(popupFinition.clone(true));
+		$("#popupF").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "OUI": function(){
+        if(nbFinitions==0){
+
+	      $.ajax({
+	        url: "libs/dataBdd.php?action=Finition&idFinition="+idF,
+	        type : "DELETE",
+	        success:function (oRep){
+	        	console.log(oRep);
+	        	$("#popupF").dialog( "close" ); // ferme la pop up 
+	        $("#popupF").remove(); // supprime la pop up
+	        $("#listeFinition option:selected").remove();
+	        
+
+	        },// fin succes
+	        error : function(jqXHR, textStatus) {
+	          console.log("erreur");
+	        },
+
+	        dataType: "json"
+	      });// fin requête ajax
+
+		}
+
+		else {
+			 	$("#popupF").remove(); // supprime la pop up
+				// TODO: mettre warning pour changer finition > ferrures en question
+				$("#infoSA").append("<div id='warning'>Impossible de supprimer une finition paramétrée pour des ferrures déjà existantes</div>");
+		}
+
+        },
+        "NON": function() {
+        $(this).dialog("close"); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+
+    });
+
+});
+
+var JMenuSelectM =$('<label for="listeMatiere">Liste des matières : </label> <select class="listeAdministration" id="listeMatiere"> </select>')
+	.click(function () {
+
+		var idM=$(this).val();
+		var nbMatiere;
+		$("#warning").remove();
+		
+		$.ajax({
+        url: "libs/dataBdd.php?action=NbMatieres&idMatiere="+idM,
+        type : "GET",
+        success:function (oRep){
+        	console.log(oRep);
+        	nbMatiere=oRep;
+        
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {r
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+		$('body').append(popupMatiere.clone(true));
+		$("#popupMat").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "OUI": function(){
+
+        if(nbMatiere==0){
+	      $.ajax({
+	        url: "libs/dataBdd.php?action=Matiere&idMatiere="+idM,
+	        type : "DELETE",
+	        success:function (oRep){
+	        	console.log(oRep);
+	        	$("#popupMat").dialog("close"); // ferme la pop up 
+	        $("#popupMat").remove(); // supprime la pop up
+	        $("#listeMatiere option:selected").remove();
+	        
+
+	        },// fin succes
+	        error : function(jqXHR, textStatus) {
+	          console.log("erreur");
+	        },
+
+	        dataType: "json"
+	      });// fin requête ajax
+	    }
+	    else {
+	    	 	$("#popupMat").remove(); // supprime la pop up
+	        // TODO: mettre warning pour changer matière > ferrures en question
+	        $("#infoSA").append("</br><div id='warning'>Impossible de supprimer une matière paramétrée pour des ferrures déjà existantes</div>");
+	    }
+
+
+        },
+        "NON": function() {
+        $(this).dialog("close"); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+
+    });
+
+	});
+	
+	
+
 $.ajax({
                 url: "libs/dataBdd.php",
                 data:{"action":"CompteAttente","admin":admin,},
                 type : "GET",
                 success:function (oRep){
 			 	console.log(oRep);
-					$("#listeCompte").append($("<h4><b>Demandes de création de compte</b></h4></br>"));
+					$("#listeCompte").append($("<h4>Demandes de création de compte</h4></br>"));
 				 	if(oRep.length != 0){
 				 		for (var i = 0; i < oRep.length; i++) {
 				 			$("#listeCompte").append(jCompte.clone(true).attr("id",oRep[i].id)
@@ -165,13 +314,19 @@ $.ajax({
 			dataType: "json"
 });
 
-var popupMail = $('<div id="popupM" title="Confirmer le changement"><h4 id="warningConfirm">Voulez-vous vraiment changer le destinataire des mails ?</h4>');
 
-var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinataire : </label> <select id="listeMail"></select>')
+var popupFinition = $('<div id="popupF" class="popupAdministration" title="Confirmer la suppression"> <h4 id="warningConfirm">Voulez-vous vraiment supprimer cette finition ?</h4>');
+
+var popupMatiere= $('<div id="popupMat" class="popupAdministration" title="Confirmer la suppression"> <h4 id="warningConfirm">Voulez-vous vraiment supprimer cette matière ?</h4>');
+
+var popupMail = $('<div id="popupM" class="popupAdministration" title="Confirmer le changement"><h4 id="warningConfirm">Voulez-vous vraiment changer le destinataire des mails ?</h4>');
+
+var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinataire : </label> <select class="listeAdministration" id="listeMail"></select>')
     .click(function () {
 
         var id = $(this).val();
         nom = $("#listeMail option:selected").text();
+        $("#warning").remove();
         
         $('body').append(popupMail.clone(true));
         $("#popupM").dialog({
@@ -216,6 +371,11 @@ var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinatair
 var jOptionSelect = $('<option></option>');
 $(document).ready(function(){
 
+		if (admin == 1 || admin == 2){
+        selectFinition();
+        selectMatiere();
+    }
+
 		$.ajax({
 		    url: "libs/dataBdd.php",
 		    data:{"action":"UserAdmin"},
@@ -247,6 +407,48 @@ $(document).ready(function(){
 		  dataType: "json"
 		});
 });
+
+function selectFinition() {
+
+    $.ajax({
+          url: "libs/dataBdd.php",
+          data:{"action":"Finitions"},
+          type : "GET",
+          success: function(oRep){
+              console.log(oRep);
+              $('#finitions').append(JMenuSelectF.clone(true));
+              for (var i = 0; i < oRep.length; i++) {
+                  $('#listeFinition').append(jOptionSelect.clone(true).val(oRep[i].id).html(oRep[i].nomF));
+              }
+
+          },
+        error : function(jqXHR, textStatus) {
+            console.log("erreur");
+        },
+        dataType: "json"
+      });
+}
+
+function selectMatiere() {
+
+    $.ajax({
+      url: "libs/dataBdd.php",
+      data:{"action":"Matieres"},
+      type : "GET",
+      success: function(oRep){
+          console.log(oRep);
+          $('#matiere').append(JMenuSelectM.clone(true));
+          for (var i = 0; i < oRep.length; i++) {
+              $('#listeMatiere').append(jOptionSelect.clone(true).val(oRep[i].id).html(oRep[i].nomM));
+          }
+
+      },
+    error : function(jqXHR, textStatus) {
+        console.log("erreur");
+    },
+    dataType: "json"
+  });
+}
 
 function sendMail(mdp,mailD) {
 
@@ -285,8 +487,12 @@ function sendMail(mdp,mailD) {
 <div id="listeCompte"></div>
 <div id="chgtDestOK">Le destinataire des mails a bien été changé</div>
 <div id="infoSA">
+	<div class="titreSection">Gestion des mails</div>
 	<div id="mailActuel"></div>
 	<div id="mail"></div>
+	<div class="titreSection">Suppression de finitions / matières</div>
+	<div id="finitions"></div>
+	<div id="matiere"></div>
 </div>
 </br></br></br></br></br>
 </body>

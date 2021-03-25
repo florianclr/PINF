@@ -85,7 +85,10 @@
                                                       		});
                                                       	}); 
 
-  var iconPencil = $('<button class="trashPencil">').append('<img src="./ressources/pencil.png" class="pencil">');  
+  var iconPencil = $('<button class="trashPencil">').append('<img src="./ressources/pencil.png" class="pencil">').click(function(){
+    var idFerrure = $(this).data("idFerrure");
+     document.location.href="./index.php?view=creerArticle&idFerrure="+idFerrure;
+  });  
 
   var imgAjout = $('<div class="col-lg-4 col-md-6 mb-4">')
                   .append($('<img class="card-img-top" src="./ressources/plus.jpg">')
@@ -124,7 +127,7 @@
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
                                                  .attr("id",oRep[i].id)
                                                  );
-                      if(admin == 1){ 
+                      if(admin == 1 || admin == 2){ 
                         $("#"+ oRep[i].id +" .card-body").append(iconTrash.clone(true)); 
                         $("#"+ oRep[i].id +" .card-body").append(iconPencil.clone(true));
                       }// fin if admin
@@ -168,7 +171,7 @@
                                                  .attr("href","./index.php?view=article&produit="+oRep[i].id)
                                                  .attr("id",oRep[i].id)
                                                  );
-                if(admin == 1){ 
+                if(admin == 1 || admin == 2){ 
                   $("#"+ oRep[i].id +" .card-body").append(iconTrash.clone(true)); 
                     $("#"+ oRep[i].id +" .card-body").append(iconPencil.clone(true));
                 }// fin if admin
@@ -230,6 +233,92 @@
     });
 
   });
+
+	var jAddFinition=$('<div class="buttonsCenter"><input type="button" id="addF" value="Ajouter une finition"/></div>').click(function(){
+    $('body').append(jPopupFinition.clone(true));
+    $("#newF").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Créer": function(){
+        console.log($('#nomF').val());
+
+      $.ajax({
+        url: "libs/dataBdd.php",
+        data:{"action":"CreerFinition","nomF":$('#nomF').val()},
+        type : "POST",
+        success:function (oRep){
+          console.log(oRep);
+          $("#newF").dialog( "close" ); // ferme la pop up 
+          $("#newF").remove(); // supprime la pop up
+        
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+
+        },
+        "Annuler": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+    });
+
+  });
+
+     var jAddMatiere=$('<div class="buttonsCenter"><input type="button" id="addM" value="Ajouter une matière"/></div>').click(function(){
+    $('body').append(jPopupMatiere.clone(true));
+    $("#newM").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Créer": function(){
+        console.log($('#nomM').val());
+
+      $.ajax({
+        url: "libs/dataBdd.php",
+        data:{"action":"CreerMatiere","nomM":$('#nomM').val()},
+        type : "POST",
+        success:function (oRep){
+          console.log(oRep);
+          $("#newM").dialog( "close" ); // ferme la pop up 
+          $("#newM").remove(); // supprime la pop up
+        
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+
+        },
+        "Annuler": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+    });
+
+  });
+  
+  var jPopupFinition=$('<div id="newF" title="Ajouter une finition"><div id="nomFin">Nom de la finition :</div>').append('<input type="text" id="nomF"/>');
+
+  var jPopupMatiere=$('<div id="newM" title="Ajouter une matière"><div id="nomMat">Nom de la matiere :</div>').append('<input type="text" id="nomM"/>');
   
   var jPopupCategorie=$('<div id="newC" title="Ajouter une catégorie"><div id="nomCol">Nom de la catégorie :</div>').append('<input type="text" id="nomC"/>').append('<div id="colCat">Couleur de la catégorie :</div>').append('<input type="color" id="couleur" name="head" value="#E66465">');
   
@@ -241,17 +330,18 @@
  var idUser ="<?php echo $idUser; ?>";
  console.log("admin =>" + admin); 
 
-//------------ CRÉATION DE LA PAGE D'ACCEUIL LORSQUE QUE LE CATALOGUE EST CHARGÉ-----------//  
+//------------ CRÉATION DE LA PAGE D'ACCUEIL LORSQUE QUE LE CATALOGUE EST CHARGÉ-----------//  
    $(document).ready(function(){
 
    	$(".col-lg-3").append(jRecherche.clone(true));
-   	if(admin==1)
+   	if(admin == 1 || admin == 2) {
     	$(".col-lg-3").append(jAddCategorie.clone(true));
-    	
+		$(".col-lg-3").append(jAddFinition.clone(true));
+		$(".col-lg-3").append(jAddMatiere.clone(true));
+    }
     $(".col-lg-3").append(jAddDevis.clone(true));
-    
     remplirMenu();
-  });// fin de la fontion de chargement
+  });// fin de la fonction de chargement
 
 ///////////////////////////////// TODO : RENDRE LE CODE QUI SUIT PLUS OPTIMAL !!!! ///////////////////////////:
 
@@ -291,7 +381,7 @@
                                                                                     );
                                                    // TODO : AJOUTER FLÈCHE !!!
 
-                                                   if(admin == 1){ 
+                                                   if(admin == 1 || admin == 2){ 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconTrash.data("idFerrure",oRep[i].id).clone(true)); 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconPencil.data("idFerrure",oRep[i].id).clone(true));
                                                     }// fin if admin 
@@ -340,13 +430,13 @@
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id)
                                                                                     .attr("id",oRep[i].id)
                                                                                     );
-                                                    if(admin == 1){ 
+                                                    if(admin == 1 || admin == 2){ 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconTrash.data("idFerrure",oRep[i].id).clone(true)); 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconPencil.data("idFerrure",oRep[i].id).clone(true));
                                                     }// fin if admin
                                                   }//fin for
                                                 }// fin if
-                                                if(admin == 1){
+                                                if(admin == 1 || admin == 2){
                                                 	$(lien).prepend(imgAjout.clone(true)
                                                            .attr("id",nom));   
                                                 }

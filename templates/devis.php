@@ -10,6 +10,7 @@ if (!valider("connecte","SESSION")){
 $idUser = valider("idUser","SESSION"); 
 $admin = valider("isAdmin","SESSION"); 
 $idDevis = valider("idDevis");
+$pseudo = valider("pseudo","SESSION");
 ?>
 
     <link href="css/devis.css" rel="stylesheet"> 
@@ -31,6 +32,7 @@ $idDevis = valider("idDevis");
  	var admin ="<?php echo $admin; ?>";
  	var idUser = "<?php echo $idUser; ?>";
  	var idDevis = "<?php echo $idDevis; ?>";
+	var pseudo = "<?php echo $pseudo; ?>";
  	var prixTotal=0;
  	var tab ;
 
@@ -127,8 +129,8 @@ $idDevis = valider("idDevis");
 		        console.log(oRep);
             $(btn).remove(); 
             $("#etat").html("DEMANDE_COMMANDE");
-		        //TODO: envoie mail 
-
+			$(".imgSuppArtDevis").remove();
+			getMail();
 		    },
 		    error : function(jqXHR, textStatus) {
 		      console.log("erreur");
@@ -230,7 +232,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                     		$(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ oRep[i].etat +'" id="' + tabAct + '">').clone(true));
                     		$("#" + tabAct).append(jHeaderTab.clone(true));
                     		$("#" + tabAct +" .title_tab").html(etat); 
-                    		if(admin == 1){// ajout d'une colone pour afficher le créateur du devis 
+                    		if(admin == 1 || admin == 2){// ajout d'une colone pour afficher le créateur du devis 
                     			$("#" + tabAct + " header .st_row div.st_column._year").before(jInfosChrageAff.clone(true)); 
                     			//.append(jInfosChrageAff).clone(true)
                     		}
@@ -243,7 +245,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                     			.append(jTd.clone(true).append(oRep[i].nomClient))
                 
                     			//SI ADMIN INSERER NOM CHARGÉ AFFAIRES 
-                    	if(admin ==1)
+                    	if(admin ==1 || admin == 2)
                     		jligne = jligne.append(jTd.clone(true).addClass("nomCa").attr("id",oRep[i].refCA)); 
 
 
@@ -256,7 +258,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
 
                     }// fin for
                 // AJout des noms des chargés 
-                if(admin ==1){
+                if(admin ==1 || admin == 2){
                 	 setPropDevis(); 
                 }
                   // CAS OU UN DEVIS EST DÉJÀ CHARGÉ 
@@ -317,7 +319,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                     console.log("TESTDATE");
                        console.log(oRep[0].dateLivraison); 
 
-                    if(admin==0 ||admin==1 && oRep[0].etat=="ARCHIVÉ"){
+                    if(admin==0 ||(admin==1 || admin==2 && oRep[0].etat=="ARCHIVÉ")){
                       $("#datepicker").replaceWith($('<p id="dateLivraison"></p>').html(oRep[0].dateLivraison));
                     }
 
@@ -340,7 +342,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                       }
                     }
 
-                    if(admin == 1){
+                    if(admin == 1 || admin == 2){
                       console.log(oRep[0].etat);
                       if(oRep[0].etat == "ARCHIVÉ"){
                         $("#etat").empty();
@@ -360,7 +362,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
                    	else
                    		$("#coms").html(oRep[0].commentaire);
 
-                    if(admin ==1){
+                    if(admin ==1 || admin == 2){
                       var com = $("#coms").html();
                       $("#coms").replaceWith(jTextarea.val(com));
                       $("#btnCom").remove(); 
@@ -530,6 +532,60 @@ function mailClient(idDevis, subject, body) {
               });
 
   }
+
+function getMail() {
+
+    $.ajax({
+                url: "libs/dataBdd.php",
+                data:{"action":"Mail"},
+                type : "GET",
+                success:function (oRep){
+                 console.log(oRep);
+                 sendMail(oRep);
+
+             },
+            error : function(jqXHR, textStatus)
+            {
+                console.log("erreur");
+
+            },
+            dataType: "json"
+            });
+
+}
+
+function sendMail(mailDest) {
+
+
+    var expediteur = "decima-ne-pas-repondre";
+    var email = "no-reply@decima.fr";
+    var subject = "Demande de commande de "+pseudo;
+    var body = "Veuillez valider ou refuser le devis de "+pseudo +" pour le projet "+$("#nomProjet").text()+" pour le client "+$("#client").text();
+
+    $.ajax({
+      url: 'PHPMailer/mail.php',
+      method: 'POST',
+      dataType: 'json',
+
+      data: {
+        name: "decima-ne-pas-repondre",
+        email: email,
+        subject: subject,
+        body: body,
+        mailD: mailDest, 
+      },
+
+      success: function(response) {
+          console.log(response);
+      },
+
+      error: function(response) { 
+        console.log(response);
+      }
+    });
+
+
+}
  	// --- CHARGEMENT PAGE -- //
  	$(document).ready(function(){
  		console.log(idUser); 

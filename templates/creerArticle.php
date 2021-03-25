@@ -1,15 +1,22 @@
 <?php
-	$idArticle = valider("idArticle");
-	$idCategorie = valider("idCategorie");
+	$idArticle = valider("idFerrure");
+	$categorie = valider("categorie");
+  $admin = valider("isAdmin","SESSION"); 
+  $msg= valider("msg"); 
 
-	if (!valider("connecte","SESSION")) {
+	if (!valider("connecte","SESSION") || $admin == 0 ) {
   		header("Location:index.php?view=connexion");
   		die("");
 	}
 ?>
-
+   <style type="text/css">
+     .error{
+      background-color : indianred; 
+     }
+   </style>
 	 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
    <link href="css/createArticle.css" rel="stylesheet">  
+   <link href="css/imagesZomm.css" rel="stylesheet">  
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -21,37 +28,52 @@
 	var DimIncluPrix = 0 ;  // boolean pour savoir si le prix est inclue 
   var stopAjout = 0 ;  // boolean afin de savoir si il faut stopper l'ajout d'une ferrure ds la bdd
   var preview = 0;  // boolean indiquant si une preview de l'image de la ferrure est présente 
+  var admin ="<?php echo $admin; ?>";
+  var categorie = "<?php echo $categorie; ?>";
+  var idArticle = "<?php echo $idArticle; ?>";
+  var chgt = 0 ; // boolean pour savoir s'il y a eu des changements lors de la modification et donc en consequence exécuter une requetes de modif ou non
+  var msgLoad = "<?php echo $msg; ?>";
+  var modeEdition=0
+  if(idArticle != null || idArticle != "")
+    modeEdition=1; 
+
 //************************** MODELE JQUERY DONNÉES FERRURES**************************//
 
- 	var jInputTitre = $('<label for="titre"> Titre: </label><br><input type="text" id="titre"> <br><br>'); 
+ 	var jInputTitre = $('<label for="titre">Titre :</label><br><input type="text" id="titre"> <br><br>'); 
 
- 	var jInputOption = $('<label for="option">Option:</label> <input type="text" id="option"><img class="icon" src="./ressources/plus2.png""><br>'); 
+ 	var jInputOption = $('<label for="option">Option :</label> <input type="text" id="option"><img class="icon" src="./ressources/plus2.png""><br>'); 
 
  	var jInputNumber = $('<input type="number" min="1">');
 
  	var jInputDimensions = $('<input type="checkbox">'); 
 
- 	var jTextareaDescription = $('<label for="description">Description: </label>' +'<br>'
+ 	var jTextareaDescription = $('<label for="description">Description :</label>' +'<br>'
  								+'<textarea id="description"></textarea><br>');
 
- 	var jTextareaMotCles = $('<label for="motsCles">Mot clés: </label>' +'<br>' 
+ 	var jTextareaMotCles = $('<label for="motsCles">Mots-clés :</label>' +'<br>' 
  							+'<textarea id="motsCles"></textarea>' +'<br>'
- 							+'<span>&#9888; veuillez séparer chaque mots clés par une point virgule</span><br><br>');
+ 							+'<span>&#9888; Veuillez séparer chaque mot-clé par un point-virgule</span><br><br>');
 
- 	var jSelectCateg = $('<br><label for="categorie">Catégorie: </label> <select id="categorie"> </select><br>'); 
+ 	var jSelectCateg = $('<br><label for="categorie">Catégorie :</label> <select id="categorie"> </select><br>'); 
 
- 	var jSelectMatiere = $('<br><label for="matiere">Matière: </label> <select id="matiere"> </select><br>'); 
+ 	var jSelectMatiere = $('<br><label for="matiere">Matière :</label> <select id="matiere"> </select><br>'); 
 
- 	var jSelectFinition = $('<br><label for="finition">Finition: </label> <select id="finition"> </select><br>'); 
+ 	var jSelectFinition = $('<br><label for="finition">Finition :</label> <select id="finition"> </select><br>'); 
 
   var jInputFile = $('<form method="post" action="" enctype="multipart/form-data" id="formPdf">')
-                  .append($('<label for="file"> Importer plan PDF: </label> <input id="file" name="file" type="file"><br>'));
+                  .append($('<label for="file">Importer un plan PDF :</label>'))
+                  .append($('<input id="file" name="file" type="file"><br>').change(function(){
+                    $("#erreur").empty().hide();
+                    requestUploadFile("testPdf"); 
+                  }) );
 
   var jImg =$('<form method="post" action="" enctype="multipart/form-data" id="formImg">')
-            .append($('<label for="imgImport"> Importer une image: </label><br>' 
+            .append($('<label for="imgImport">Importer une image :</label><br>' 
                     +'<img id="imgImport" src="./ressources/image.png"><br>'))
+            .append($('<span>Cliquez sur l\'image pour zoomer</span><br><br>'))
             .append($('<input type="file" id="file" name="file"/><br><br>').change(function(){
                     
+                    $("#erreur").empty().hide();
                     if(preview == 1){ // supprime l'ancienne image 
                       console.log("supression img..."); 
                       var lien= $("#imgImport").prop("src");
@@ -69,16 +91,16 @@
 
  	var jSubmit = $('<input type="submit">');
 
- 	var jTableauPrix = $('<br><label for="tabPrix"> Tableau des prix: </label>'
+ 	var jTableauPrix = $('<br><label id="labelTabPrix" for="tabPrix">Tableau des prix :</label>'
  						+'<table id="tabPrix" class="tabAjout w3-table-all">' 
 					    +'<tr class="nomCol">'
-					    +'<th>Quantite minimale</th>'
-					    +'<th>Quantite maximale</th>'
-					    +'<th>Prix unitaires</th>'
+					    +'<th>Quantité minimale</th>'
+					    +'<th>Quantité maximale</th>'
+					    +'<th>Prix unitaire</th>'
               +'<th style="text-align: center;"><img class="icon ajoutLignetabPrix" src="./ressources/plus2.png""></th>'
 					    +'</tr>'
 					    +'</table>'
-					    +'<br><br><br><br><br><br>'); 
+					    +'<br>'); 
 
  	var jLigneTableauPrix = $('<tr class="ligne">'
 						     +'<td><input type="number"></td>'
@@ -88,7 +110,7 @@
 						     +'</tr>');
  	// source image : https://pixabay.com/fr/vectors/icône-symbole-plus-rouge-croix-1970474/
 
- 	var jTableauOption = $('<br><label for="tabOption">Tableau des options: </label>'
+ 	var jTableauOption = $('<br><label for="tabOption">Tableau des options :</label>'
  						+'<table id="tabOption" class="tabAjout w3-table-all">' 
 					    +'<tr>'
 					    +'<th>Nom</th>'
@@ -96,17 +118,17 @@
               +'<th style="text-align: center;"><img class="icon ajoutLignetabOptions" src="./ressources/plus2.png""></th>'
 					    +'</tr>'
 					    +'</table>'
-					    +'<br><br><br><br><br><br>');
+					    +'<br><br>');
 
  	// tabelau des options // 
- 	var jLigneTableauOption = $('<tr>'
+ 	var jLigneTableauOption = $('<tr class="ligne">'
 						     +'<td><input type="text"></td>'
 						     +'<td><input type="number"></td>'
                  +'<td style="text-align: center;"><img class="icon suprLigneTabOptions" src="./ressources/moins.png""></td>'
 						     +'</tr>');
 
  	// tabelau des dimensions // 
- 	var jTableauDimensions = $('<label for="tabDims"> Tableau des dimensions: </label>'
+ 	var jTableauDimensions = $('<label for="tabDims"> Tableau des dimensions :</label>'
  						+'<table id="tabDims" align="right" class="tabAjout w3-table-all">' 
 					    +'<tr>'
 					    +'<th>Dimension</th>'
@@ -153,7 +175,7 @@
  	var jInputRadioDimPrix3 = $('<div id="c"><label for"dimensionPrix"> c </label> <input type="radio" name="dimensionPrix" value="c"></div>'); 
 
  	
- 	var jBtnModePrix = $('<br><br><br><input type="button" value="Inclure une dimension dans le prix">').click(function(){
+ 	var jBtnModePrix = $('<br><br><br><input id="btnModePrix" type="button" value="Inclure une dimension dans le prix">').click(function(){
  		 if($(this).val() == "Inclure une dimension dans le prix"){
  		  DimIncluPrix = 1 ; 
  			$(this).val("Ne plus inclure la dimension dans le prix");
@@ -171,27 +193,39 @@
  	});
 
  	var jDimPrix =  $('<div id="modeDimensionsPrix">')	
- 					.append("<h6>Le prix dépende de :</h6>")
+ 					.append("<h6>Le prix dépend de :</h6>")
  					.append('<div id="a"><label for"dimensionPrix"> a </label> <input type="radio" name="dimensionPrix" value="a"></div>')
  					.append('<div id="b"><label for"dimensionPrix"> b </label> <input type="radio" name="dimensionPrix" value="b"></div>')
  					.append('<div id="c"><label for"dimensionPrix"> c </label> <input type="radio" name="dimensionPrix" value="c"></div>'); 
 
- 	var jBrTabOption = $('<div class="jBrTabOption"></br></br></div>');
- 	var jBrTabPrix = $('<div class="jBrTabPrix"></br></br></div>');
+ 	var jBrTabOption = $('<div class="jBrTabOption"></br></div>');
+ 	var jBrTabPrix = $('<div class="jBrTabPrix"></br></div>');
 
 //************************** VALIDATION **************************//
 
- 	var jInputCreerFer = $('</br><input class="create" type="submit" value="CREER">').click(function(){
+ 	var jInputCreerFer = $('</br><input class="create" type="submit" value="CRÉER">').click(function(){
  		// 1 requête par table 
     resetErreur(); 
- 		requestCreerFerrure(); // qui appelle : 
+    requestCreerFerrure(); // qui appelle : 
  		 //requestCreateDimsFerrures(); OK
  		 //requestCreatePrixFerrures(); OK
  		 //requestCreteOptionsFerrures(); OK
- 		 //requestAddImgFerrure(); 
- 		//requestAddPdfFerrures();  
- 		// TODO : si erreur annuler  l'insertion et supprimer de la bdd tout ce qui a été supprimer 
+ 		 //requestAddImgFerrure(); OK
+ 		//requestAddPdfFerrures();  OK
+    if(stopAjout ==0){ 
+	    // window.alert("Ferrure ajoutée dans la base");
+	    // location.reload();
+	}
  	}); 
+
+  var jInputModifFer = $('</br><input class="create" type="submit" value="ENREGISTRER LES MODIFICATIONS">').click(function(){
+    resetErreur(); 
+    requestCreerFerrure(1); 
+    if(stopAjout ==0)
+    $("#uploadOK").html("Modification(s) enregistrée(s)").show();
+    else
+      $("#uploadOK").html("Toutes les  modifications ont été enregistrées exeptées celles en rouges").show();
+  }); 
 
 //************************** GÉNÉRATIONS DES MODÈLES **************************//
 
@@ -202,7 +236,7 @@
  	 	$(".contenuArticle1").append(jTextareaMotCles.clone(true)); 
  	 	$(".contenuArticle1").append(jInputFile.clone(true)); 
  	 	$(".contenuArticle1").append(jSelectCateg.clone(true));
- 	 	// création select avec les categorie
+ 	 	// création select avec les categories
  	 	$.ajax({
               url: "libs/dataBdd.php",
       				data:{"action":"Categories"},
@@ -213,7 +247,10 @@
                     		$("#categorie").append(jOptionSelect.clone(true)
                                           .val(oRep[i].id)
                     											.html(oRep[i].nomCategorie));
-                    	}                          
+                        }
+                         if( categorie != null){ 
+                         $('#categorie option:contains('+ categorie +')').prop('selected', true);
+                        }
                     },// fin succes
                     error : function(jqXHR, textStatus) {
                     console.log("erreur");  
@@ -268,13 +305,19 @@
  	 	$(".contenuArticle2").append(jBtnModePrix.clone(true));
  	 	$(".contenuArticle2").append(jDimPrix.clone(true));
  	 	$(".contenuArticle2").append(jTableauPrix.clone(true));
- 	 	$(".contenuArticle2 #tabPrix").append(jLigneTableauPrix.clone(true));  
+ 	 	//$(".contenuArticle2 #tabPrix").append(jLigneTableauPrix.clone(true));  
  	  $(".contenuArticle2").append(jTableauOption.clone(true));
- 	 	$(".contenuArticle2 #tabOption").append(jLigneTableauOption.clone(true));  
- 	 	$(".contenuArticle2").append(jInputCreerFer.clone(true));   
+ 	 	//$(".contenuArticle2 #tabOption").append(jLigneTableauOption.clone(true));  
+ 	 
+    if (idArticle != null && idArticle !=""){
+      $(".contenuArticle2").append(jInputModifFer.clone(true));
+      remplirInfosFerrure(idArticle); 
+    }
+    else
+      $(".contenuArticle2").append(jInputCreerFer.clone(true));
  	 });
 
-//************************** GESTIONNAIRE D'EVENEMENT **************************//
+//************************* GESTIONNAIRE D'EVENEMENT **************************//
 	
 	$(document).on("click", "table img", function() {
 
@@ -290,14 +333,14 @@
  	 			case 'ajoutLignetabOptions':
  	 				
  	 				$(".contenuArticle2 #tabOption tbody").append(jLigneTableauOption.clone(true)); 
- 	 				$("input[value='CREER']").before(jBrTabOption.clone(true)); 
-
+ 	 				
  	 				var first = $(".contenuArticle2 #tabOption tr").last().offset().top; //first element distance from top
-        			var second = $("input[value='CREER']").offset().top;  //second element distance from top
+        			var second = $("input[value='CRÉER']").offset().top;  //second element distance from top
         			var distance = parseInt(first) - parseInt(second) ;	//distance between elements
         			//console.log(distance); 
         			if(distance > -70)
-        				$(".jBrTabOption").last().append("</br>");
+                $("input[value='CRÉER']").before(jBrTabOption.clone(true)); 
+        				//$(".jBrTabOption").last().append("</br>");
  	 			break; 
 
  	 			case 'ajoutLignetabPrix':
@@ -307,14 +350,14 @@
  	 				else
  	 					$(".contenuArticle2 #tabPrix").append(jLigneTableauPrix.clone(true).prepend('<td class="modeDimPrix"><input type="number"></td><td class="modeDimPrix"><input type="number"></td>')); 
 
- 	 				$("label[for='tabOption']").before(jBrTabPrix.clone(true));
-
  	 				var first = $(".contenuArticle2 #tabPrix tr").last().offset().top; //distance du première élement à partir du haut 
         			var second = $("label[for='tabOption']").offset().top;  //distance du second élement à partir du haut 
         			var distance = parseInt(first) - parseInt(second) ;	//distance entre les deux éléments
 
+              console.log(distance); 
         			if(distance > -70)
-        				$(".jBrTabPrix").last().append("</br>");   
+                $("label[for='tabOption']").before(jBrTabPrix.clone(true));
+        				//$(".jBrTabPrix").last().append("</br>");   
  	 			break; 
 
  	 			case 'suprLigneTabOptions':
@@ -331,17 +374,40 @@
 
  	 $(document).ready(function(){ // Lorsque le document est chargé 
 
- 	 	$(".addDim").change(function(){ 
+    resetErreur(); 
+
+ 	 	  $(".addDim").change(function(){ 
  	 		var nomDim = $(this).val(); 
  	 		$('input:radio[value='+nomDim+']').prop("checked", false); // décoche le cb pour éviter les erreurs
  	 		$("#"+nomDim).toggle(); 
  	 	});
+
+// ZOOM image 
+// SOURCE : https://www.w3schools.com/howto/howto_css_modal_images.asp
+    $("#imgImport").click(function(){
+      var modal = document.getElementById("myModal");
+      var img = document.getElementById("myImg");
+      var modalImg = document.getElementById("img01");
+      var captionText = document.getElementById("caption");
+      modal.style.display = "block";
+      modalImg.src = this.src;
+      captionText.innerHTML = this.alt ;
+    });
+
+    $(".close").click(function(){
+       var modal = document.getElementById("myModal");
+      modal.style.display = "none";
+    });
  	 });
 
- 	 //************************** FONCTION DE REQUETES **************************//
-    // COULEUR : https://developer.mozilla.org/fr/docs/Web/HTML/Element/Input/color
-    // todo couleur create ferrues
- 	 function requestCreerFerrure(){
+ 	 //************************* FONCTION DE REQUETES **************************//
+
+   function remplirInfosFerrure(idArticle){
+    console.log(idArticle); 
+    requestAjaxRemplirInfos(idArticle); 
+   }
+
+ 	 function requestCreerFerrure(modif=0){
  	 	//var titre = $("#titre").val(); 
  	 	var titre,description,tags,categorie ; 
  	 	if( titre = infosManquantesImportantes("titre"))
@@ -353,7 +419,31 @@
       var matiere =  $("#matiere").val();
  	 		console.log(titre + description + tags + categorie + matiere + finition);
       /* Requete AJax : */  
-      requestAjaxCreerFerrure(titre,description,categorie,tags,matiere,finition);  
+      if(modif==0){
+        tags = tags + ";" + titre + ";" + $("#categorie").find('option:selected').html() + ";" + $("#matiere").find('option:selected').html() + ";" 
+        + $("#finition").find('option:selected').html() ; 
+        requestAjaxCreerFerrure(titre,description,categorie,tags,matiere,finition); 
+      }
+
+      else if(modif ==1){
+        checkModif(titre,$("#titre").data("initial"),$("#titre"));
+        checkModif(description,$("#description").data("initial"),$("#description"));
+        checkModif(tags,$("#motsCles").data("initial"),$("#motsCles")) ;
+        checkModif(categorie,$("#categorie").data("initial"),$("#categorie"));
+        checkModif(matiere,$("#matiere").data("initial"),$("#matiere"));
+        checkModif(finition,$("#finition").data("initial"),$("#matiere"));
+        if(chgt==1){
+          console.log("changement !!! ==> "+idArticle); 
+          requestAjaxModifierFerrure(titre,description,categorie,tags,matiere,finition,idArticle);
+      }
+      else{
+        console.log("pas de chgt !!"); 
+      }
+      if(modif ==1){ 
+        chgt=0; 
+        requestCreateDimsFerrures(idArticle,1)
+        }
+      }
  	 	}
  	} 
 
@@ -363,7 +453,7 @@
 
                 if(mode=="img"||mode=="preview")
                   var files = $('#formImg #file')[0].files;
-                else if(mode=="pdf")
+                else if(mode=="pdf" || mode=="testPdf")
                   var files = $('#formPdf #file')[0].files;
 
                 console.log(files); 
@@ -378,24 +468,41 @@
                         contentType: false,
                         processData: false,
                         success:function(response){
-                            if(mode =="preview"){
+                            if(mode =="preview" && response ==1){
                                 console.log(response);
                                 preview = 1; 
-                                $("#imgImport").attr("src",response);
+                                $("#imgImport").attr("src","./images/preview");
+                                var nomImg= $('#formImg #file')[0].files[0].name;
+                                $("#imgImport").attr("alt",nomImg);
                                 //  $("#imgImport").show();
                             }
-                              //alert('File not uploaded');
+                            if (response != 1){
+                              //console.log("errreur import "+ mode + response); 
+                              displayErreur(response);
+                              if(mode=="pdf" || mode=="testPdf") 
+                                $("#formPdf input").val("");
+                              else{
+                                $("#imgImport").attr("src","./ressources/image.png"); // si une image était déjà chargé 
+                                $("#formImg input").val("");
+                              }
+                            }
                             return;
                         }
                     });
-                } else{ 
-                    alert("Please select a file.");
-                    displayErreur("Selectionner une image"); 
+                } else{
+                    if(mode="pdf"){  
+                    alert("Plan manquant pour le pdf");
+                    displayErreur("Pdf manquant"); 
+                    }
+                    else{
+                      alert("Image manquante");
+                      displayErreur("Selectionner une image"); 
+                    }
                     return;
                 }
  	}
 
- 	function requestCreateDimsFerrures(idFerrure){
+ 	function requestCreateDimsFerrures(idFerrure,modif=0){ // param modif => booelean afin de savoir si on est en mode création ou édition 
     console.log(idFerrure); 
  		var min,max,incluePrix ;  
  		var tab = $("#tabDims td input"); 
@@ -406,25 +513,68 @@
 
  			if(tab[i].checked == true){
  				var nom = tab[i].value;
- 				if(min = verifInputTableau(tab[i+1].value,"Tableau des dimensions","dimention minimale",ligne,"number",1))
- 					if(max = verifInputTableau(tab[i+2].value,"Tableau des dimensions","dimention maximale",ligne,"number",1)){
+ 				if(min = verifInputTableau(tab[i+1].value,"Tableau des dimensions","dimention minimale",ligne,"number",1,tab[i+1]))
+ 					if(max = verifInputTableau(tab[i+2].value,"Tableau des dimensions","dimention maximale",ligne,"number",1,tab[i+2])){
  						if($('input:radio[value='+nom+']').prop("checked") == true)
               incluePrix = 1 ;
             else 
-              incluePrix = 0 ;  
-            //requestAjaxAddDimFerrure(min,max,nom,incluxPrix,refFerrure)
+              incluePrix = 0 ; 
+
+            if (modif ==1){
+              var incluePrixInit = $('input:radio[value='+nom+']').data("checked");
+              if (incluePrix != incluePrixInit)
+                chgt=1; 
+            } 
+
             console.log(min+max+nom+incluePrix+idFerrure); 
-            requestAjaxAddDimFerrure(min,max,nom,incluePrix,idFerrure);
+            console.log($(tab[i]).data("checked"));
+
+            if(modif ==0 || $(tab[i]).data("checked") == undefined){ 
+              console.log("AJOUT "+nom); 
+              requestAjaxAddDimFerrure(min,max,nom,incluePrix,idFerrure);
+              if(modif == 1){
+                $(tab[i]).data("checked","true");
+                $(tab[i+1]).data("initial",min);
+                $(tab[i+2]).data("initial",max);
+              }
+            }
+            
+            else if(modif==1 && $(tab[i]).data("checked") == "true"){
+              checkModif(min,$(tab[i+1]).data("initial"),$(tab[i+1]));
+              checkModif(max,$(tab[i+2]).data("initial"),$(tab[i+2]));
+              if(chgt==1){
+                chgt=0;
+                console.log("MODIF dimsss!!"+nom);
+                var idLigne=$(tab[i]).parent().parent().data("id");
+                console.log("ligne=>"+idLigne);
+                requestAjaxModifierDimFerrure(min,max,nom,incluePrix,idLigne); 
+              }
+              else
+                console.log("pas modif Dims"+nom);
+            }
  					}
         if(stopAjout == 1){
-          requestDeleteFerrure(idFerrure); 
-          return ;
+          if(modif==0){ 
+            requestDeleteFerrure(idFerrure); 
+            return ; // en edition on quitte juste la fonction pour ne pas mettre à jour la ferrues, on ne supprime sourtout pas la ferrure
+          }
         } 
  			}
- 		} requestCreteOptionsFerrures(idFerrure); 
+       if(modif==1 && tab[i].checked == false && $(tab[i]).data("checked") == "true"){
+        console.log("SUPRIMER DIM !!!"+tab[i].value); 
+        var idLigne=$(tab[i]).parent().parent().data("id");
+        requestAjaxSuprDim(idLigne,idArticle); 
+      }
+ 		}
+    if(modif==1){ 
+      chgt=0; 
+      requestCreteOptionsFerrures(idFerrure,1); 
+    }
+    else
+      requestCreteOptionsFerrures(idFerrure); 
  	} 
  	
- 	function requestCreatePrixFerrures(idFerrure){
+ 	function requestCreatePrixFerrures(idFerrure,modif=0){
 
  		var qteMin,qteMax,prix,dimPrix,dimMax,dimPrix; 
  		var tab = $("#tabPrix td input"); 
@@ -438,11 +588,34 @@
  			var ligne = parseInt(i/suiv + 1) ; 
 
  			if(DimIncluPrix ==0){ 
- 				if(qteMin = verifInputTableau(tab[i].value,"Tableau des prix","quantite minimale",ligne,"number",1))
- 					if(qteMax = verifInputTableau(tab[i+1].value,"Tableau des prix","quantite maximale",ligne,"number",1))
- 						if(prix = verifInputTableau(tab[i+2].value,"Tableau des prix","prix",ligne,"number",0)){
- 							console.log("Ajout ligne "+ ligne + " dans la bdd"+qteMin+qteMax+prix+idFerrure); 
-              requestAjaxAddPrixFerrure(qteMin,qteMax,prix,idFerrure,0,0)
+ 				if(qteMin = verifInputTableau(tab[i].value,"Tableau des prix","quantite minimale",ligne,"number",1,tab[i]))
+ 					if(qteMax = verifInputTableau(tab[i+1].value,"Tableau des prix","quantite maximale",ligne,"number",1,tab[i+1]))
+ 						if(prix = verifInputTableau(tab[i+2].value,"Tableau des prix","prix",ligne,"number",0,tab[i+2])){
+ 							//console.log("Ajout ligne "+ ligne + " dans la bdd"+qteMin+qteMax+prix+idFerrure); 
+
+              if(modif==0 || $(tab[i]).data("initial")==undefined){
+                console.log("Ajout ligne"+ligne);
+                requestAjaxAddPrixFerrure(qteMin,qteMax,prix,idFerrure,0,0)
+                if(modif==1){
+                  $(tab[i]).data("initial",qteMin);
+                  $(tab[i+1]).data("initial",qteMax);
+                  $(tab[i+2]).data("initial",prix);
+                }
+              }
+
+              else if(modif==1){
+                checkModif(qteMin,$(tab[i]).data("initial"),$(tab[i]));
+                checkModif(qteMax,$(tab[i+1]).data("initial"),$(tab[i+1]));
+                checkModif(prix,$(tab[i+2]).data("initial"),$(tab[i+2]));
+                if (chgt == 1){ 
+                  chgt=0;
+                  console.log("Modif ligne"+ligne);
+                  var idLigne = $(tab[i]).parent().parent().data("id"); 
+                  requestAjaxModifierPrixFerrure(idLigne,qteMin,qteMax,prix); 
+                }
+                 else
+                  console.log("Pas de modif pour la ligne "+ ligne);
+              }
  						}
  			}
 
@@ -450,34 +623,59 @@
  				dimPrix = $("input[name='dimensionPrix']:checked").val(); 
  				//console.log(dimPrix); 
 
- 				if(dimMin = verifInputTableau(tab[i].value,"Tableau des prix","dimension minimale",ligne,"number",1))
- 					if(dimMax = verifInputTableau(tab[i+1].value,"Tableau des prix","dimension maximale",ligne,"number",1))
- 						if(qteMin = verifInputTableau(tab[i+2].value,"Tableau des prix","quantite minimale",ligne,"number",0))
- 							if(qteMax = verifInputTableau(tab[i+3].value,"Tableau des prix","quantite maximale",ligne,"number",1))
- 								if(prix = verifInputTableau(tab[i+4].value,"Tableau des prix","prix",ligne,"number",1))
+ 				if(dimMin = verifInputTableau(tab[i].value,"Tableau des prix","dimension minimale",ligne,"number",0,tab[i]))
+ 					if(dimMax = verifInputTableau(tab[i+1].value,"Tableau des prix","dimension maximale",ligne,"number",0,tab[i+1]))
+ 						if(qteMin = verifInputTableau(tab[i+2].value,"Tableau des prix","quantite minimale",ligne,"number",0,tab[i+2]))
+ 							if(qteMax = verifInputTableau(tab[i+3].value,"Tableau des prix","quantite maximale",ligne,"number",1,tab[i+3]))
+ 								if(prix = verifInputTableau(tab[i+4].value,"Tableau des prix","prix",ligne,"number",1,tab[i+4]))
  									if(dimPrix != undefined){
- 										console.log("Ajout ligne "+ ligne + " dans la bdd"+prix); 
+ 										//console.log("Ajout ligne "+ ligne + " dans la bdd"+prix); 
+                    if(modif==0 || $(tab[i]).data("initial")==undefined){
+                    console.log("ajout ligne "+ligne);
                     requestAjaxAddPrixFerrure(qteMin,qteMax,prix,idFerrure,dimMin,dimMax)
+                    }
+                    else if(modif ==1){
+                       checkModif(dimMin,$(tab[i]).data("initial"),$(tab[i]));
+                       checkModif(dimMax,$(tab[i+1]).data("initial"),$(tab[i+1]));
+                       checkModif(qteMin,$(tab[i+2]).data("initial"),$(tab[i+2]));
+                       checkModif(qteMax,$(tab[i+3]).data("initial"),$(tab[i+3]));
+                       checkModif(prix,$(tab[i+4]).data("initial"),$(tab[i+4]));
+                       if (chgt == 1){ 
+                        chgt=0;
+                        console.log("Modif ligne"+ligne);
+                        var idLigne = $(tab[i]).parent().parent().data("id"); 
+                        requestAjaxModifierPrixFerrure(idLigne,qteMin,qteMax,prix,dimMin,dimMax);
+                      }
+                      else
+                        console.log("Pas de modif pour la ligne "+ ligne);
+                    }
  									}
- 									
+ 		
  									else{
-                    msg = "veuillez sélectionner une dimensions dans le prix" ; 
+                    msg = "Veuillez sélectionner une dimension dans le prix" ; 
  										console.log(msg); 
                     displayErreur(msg); 
-                    requestDeleteFerrure(idFerrure); 
+                    $("#modeDimensionsPrix h6").addClass("error");
+                    if(modif==0)
+                      requestDeleteFerrure(idFerrure); 
                     return ; 
  									}
  			}
       if(stopAjout == 1){
-                    console.log("out!!!");
+                    console.log("supression!!"+modif); 
                     requestDeleteFerrure(idFerrure); 
                     return ; 
                     }
- 		}console.log("TEST:"+displayErreur);
-    requestAddFilesFerrures(idFerrure);
+ 		}
+    if(modif==1){ 
+      chgt=0; 
+      requestAddFilesFerrures(idFerrure,1);
+    }
+    else
+      requestAddFilesFerrures(idFerrure);
  	}
 
- 	function requestCreteOptionsFerrures(idFerrure){
+ 	function requestCreteOptionsFerrures(idFerrure,modif=0){
  		var nom,prix ;  
  		var tab = $("#tabOption td input"); 
  		console.log(tab);
@@ -485,32 +683,114 @@
  		for(var i =0 ; i < tab.length ; i+=2){
  			var ligne = i/2 + 1; 
 
- 			if(nom = verifInputTableau(tab[i].value,"Tableau des options","nom",ligne,"text"))
- 		    if(prix = verifInputTableau(tab[i+1].value,"Tableau des options","prix",ligne,"number",0)){
+ 			if(nom = verifInputTableau(tab[i].value,"Tableau des options","nom",ligne,"text",0,tab[i]))
+ 		    if(prix = verifInputTableau(tab[i+1].value,"Tableau des options","prix",ligne,"number",0,tab[i+1])){
  				  console.log(nom+prix+idFerrure); 
-          requestAjaxAddOptionFerrure(nom,prix,idFerrure); 		
+
+          if(modif ==0 || $(tab[i]).data("initial")==undefined){
+            console.log("ajout !!"+nom)
+            requestAjaxAddOptionFerrure(nom,prix,idFerrure); 	
+            if(modif ==1){
+              $(tab[i]).data("initial",nom);
+              $(tab[i+1]).data("initial",prix);
+            }	
+          }
+
+          else if(modif ==1){
+            checkModif(nom,$(tab[i]).data("initial"),$(tab[i]));
+            checkModif(prix,$(tab[i+1]).data("initial"),$(tab[i+1]));
+            if(chgt==1){
+              chgt=0;
+              console.log("modif pour option "+nom)
+              var idLigne=$(tab[i]).parent().parent().data("id");
+              requestAjaxModifierOptionFerrure(idLigne,nom,prix);
+            }
+            else 
+              console.log("pas de modif pour option" + nom)
+          }
  			}
       if(stopAjout ==1){
-        requestDeleteFerrure(idFerrure); 
-        return ; 
+        if(modif ==0){ 
+          requestDeleteFerrure(idFerrure); 
+          return ; 
+        }
       }
- 		}requestCreatePrixFerrures(idFerrure);
+ 		}
+    if(modif==1){
+      chgt=0;
+      requestCreatePrixFerrures(idFerrure,1);
+    }
+    else
+      requestCreatePrixFerrures(idFerrure);
  	}
 
- 	function requestAddFilesFerrures(idFerrure){
-    requestUploadFile("img"); 
-    requestUploadFile("pdf");
+
+ 	function requestAddFilesFerrures(idFerrure,modif=0){
+
+    if(modif==0){ 
+      requestUploadFile("img"); 
+      requestUploadFile("pdf");
+    }
     var lienImg = $("#formImg #file").val(); 
     var lienPdf = $("#formPdf #file").val(); 
     var tabLien = lienImg.split("\\"); 
     var img = tabLien[tabLien.length - 1] ; 
     tabLien = lienPdf.split("\\");
-    var pdf = tabLien[tabLien.length - 1] ; 
-    //console.log("TEST"+img+pdf); 
-    requestAjaxCreerFerrure2(img,pdf,pdf,idFerrure);
+    var pdf = tabLien[tabLien.length - 1] ;
+
+    if (modif==1){
+      console.log("act img=>"+img + " init img=>"+$("#formImg #file").data("file"));
+      if(img != "" && img != $("#formImg #file").data("file")){
+        console.log("changement image !!"); 
+        chgt=1;
+        var lien= "images/"+$("#formImg #file").data("file"); 
+        requestSuprImg(lien);
+        requestUploadFile("img");
+        $("#formImg #file").data("file",img);
+        requestAJaxModifierImg(idFerrure,img);
+      }
+
+      if(pdf != "" && pdf != $("#formPdf #file").data("file")){
+        chgt=1;
+        console.log("changement pdf !!"); 
+        var lien= "plan/"+$("#formPdf #file").data("file"); 
+        console.log("supression ==>" + lien); 
+        requestSuprImg(lien);
+        requestUploadFile("pdf");
+        $("#formPdf #file").data("file",pdf);
+        requestAJaxModifierPdf(idFerrure,pdf,pdf);
+      }
+    }
+
+    if(modif==0 && (lienImg =="" || lienPdf =="")){ // insinue que les images ou pdf ne sont pas bon 
+        console.log("erreur image");
+        requestDeleteFerrure(idFerrure); 
+        return ;
+      } 
+    else{
+      if (modif ==0)
+        requestAjaxCreerFerrure2(img,pdf,pdf,idFerrure);
+      if (modif==1 && chgt==1){
+        console.log("changement img ou pdf !!"); 
+      } 
+      else{
+        console.log("pas de chgt pour img ou pdf")
+      }
+    }
  	}
 
- 	//************************** FONCTION ERREURS **************************//
+ 	//************************** FONCTION ERREURS ************************//
+
+  function checkModif(valTetser,valInitial,ref){
+    console.log("init=>"+valInitial + " test=>" + valTetser);
+   if(valInitial == valTetser)
+    return 0;
+  else {
+    $(ref).data("initial",valTetser);
+    chgt=1; 
+    return 1 
+  }
+}
 
  	function infosManquantesImportantes(idElement){
  		contenu = $("#"+idElement).val(); 
@@ -518,6 +798,7 @@
  		//Les blancs considérés sont les caractères d'espacement (espace, tabulation, espace insécable, etc.) 
  		//ainsi que les caractères de fin de ligne (LF, CR, etc.).
         var msg = idElement + " vide !!" ; 
+        $("#"+idElement).addClass("error");
     		console.log(msg);
         displayErreur(msg); 
     		return null ; 
@@ -526,7 +807,7 @@
 			return contenu ; 
  	}
 
- 	function verifInputTableau(valueInput,nomTab,nomCol,numLigne,typeInput,valMin){
+ 	function verifInputTableau(valueInput,nomTab,nomCol,numLigne,typeInput,valMin,refError){
  	// valueInput : valeur de la case input
  	// nom du tableau dans lequel l'input est contenu 
  	// nomcol : nom du champ input
@@ -536,7 +817,8 @@
  		if(valueInput ==""){
  			var msg = nomCol + " manquante dans le " + nomTab + " à la ligne " + numLigne ; 
  			console.log(msg);
-      displayErreur(msg);  
+      displayErreur(msg); 
+      $(refError).addClass("error"); 
  			return null ;  
  		}
 
@@ -544,6 +826,7 @@
  			var msg = nomCol + " érroné dans le " + nomTab + " à la ligne " + numLigne ; 
  			console.log(msg); 
       displayErreur(msg);
+      $(refError).addClass("error"); 
  			return null;  
  		} 
 
@@ -552,6 +835,7 @@
         var msg = nomCol + " invalide dans le " + nomTab + " à la ligne " + numLigne ;  
         console.log(msg);
         displayErreur(msg); 
+        $(refError).addClass("error"); 
         return null ; 
       }
     }
@@ -559,19 +843,281 @@
  	}
 
   function displayErreur(msg){
-    $("#erreur").html(msg).show();
-    stopAjout = 1 ; 
+    stopAjout = 1 ;
+    if(modeEdition ==0){ 
+      $("#erreur").html(msg).show(); 
+    }
+    else{
+      msgAct=$("#erreur").html(); 
+      $("#erreur").html(msgAct+"<br>"+msg).show();
+    }
   }
 
   function resetErreur(){
-     $("#erreur").hide();
-     stopAjout = 0; 
+     $(".error").removeClass("error"); 
+     $("#erreur").empty().hide();
+     $("#uploadOK").empty().hide();
+     stopAjout = 0;
+     chgt=0; 
   }
 
+  function reloadPage(msg){
+    var url = window.location.href;    
+    url += "&msg="+msg ; 
+    window.location.href = url;
+  }
 /////////////////////////////////////// AJAX ////////////////////////////////////
+  
+  function requestAjaxRemplirInfos(idArticle){
+ 
+     $.ajax({
+            url: "libs/dataBdd.php",
+            data:{"action":"Produit", "idProduit":idArticle },
+            type : "GET",
+            success : function(oRep){
+              console.log(oRep); 
+              $("#titre").val(oRep[0].titre).data("initial",oRep[0].titre);
+              $("#description").val(oRep[0].description).data("initial",oRep[0].description);
+              $("#motsCles").val(oRep[0].tags).data("initial",oRep[0].tags);
+              $('#categorie  option[value="' + oRep[0].refcategories +'"]').prop('selected', true);
+              $('#matiere  option[value="' + oRep[0].refMatiere +'"]').prop('selected', true);
+              $('#finition option[value="' + oRep[0].refFinition +'"]').prop('selected', true);
+
+              $("#categorie").data("initial",oRep[0].refcategories);
+              $("#matiere").data("initial",oRep[0].refMatiere);
+              $("#finition").data("initial",oRep[0].refFinition);
+
+              var img = "./images/"+oRep[0].image ;
+              var pdf = "./plan/"+oRep[0].planPDF ;
+              //console.log($("#formPdf input")); 
+              $("#imgImport").attr("src",img);
+              $("#imgImport").attr("alt",oRep[0].image); 
+              $("#formImg label").html("Changer d'image :");
+
+              $("#formPdf").append("<b>PDF originel => </b>").append($("<a id='planPdfActuel' target='blank'>"+oRep[0].planPDF+"</a>").attr("href",pdf));
+              requestAjaxRemplirDimension(idArticle); 
+
+              $("#formImg input").data("file",oRep[0].image);
+              $("#formPdf input").data("file",oRep[0].planPDF);
+            },
+            error : function(oRep){
+              console.log("error ger infos devis"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxRemplirDimension(idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php",
+            data:{"action":"listerDimensionsFerrure", "idProduit":idArticle },
+            type : "GET",
+            success : function(oRep){
+              console.log(oRep); 
+              for(var i=0 ; i<oRep.length ; i++){
+                var refNom = $('#tabDims input[value="'+ oRep[i].nom +'"]').prop('checked', true).data("checked","true");
+                refNom=$(refNom).parent(); 
+                $(refNom).parent().data("id",oRep[i].id); 
+                $(refNom).next().children().val(oRep[i].min).data("initial",oRep[i].min);
+                $(refNom).next().next().children().val(oRep[i].max).data("initial",oRep[i].max);
+                $("#"+oRep[i].nom).toggle();
+
+                if( oRep[i].incluePrix ==1){
+                  $('input:radio[value='+oRep[i].nom+']').prop("checked", true).data("checked","true"); // décoche le cb pour éviter les erreurs
+                  DimIncluPrix = 1 ; 
+                  $("#btnModePrix").val("Ne plus inclure la dimension dans le prix");
+                  $("#modeDimensionsPrix").show();  
+                  $("#tabPrix .nomCol").prepend('<th class="modeDimPrix">Dimension min</th><th class="modeDimPrix">Dimension max</th>'); 
+                  $("#tabPrix .ligne").prepend('<td class="modeDimPrix"><input type="number"></td><td class="modeDimPrix"><input type="number"></td>'); 
+                } 
+
+              }
+              requestAjaxRemplirPrix(idArticle);
+            },
+            error : function(oRep){
+              console.log("error ger dims devis"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxRemplirPrix(idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php",
+            data:{"action":"TabPrix","idProduit":idArticle },
+            type : "GET",
+            success : function(oRep){
+              console.log(oRep); 
+              for(var i=0 ; i<oRep.length ; i++){
+
+                var jLigneAux = jLigneTableauPrix.clone(true); 
+                jLigneAux.data("id",oRep[i].id); 
+                jLigneAux.find("td img").click(function(){
+                  var idLigne=$(this).parent().parent().data("id");
+                  console.log("SUPRESSIONS LIGNE PRIX ===>"+idLigne); 
+                  requestAjaxSuprPrix(idLigne,idArticle); 
+                });
+                jLigneAux.find("td input").eq(0).val(oRep[i].qteMin).data("initial",oRep[i].qteMin);
+                jLigneAux.find("td input").eq(1).val(oRep[i].qteMax).data("initial",oRep[i].qteMax);
+                jLigneAux.find("td input").eq(2).val(oRep[i].prixU).data("initial",oRep[i].prixU);
+
+                if(DimIncluPrix == 1){// var globale indiquant si une dimension est inclue dans le prix 
+                  jLigneAux.prepend('<td class="modeDimPrix"><input type="number"></td><td class="modeDimPrix"><input type="number"></td>')
+                  jLigneAux.find("td input").eq(0).val(oRep[i].dimMin).data("initial",oRep[i].dimMin);
+                  jLigneAux.find("td input").eq(1).val(oRep[i].dimMax).data("initial",oRep[i].dimMax);
+                }
+
+                $(".contenuArticle2 #tabPrix").append(jLigneAux.clone(true)); 
+  
+              var first = $(".contenuArticle2 #tabPrix tr").last().offset().top; //distance du première élement à partir du haut 
+              var second = $("label[for='tabOption']").offset().top;  //distance du second élement à partir du haut 
+              var distance = parseInt(first) - parseInt(second) ; //distance entre les deux éléments
+
+              console.log(distance); 
+              if(distance > -70)
+                $("label[for='tabOption']").before(jBrTabPrix.clone(true));
+              }
+              requestAJaxRemplirOptions(idArticle)
+            },
+            error : function(oRep){
+              console.log("error ger prix devis"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAJaxRemplirOptions(idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php",
+            data:{"action":"Options", "idProduit":idArticle },
+            type : "GET",
+            success : function(oRep){
+              console.log(oRep); 
+               for(var i=0 ; i<oRep.length ; i++){
+
+                jLigneAux=jLigneTableauOption.clone(true);
+                jLigneAux.data("id",oRep[i].id);
+                jLigneAux.find("td img").click(function(){
+                  var idLigne=$(this).parent().parent().data("id");
+                  console.log("SUPRESSIONS LIGNE OPTION"+idLigne); 
+                  requestAjaxSuprOPtion(idLigne,idArticle); 
+                });
+                jLigneAux.find("td input").eq(0).val(oRep[i].nom).data("initial",oRep[i].nom); 
+                jLigneAux.find("td input").eq(1).val(oRep[i].prix).data("initial",oRep[i].prix); 
+
+                $(".contenuArticle2 #tabOption tbody").append(jLigneAux.clone(true)); 
+                var first = $(".contenuArticle2 #tabOption tr").last().offset().top; //first element distance from top
+                var second = $("input[value='ENREGISTRER LES MODIFICATIONS']").offset().top;  //second element distance from top
+                var distance = parseInt(first) - parseInt(second) ; //distance between elements
+                if(distance > -70)
+                  $("input[value='ENREGISTRER LES MODIFICATIONS']").before(jBrTabOption.clone(true));
+              }
+            },
+            error : function(oRep){
+              console.log("error ger options devis"); 
+            },
+            dataType: "json"
+          });
+
+  }
+
+  function requestAjaxModifierFerrure(titre,description,categorie,tags,matiere,finition,refFerrure){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Ferrure" + "&titre=" + titre + "&description=" + description + "&tags=" + tags + "&categorie=" + categorie
+            + "&matiere=" + matiere + "&finition=" + finition + "&idF=" + refFerrure,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Ferrure modifiée , id => "); console.log(oRep); 
+             //requestCreateDimsFerrures(oRep,1);
+            },
+            error : function(oRep){
+              console.log("error modif"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxModifierDimFerrure(min,max,nom,incluePrix,idLigne){
+    console.log("infos=>"+min+max+nom+incluePrix+idLigne);
+    $.ajax({
+            url: "libs/dataBdd.php?action=Dimension" + "&nom=" + nom + "&min=" + min + "&max=" + max + "&incluePrix=" + incluePrix +
+            "&idLigne=" + idLigne,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Dim modifiée , id => "); console.log(oRep); 
+             return;
+            },
+            error : function(oRep){
+              console.log("error modif dim"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxModifierOptionFerrure(idLigne,nom,prix){
+      console.log("INFOS=>"+idLigne+nom+prix);
+    $.ajax({
+            url: "libs/dataBdd.php?action=Option" + "&nom=" + nom + "&prix=" + prix + "&idLigne=" + idLigne,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Option modifiée , id => "); console.log(oRep); 
+             return;
+            },
+            error : function(oRep){
+              console.log("error modif options"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxModifierPrixFerrure(idLigne,qteMin,qteMax,prix,dimMin=0,dimMax=0){
+     $.ajax({
+            url: "libs/dataBdd.php?action=Prix" + "&qteMin=" + qteMin + "&qteMax=" + qteMax + "&id=" + idLigne
+            + "&prixU=" + prix + "&dimMin=" + dimMin + "&dimMax=" + dimMax,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Prix modifiée , id => "); console.log(oRep); 
+             return;
+            },
+            error : function(oRep){
+              console.log("error modif prix"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAJaxModifierImg(idFerrure,img){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Image" + "&idF=" + idFerrure + "&nom=" + img,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Prix modifiée , id => "); console.log(oRep); 
+             return;
+            },
+            error : function(oRep){
+              console.log("error modif img"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAJaxModifierPdf(idFerrure,nom,plan){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Pdf" + "&idF=" + idFerrure + "&nom=" + nom + "&plan=" + plan,
+            type : "PUT",
+            success : function(oRep){
+             console.log("Pdf modifiée , id => "); console.log(oRep); 
+             return;
+            },
+            error : function(oRep){
+              console.log("error modif pdf"); 
+            },
+            dataType: "json"
+          });
+  }
 
   function requestAjaxCreerFerrure(titre,description,categorie,tags,matiere,finition){
- 
+
      $.ajax({
             url: "libs/dataBdd.php",
             data:{"action":"Ferrure1","titre":titre , "description":description , "tags":tags , 
@@ -587,7 +1133,7 @@
 
 
   function requestAjaxCreerFerrure2(img,pdf,numPdf,refFerrure){
-
+      console.log("TESTEND=>"+stopAjout+$("#formPdf input").val());
       $.ajax({
             url: "libs/dataBdd.php?action=Ferrure2&img=" + img + "&pdf=" + pdf + "&numPlan=" + numPdf + "&refFerrure="+refFerrure,
             type : "PUT",
@@ -673,11 +1219,55 @@
     console.log(lien); 
 
     $.ajax({
-            url:"delete.php",
-            data:{"lien":lien},
-            type : "POST",
+            url:"delete.php?lien="+lien,
+            type : "DELETE",
             success : function(oRep){
               console.log(oRep); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxSuprDim(idLigne,idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Dimension&id="+idLigne,
+            type : "DELETE",
+            success : function(oRep){
+              console.log("Dim supprimée!!");
+              console.log(oRep);  
+            },
+            error : function(oRep){
+              console.log("ERREUR"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxSuprPrix(idLigne,idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Prix&id="+idLigne,
+            type : "DELETE",
+            success : function(oRep){
+              console.log("Prix supprimée!!");
+              console.log(oRep);  
+            },
+            error : function(oRep){
+              console.log("ERREUR"); 
+            },
+            dataType: "json"
+          });
+  }
+
+  function requestAjaxSuprOPtion(idLigne,idArticle){
+    $.ajax({
+            url: "libs/dataBdd.php?action=Option&id="+idLigne,
+            type : "DELETE",
+            success : function(oRep){
+              console.log("Option supprimée!!");
+              console.log(oRep);  
+            },
+            error : function(oRep){
+              console.log("ERREUR"); 
             },
             dataType: "json"
           });
@@ -689,9 +1279,10 @@
  	<div class="container">
 
      <br><br><div id="erreur"></div>
+     <br><div id="uploadOK"></div>
 
  		<div class="row" style="text-align: center;">
- 		<h2 id="titlePage">Ajouter un Produit</h2><br><br><br>
+ 		<h2 id="titlePage">Ajouter un produit</h2><br><br><br>
  		</div>
 
  		<div class="row">
@@ -706,4 +1297,17 @@
 			</div>		
 		</div>
  		</div>
+
+    <!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- The Close Button -->
+  <span class="close">&times;</span>
+
+  <!-- Modal Content (The Image) -->
+  <img class="modal-content" id="img01">
+
+  <!-- Modal Caption (Image Text) -->
+  <div id="caption"></div>
+</div>
  </body>
