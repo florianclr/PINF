@@ -82,9 +82,6 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="index.php?view=devis">Devis</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="index.php?view=planning">Planning</a>
           </li>';
       			};
         	 ?>
@@ -95,10 +92,13 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
           </li>
            <?php 
           if($admin){
+		      	echo '<li class="nav-item active">';
+		      	echo '<a class="nav-link" href="index.php?view=planning">Planning</a>';
+		      	echo '</li>';
 
-            echo '<li class="nav-item active">';
-            echo '<a class="nav-link" href="index.php?view=administration">Administration</a>';
-            echo "</li>";
+		        echo '<li class="nav-item active">';
+		        echo '<a class="nav-link" href="index.php?view=administration">Administration</a>';
+		        echo "</li>";
           }
            ?>
         </ul>

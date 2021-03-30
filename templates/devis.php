@@ -32,7 +32,7 @@ $pseudo = valider("pseudo","SESSION");
  	var admin ="<?php echo $admin; ?>";
  	var idUser = "<?php echo $idUser; ?>";
  	var idDevis = "<?php echo $idDevis; ?>";
-	var pseudo = "<?php echo $pseudo; ?>";
+	var pseudo = "<?php echo $pseudo; ?>"; // TODO : sert plus à rien ??
  	var prixTotal=0;
  	var tab ;
 
@@ -186,6 +186,52 @@ var jHeaderTab = $('<header class="st_table_header">' +
       '</header>');
 
 var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du devis</div>');
+
+var jPopupDevis=$('<div id="newD" title="Création d\'un devis"><div id="nomCli">Nom du client : </div>').append('<input type="text" id="nomClient"/>').append('<div id="numDev">Numéro du devis :</div>').append('<input type="text" id="numD">').append('<div id="nomPro">Nom du projet :</div>').append('<input type="text" id="nomP"/>');
+
+var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value="Créer un devis"/></div>').click(function(){
+    $('body').append(jPopupDevis.clone(true));
+    $("#newD").dialog({
+      modal: true, 
+      height: 380,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "Créer": function(){
+
+        $.ajax({
+        url: "libs/dataBdd.php",
+        data:{"action":"CreerDevis","nomClient":$('#nomClient').val(),"numD":$('#numD').val(),"nomP":$('#nomP').val(),"refCa":idUser},
+        type : "POST",
+        success:function (oRep){
+          console.log(oRep);
+          $("body").prepend("<div id='ajoutDevOK'>Le devis a bien été créé</div>");
+           $("#newD").dialog( "close" ); // ferme la pop up
+           $("#newC").remove(); // supprime la pop up 
+           $(".st_viewport").empty();
+			generateTableUser(idUser);	// MAJ tableau
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+
+        },
+        "Annuler": function() {
+        $(this).dialog( "close" ); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsque on appui sur la croix pour fermer la pop up 
+      console.log("close!!!!");
+      $(this).remove(); // supprime la pop up 
+      }
+    });
+
+  });
 
  	// ------ GENERATION TABELAU NON ADMIN ---//
 
@@ -427,6 +473,7 @@ var jInfosChrageAff = $('<div class="st_column _dateLivraison">Propriétaire du 
 		data:{"action":"Produit","idProduit" :oRep[i].refFerrures},
 			    type : "GET",
 			    success: function(oRep){
+				// TODO: rajouter catégorie > URL
 			    	var lien = "index.php?view=article&produit=" + oRep[0].id ; 
 			    	var jlien2 = $("<a></a>").html(oRep[0].titre).attr("href",lien); 
 			   		$("#nomF"+i).append(jlien2.clone(true));
@@ -559,8 +606,8 @@ function sendMail(mailDest) {
 
     var expediteur = "decima-ne-pas-repondre";
     var email = "no-reply@decima.fr";
-    var subject = "Demande de commande de "+pseudo;
-    var body = "Veuillez valider ou refuser le devis de "+pseudo +" pour le projet "+$("#nomProjet").text()+" pour le client "+$("#client").text();
+    var subject = "Demande de commande du devis n°"+$("#numDevis").text();
+    var body = "Veuillez valider ou refuser le devis n°"+$("#numDevis").text()+" du projet "+$("#nomProjet").text();
 
     $.ajax({
       url: 'PHPMailer/mail.php',
@@ -591,6 +638,7 @@ function sendMail(mailDest) {
  		console.log(idUser); 
  		console.log(idDevis);
  		generateTableUser(idUser);
+		$(".st_viewport").after(jAddDevis.clone(true));
  	})
 
 

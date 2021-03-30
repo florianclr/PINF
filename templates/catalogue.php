@@ -464,6 +464,7 @@
         type : "POST",
         success:function (oRep){
           console.log(oRep);
+          $("body").prepend("<div id='ajoutDevOK'>Le devis a bien été créé</div>");
            $("#newD").dialog( "close" ); // ferme la pop up
            $("#newC").remove(); // supprime la pop up 
 

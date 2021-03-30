@@ -50,9 +50,10 @@
  	var jTextareaDescription = $('<label for="description">Description :</label>' +'<br>'
  								+'<textarea id="description"></textarea><br>');
 
- 	var jTextareaMotCles = $('<label for="motsCles">Mots-clés :</label>' +'<br>' 
+ 	var jTextareaMotCles = $('<label for="motsCles">Mots-clés :</label>' +'<br>'
  							+'<textarea id="motsCles"></textarea>' +'<br>'
- 							+'<span>&#9888; Veuillez séparer chaque mot-clé par un point-virgule</span><br><br>');
+ 							+'<span>&#9888; Veuillez séparer chaque mot-clé par un point-virgule</span><br>'
+ 							+'<span>Le titre, la catégorie, la matière et la finition figureront automatiquement parmi les tags, en plus des mots-clés saisis</span>'+'<br><br>');
 
  	var jSelectCateg = $('<br><label for="categorie">Catégorie :</label> <select id="categorie"> </select><br>'); 
 

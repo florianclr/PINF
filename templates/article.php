@@ -341,6 +341,7 @@
                 			prixTemp = 0;
                 			prixTot = 0;
                 			prixDisplay = 0;
+                			qte = 1;
 						},
 						error : function(jqXHR, textStatus) {
 						  console.log("erreur");  
@@ -421,7 +422,7 @@ function genTabPrix(){
                   break;
                 else 
                   qteStock = oRep[i].qteMin ; 
-                $("#prix tbody").append($('<tr></tr>').append($('<td></td>').html(oRep[i].dimMin+" à "+oRep[i].dimMax+" m")).attr("id",i));
+                $("#prix tbody").append($('<tr></tr>').append($('<td></td>').html(oRep[i].dimMin+" à "+oRep[i].dimMax+" mm")).attr("id",i));
                 compt++;
             }//fin for 
         }//fin if
@@ -525,6 +526,7 @@ function listerDimensions() {
 			for (var i = 0; i < oRep.length; i++) {
 				 if (oRep[i].incluePrix == 1) {
 				 	isPrixInclude = oRep[i].nom;
+				 	$("#dimFond").append('<div id="dimInclue">La dimension <b>'+oRep[i].nom+'</b> est inclue dans le prix</div>');
 				 }
 			
 				 $("#dimFond").append($('<div id="dim"></div>').html(oRep[i].nom+' = '));
@@ -625,7 +627,7 @@ function finirCommande() {
 			$("#listeDevis").append($("<option selected='selected'></option>").text("--"));
 		
 			for (var i = 0; i < oRep.length; i++) {
-				$("#listeDevis").append($("<option></option>").attr("value", oRep[i].id).text(oRep[i].nomProjet));
+				$("#listeDevis").append($("<option></option>").attr("value", oRep[i].id).text(oRep[i].numeroDevis+" : "+oRep[i].nomProjet));
 			}
 		},
 		error : function(jqXHR, textStatus) {
