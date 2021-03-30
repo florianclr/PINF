@@ -142,6 +142,21 @@ pre {
   padding: 10px 20px;
 }
 
+.buttonsCenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#addD {
+	margin-top: -30px;
+	margin-bottom: 100px;
+	padding: 10px 50px 10px 50px;
+	color: black;
+	font-size: x-large;
+	background-color: white;
+	border: 3mm ridge darkred;
+}
 
 /** TEMPLATE DEVIS **/
 

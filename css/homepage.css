@@ -3,6 +3,8 @@
  * Copyright 2013-2020 Start Bootstrap
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
  */
+ 
+ /*couleur de la bannière : #353a40*/
 
 body {
   	padding-top: 56px;
@@ -25,7 +27,15 @@ body {
 .fond {
 	background: linear-gradient(#EAECEE, lightgrey);
 }
-/*couleur de la bannière : #353a40*/
+
+.fond a {
+	position: absolute;
+	bottom: 15px;
+}
+
+.card-body {
+    padding: 1.8rem 1.25rem;
+}
 
 .article{
 	display: block;
@@ -91,6 +101,20 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+#ajoutDevOK {
+    margin-bottom: 30px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+    color: green;
+    background-color: white;
+    border: 2px solid green;
+    box-shadow: 0px 0px 3px #000;
 }
 
 #addD, #addC, #addF, #addM {

@@ -116,6 +116,11 @@ table {
 	text-align: center;
 }
 
+#dimInclue {
+	color: darkred;
+	margin-bottom: 10px;
+}
+
 #colFond {
 	background-color: #ECFFB3;
 	padding: 8px;
