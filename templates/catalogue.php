@@ -32,9 +32,16 @@
 
   var jLien = $('<a href="#">');
 
-  var jMenu=$('<a herf="#" class="list-group-item">').click(function(){
-                $nomCategorie = $(this).html();
+  var jMenu=$('<a href="#" class="list-group-item">').click(function(){
+  				var stateObj = { foo: "bar" };
+  				$nomCategorie = $(this).html();
+  				$idCategorie = $(this).attr("id");
                 $couleurCategorie = $(this).css("color");
+                
+                console.log("idCat="+$idCategorie);
+                
+              	history.pushState(stateObj, "Catalogue", "index.php?view=catalogue&categorie="+$idCategorie);
+                
                 $(".col-lg-9").empty(); // on vide l'ancien contenu affiché
                 $(".col-lg-9").append(jtitre.html($nomCategorie).css("color", $couleurCategorie).clone(true));
                 $(".col-lg-9").append(jCatgegorie
@@ -124,7 +131,7 @@
                       $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
                       $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
-                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id)
+                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
                                                  .attr("id",oRep[i].id)
                                                  );
                       if(admin == 1 || admin == 2){ 
@@ -168,7 +175,7 @@
                 $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
                 $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
-                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id)
+                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
                                                  .attr("id",oRep[i].id)
                                                  );
                 if(admin == 1 || admin == 2){ 
@@ -427,7 +434,7 @@
                                                    																			.attr('src',"./images/"+oRep[i].image);
                                                    $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                                                     .html(oRep[i].titre)
-                                                                                    .attr("href","./index.php?view=article&produit="+oRep[i].id)
+                                                                                    .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
                                                                                     .attr("id",oRep[i].id)
                                                                                     );
                                                     if(admin == 1 || admin == 2){ 
@@ -528,7 +535,7 @@
             couleurCat = "black";
           if(oRep[i].nomCategorie != "Tout")
           $(".list-group").append(jMenu.css("color", couleurCat).clone(true)
-            .html(oRep[i].nomCategorie));
+            .html(oRep[i].nomCategorie).attr("id", "categ"+oRep[i].id));
 
           if(oRep[i].nomCategorie != "Tout"){ 
              $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).css("color", couleurCat).clone(true)); 
@@ -539,6 +546,7 @@
         }// fin for
         $(".list-group").append(jMenu.css("color", "black").clone(true)
             .html("Tout"));
+          //TODO: si qq ch dans URL, appeler V2 pour n'afficher que la catégorie (btn retour categ)
           remplirCatgegorieV1(); 
       },// fin succes
       dataType: "json"

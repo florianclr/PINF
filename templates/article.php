@@ -43,6 +43,8 @@
   var areOpt = 1;
 
   var jImg=$('<div class="card h-100" id="imgProduct"><img class="card-img-top" alt=""/></div>');
+  
+  var jRetour = $("<a href=''>< Retour à la catégorie</a>");
 
   var jTitre=$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
@@ -352,12 +354,19 @@
 					
              },
              "Quitter": function() {
+             	prixTemp = 0;
+		        prixTot = 0;
+		        prixDisplay = 0;
+		        qte = 1;
                 $(this).dialog("close"); // ferme la pop up 
                 $(this).remove(); // supprime la pop up
              },
          },
          close: function() { // lorsqu'on appuie sur la croix pour fermer la pop-up 
-            console.log("Fermeture du pop-up");
+			prixTemp = 0;
+            prixTot = 0;
+            prixDisplay = 0;
+            qte = 1;
             $(this).remove(); // supprime la pop up 
          }
       }); 
@@ -374,6 +383,7 @@ function genInfos() {
         console.log(oRep);
         console.log(couleurFond);
         
+        $(".product").before(jRetour.clone(true).attr('href', "index.php?view=catalogue&categorie=categ"+oRep[0].refcategories+"#"));
         $(".product").append(jTitre.clone(true).html(oRep[0].titre));
         $("#titleProduct").css("background-color", couleurFond);
         $(".row").prepend(jImg.clone(true));
