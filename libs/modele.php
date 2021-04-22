@@ -96,6 +96,16 @@ function getCompte($id,$etat)
 
 }
 
+function getCompteByMail($mail) {
+	$SQL="SELECT * FROM utilisateur WHERE mail LIKE '$mail'";
+	return parcoursRs(SQLSelect($SQL));
+}
+
+function getCompteExiste($mail) {
+	$SQL="SELECT EXISTS(SELECT * FROM utilisateur WHERE mail LIKE '$mail')";
+	return SQLGetChamp($SQL);
+}
+
 function accepterCompte($mdp, $idUser,$promouvoir)
 {
    	$SQL="UPDATE utilisateur SET mdp='$mdp',admin='$promouvoir' WHERE id='$idUser'";

@@ -153,6 +153,20 @@ if ($action = valider("action"))
 				$tab=updateInfo($_SESSION['idUser'], $info, $value);
                 echo(json_encode($tab));
 			break;
+			
+			case 'GET_CompteByMail' :
+            if ($mail=valider("mail")) {
+                $tab=getCompteByMail($mail);
+                    echo(json_encode($tab));
+            }
+            break;
+
+            case 'GET_CompteExiste' :
+            if ($mail=valider("mail")) {
+                $tab=getCompteExiste($mail);
+                echo(json_encode($tab));
+            }
+            break;
 
 			case 'GET_CompteAttente' :
                 if($admin=valider("admin")){
