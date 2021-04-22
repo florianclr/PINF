@@ -79,7 +79,7 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-               	sendMail();  // envoi d'un mail
+               	getMail();  // envoi d'un mail
              },
              "Annuler": function() {
                	$(this).dialog("close"); // ferme la pop up 
@@ -150,7 +150,28 @@ function updateInfos(idUser) {
 ?>
 }
 
-function sendMail() {
+function getMail() {
+
+    $.ajax({
+                url: "libs/dataBdd.php",
+                data:{"action":"Mail"},
+                type : "GET",
+                success:function (oRep){
+                 console.log(oRep);
+                 sendMail(oRep);
+
+             },
+            error : function(jqXHR, textStatus)
+            {
+                console.log("erreur");
+
+            },
+            dataType: "json"
+            });
+
+}
+
+function sendMail(mailDestinataire) {
 
 
 	var surname = $("#surname").val().trim();
@@ -212,7 +233,7 @@ function sendMail() {
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
 		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
-		var body = "Veuillez valider ou refuser la creation du compte sur votre page administrateur";
+		var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
 
 		$.ajax({
 			url: 'PHPMailer/mail.php',
@@ -224,7 +245,7 @@ function sendMail() {
 				email: email,
 				subject: subject,
 				body: body,
-				mailD: "benoit.blart@gmail.com"
+				mailD: mailDestinataire
 			},
 
 			success: function(response) {
@@ -289,7 +310,7 @@ function forgotPassword() {
 						email: email,
 						subject: subject,
 						body: body,
-						mailD: "zakirio2727@gmail.com"
+						mailD: mail
 					},
 
 					success: function(response) {
