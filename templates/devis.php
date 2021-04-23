@@ -13,13 +13,14 @@ $idDevis = valider("idDevis");
 $pseudo = valider("pseudo","SESSION");
 ?>
 
-    <link href="css/devis.css" rel="stylesheet"> 
+    <link href="css/devis2.css" rel="stylesheet"> 
     <link href="jquery-ui/jquery-ui.css" rel="stylesheet" />
     <link href="jquery-ui/jquery-ui.structure.css" rel="stylesheet" />
     <link href="jquery-ui/jquery-ui.theme.css" rel="stylesheet" />
 
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="jquery-ui/jquery-ui.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap core JavaScript -->
     <script type="text/javascript">
@@ -35,6 +36,7 @@ $pseudo = valider("pseudo","SESSION");
 	var pseudo = "<?php echo $pseudo; ?>"; // TODO : sert plus à rien ??
  	var prixTotal=0;
  	var tab ;
+  var categorie;
 
  	//----- MODELE JQUERY -----//
 
@@ -142,9 +144,9 @@ $pseudo = valider("pseudo","SESSION");
 
 var jTitre =$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
-var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Prix</td></tr></table>');
+var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimensions</td><td id="option">Option</td><td>Couleur</td><td>Prix</td></tr></table>');
 
-var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td id='prixTot'></td></tr>"); 
+var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td></td><td></td><td></td><td id='prixTot'></td></tr>"); 
 
 var jImg=$('<img  class="imgSuppArtDevis" src="./ressources/moins.png"/>').click(function(){
 	
@@ -432,7 +434,8 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 
  	// ------ GENERATION DES FERRURES DU DEVIS ---//
 
- 	function genFerruresDevis(idDevis){ 
+ 	function genFerruresDevis(idDevis){
+
  		$("#articles").append(jTable.clone(true));
  		$.ajax({
               url: "libs/dataBdd.php",
@@ -445,13 +448,18 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 
 
 			        	$("#lig0")
-			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td><td class="tabDevis"id="prix'+i+'""></td></tr>'));
+			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td></td><td id="dim'+i+'"">dim1 : '+oRep[i].a+' dim2 : '+oRep[i].b+' dim3 : '+oRep[i].c+'</td><td>'+oRep[i].couleur+'</td><td class="tabDevis"id="prix'+i+'""></tr>'));
 
-        				$("#img").prepend(jImg.clone(true).attr("id",oRep[i].id));
+			        	console.log($("#etat").text());
+			        	if($("#etat").text() =="EN_CRÉATION"  ||( admin==1 || admin==2)){
+        					$("#img").prepend(jImg.clone(true).attr("id",oRep[i].id));
+        				}
 
 			        	$("#qte"+i).html(oRep[i].quantite);
 			        	$("#prix"+i).html(oRep[i].prix + "€");
 			        	remplirTab(i,oRep);
+
+                 insererOption(oRep[i].id,i);
 			        	//prixTotal+=parseInt(oRep[i].prix);
 
 					}//fin for
@@ -464,7 +472,53 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                     },
                     dataType: "json"
                  });
+
+
+ 		if($("#etat").text()=="EN_CRÉATION")$("#supp").hide();
  	}
+
+
+function insererOption(id,i) {
+
+  $.ajax({
+                  url: "libs/dataBdd.php",
+                  data:{"action":"OptionsFerrure","refFerrureDevis":id},
+                  type : "GET",
+                  success: function(oRep){
+                    console.log(oRep);
+
+                    if(oRep.length!=0){
+                      for (var j =0; j < oRep.length; j++){
+
+                        if($("#opt").length >0){
+
+                          var option="</br>- "+oRep[j].nom +"<b> x"+oRep[j].quantité+"</b>";
+                          $("#opt").append(option);
+                          console.log("exist");
+                        }
+                        else {
+
+                        $("#dim"+i).after('<td id="opt">- '+oRep[j].nom +"<b> x"+oRep[j].quantité+"</b></td>"); 
+                      }
+
+
+                    }
+                  }
+                  else {
+
+                    $("#dim"+i).after('<td id="opt"></td>'); 
+
+                  }
+                    
+                    
+                  },
+                  error : function(jqXHR, textStatus) {
+                    console.log("erreur");
+                  },
+                  dataType: "json"
+                });
+}
+
 
  	function remplirTab(i,oRep) {
 
@@ -473,10 +527,13 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 		data:{"action":"Produit","idProduit" :oRep[i].refFerrures},
 			    type : "GET",
 			    success: function(oRep){
-				// TODO: rajouter catégorie > URL
-			    	var lien = "index.php?view=article&produit=" + oRep[0].id ; 
-			    	var jlien2 = $("<a></a>").html(oRep[0].titre).attr("href",lien); 
-			   		$("#nomF"+i).append(jlien2.clone(true));
+            console.log("oRep");
+            console.log(oRep);
+
+            var lien = "index.php?view=article&produit=" + oRep[0].id + "&categorie=" + oRep[0].nomCategorie ;
+            var jlien2 = $("<a></a>").html(oRep[0].titre).attr("href",lien); 
+            $("#nomF"+i).append(jlien2.clone(true));
+           
 			    },
 			    error : function(jqXHR, textStatus) {
 			      	console.log("erreur");
@@ -484,6 +541,8 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 			    dataType: "json"
 			    });
 	}
+
+
 
  	// ---- FERMETURE ONGLET DEVIS ---//
  	$(document).ready(function(){
@@ -639,8 +698,31 @@ function sendMail(mailDest) {
  		console.log(idDevis);
  		generateTableUser(idUser);
 		$(".st_viewport").after(jAddDevis.clone(true));
- 	})
+		
+ 	});
 
+function SupprimerDevis() {
+  
+    $.ajax({
+    url: "libs/dataBdd.php?action=SuppDevis&idDevis="+idDevis+"&idUser="+idUser,
+          type : "DELETE",
+          success: function(oRep){
+           console.log(oRep);
+            $("#articles").empty();
+              $(".st_table_header").toggle();
+              $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
+              $('#'+idDevis).parent().parent().remove();
+              var stateObj = { foo: "bar" };
+              history.pushState(stateObj, "Devis", "index.php?view=devis");
+
+          },
+          error : function(jqXHR, textStatus) {
+              console.log("erreur");
+          },
+          dataType: "json"
+          });
+
+}
 
 
     </script>
@@ -708,8 +790,9 @@ function sendMail(mailDest) {
     </div>
     <div class='detail-nav'>
       <button class='close' id="close">
-        Close
+        Fermer
       </button>
+       <input type="button" id="supp" class="supp" value="Supprimer" onclick="SupprimerDevis();" />
     </div>
   </div>
 
