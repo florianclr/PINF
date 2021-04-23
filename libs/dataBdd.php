@@ -406,6 +406,20 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
             
+            case 'POST_OptionDevis': 
+                if($refFerrureDevis=valider("idFerrureDevis"))
+                if($refOption=valider("idOption"))
+                if($quantite=valider("qte"))
+                    $tab = addOptionDevis($refFerrureDevis, $refOption, $quantite);
+                 echo(json_encode($tab)); 
+            break ;
+
+            case 'GET_OptionsFerrure': 
+                if($refFerrureDevis=valider("refFerrureDevis"))
+                    $tab = getOptionDevis($refFerrureDevis);
+                    echo(json_encode($tab)); 
+            break ;
+            
             /****************************************************/
 
 			case 'GET_listerDimensionsFerrure' :

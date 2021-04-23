@@ -302,10 +302,23 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	function deleteFerrureDevis($idFerrureDevis,$idDevis) {
 
         $SQL="UPDATE devis SET PrixTotal=PrixTotal-(SELECT prix FROM ferruresDevis WHERE id='$idFerrureDevis') WHERE id='$idDevis';
+                DELETE FROM optionDevis WHERE refFerrureDevis='$idFerrureDevis';
                DELETE FROM ferruresDevis WHERE id='$idFerrureDevis'";
         return SQLUpdate($SQL); 
 
     }
+    
+    function getOptionDevis($refFerrureDevis)
+	{
+    	$SQL="SELECT optionDevis.quantité,`option`.`nom`FROM `optionDevis`,ferruresDevis,`option` WHERE optionDevis.refFerrureDevis=ferruresDevis.id and  optionDevis.refOption=`option`.id and ferruresDevis.id='$refFerrureDevis'";
+    	return parcoursRs(SQLSelect($SQL));
+	}
+
+	function addOptionDevis($refFerrureDevis, $refOption, $quantite)
+	{
+		$SQL="INSERT INTO optionDevis (refFerrureDevis,quantité,refOption) VALUES($refFerrureDevis,$quantite,$refOption)";
+		return SQLInsert($SQL);
+	} 
 	
 	/***********************************************************/
 
