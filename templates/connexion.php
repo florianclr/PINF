@@ -114,6 +114,7 @@ function updateInfos(idUser) {
                     type : "PUT",
                     success: function (oRep){
                     	console.log(oRep);
+						$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
                     },
                     dataType: "json"
                 });
@@ -126,6 +127,7 @@ function updateInfos(idUser) {
                     type : "PUT",
                     success: function (oRep) {
                     	console.log(oRep);
+                    	$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
                     },
                     dataType: "json"
                 });
@@ -138,6 +140,7 @@ function updateInfos(idUser) {
                     type : "PUT",
                     success:function (oRep){
                     	console.log(oRep);
+                    	$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
                     },
                     dataType: "json"
                 });
@@ -209,7 +212,7 @@ function sendMail(mailDestinataire) {
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
 		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
-		var body = "Veuillez valider ou refuser la creation du compte sur votre page administrateur";
+		var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
 
 		$.ajax({
 			url: 'PHPMailer/mail.php',
@@ -284,7 +287,7 @@ if ($connecte)
 	<br/><br/>
 	<div id="compte">
 			<h1 class="my-4">Mon compte</h1>
-			<h4>Mes informations</h4><br/>
+			<h4>Modifier mes informations</h4><br/>
 			Mot de passe : <input type="password" id="passe"  value="<?php echo $passe;?>"/>
 			<label for="displayPasse" id="labelDisplayPasse">
 				<input type="checkbox" id="displayPasse"/>
