@@ -420,6 +420,15 @@ if ($action = valider("action"))
                     echo(json_encode($tab)); 
             break ;
             
+            case 'DELETE_SuppDevis':
+                if($idDevis=valider("idDevis"))
+                if($idUser=valider("idUser"))
+                if($idUser==$idUserCo){ 
+		            $tab=supprimerDevis($idDevis);
+		            echo(json_encode($tab));
+                }
+            break ; 
+            
             /****************************************************/
 
 			case 'GET_listerDimensionsFerrure' :
@@ -501,6 +510,13 @@ if ($action = valider("action"))
             	$tab = getMail();
                 echo(json_encode($tab));
             break ;
+            
+            case 'PUT_LiverDevis':
+                if($devis=valider("idDevis")) {
+                    $tab =LivrerDevis($devis);
+                    echo(json_encode($tab));
+                }   
+            break; 
 
 			/****************************************************/
 			

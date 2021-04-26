@@ -1,9 +1,6 @@
 <?php
 
 include_once("maLibSQL.pdo.php");
-/*
-Dans ce fichier, on définit diverses fonctions permettant de récupérer des données utiles pour notre TP d'identification. Deux parties sont à compléter, en suivant les indications données dans le support de TP
-*/
 
 function listerCategories($cat)
 {
@@ -38,7 +35,7 @@ function listerArticles($categorie,$nombre)
 
 function getProduit($id)
 {
-    $SQL="SELECT ferrures.*, matiere.nomM, finition.nomF FROM ferrures,finition,matiere WHERE finition.id=ferrures.refFinition AND matiere.id=ferrures.refMatiere AND ferrures.id='$id'";
+    $SQL="SELECT ferrures.*, matiere.nomM, finition.nomF, catalogue.nomCategorie FROM ferrures,finition,matiere,catalogue WHERE finition.id=ferrures.refFinition AND matiere.id=ferrures.refMatiere AND ferrures.id='$id' AND ferrures.refcategories=catalogue.id";
     return parcoursRs(SQLSelect($SQL));
 }
 
@@ -319,6 +316,13 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		$SQL="INSERT INTO optionDevis (refFerrureDevis,quantité,refOption) VALUES($refFerrureDevis,$quantite,$refOption)";
 		return SQLInsert($SQL);
 	} 
+
+	function supprimerDevis($idDevis){
+	// CLÉS ÉTRANGÈRES ENTRE FERRURESDEVIS ET OPTIONDEVIS EN CASCADE POUR SUPPRIMER !!!
+		$SQL=" DELETE FROM  ferruresDevis WHERE ferruresDevis.refDevis ='$idDevis';
+			   DELETE FROM  devis WHERE id = '$idDevis';";
+    	return SQLDelete($SQL);
+	}
 	
 	/***********************************************************/
 
@@ -352,17 +356,22 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	/***********************************************************/
 	
 	function getDevisEnAttente() {
-		$SQL="SELECT * FROM devis WHERE dateLivraison IS NULL AND etat IN('COMMANDE_VALIDÉE','EN_FABRICATION','FABRIQUÉ')";
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NULL AND etat IN('COMMANDE_VALIDÉE')";
 		return parcoursRs(SQLSelect($SQL));
 	}
 
 	function getDevisPlanifies() {
-		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL AND etat NOT IN('ARCHIVÉ','LIVRÉ')";
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL AND etat IN('EN_FABRICATION','LIVRÉ')";
 		return parcoursRs(SQLSelect($SQL));
 	}
 
 	function planifierDevis($id, $date) {
 		$SQL="UPDATE devis SET dateLivraison='$date', etat='EN_FABRICATION' WHERE id='$id'";
+		return SQLUpdate($SQL);
+	}
+
+	function LivrerDevis($id) {
+		$SQL="UPDATE devis SET etat='LIVRÉ' WHERE id='$id'";
 		return SQLUpdate($SQL);
 	}
 
