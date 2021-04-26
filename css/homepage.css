@@ -28,13 +28,14 @@ body {
 	background: linear-gradient(#EAECEE, lightgrey);
 }
 
-.fond a {
-	position: absolute;
-	bottom: 15px;
+.card {
+	width: 250px;
 }
 
 .card-body {
     padding: 1.8rem 1.25rem;
+	width: 250px;
+	height: 250px;
 }
 
 .article{
@@ -171,6 +172,12 @@ body {
 	margin-left: -8px;
 	margin-top: -3px;
 }
+
+/*.card-body a {
+	border: 1px solid red ; 
+	width: 5px ; 
+	size:20px; 
+}*/
 
 /******************************** COMPTE **********************************/
 

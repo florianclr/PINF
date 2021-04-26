@@ -36,24 +36,29 @@ p {
   overflow: auto;
 }
 
-[data-table_id="1"] {
-  background-color: rgb(255, 115, 0);
+[data-table_id="EN_CRÉATION"] {
+  background-color: rgb(47, 123, 194, 0.8);
 }
-[data-table_id="2"] {
-  background-color: rgb(61, 53, 39);
-  color: rgb(220, 220, 220);
+[data-table_id="DEMANDE_COMMANDE"] {
+  background-color: rgb(201, 94, 40, 0.8);
 }
-[data-table_id="3"] {
-  background-color: rgba(168, 189, 4, 0.8);
+[data-table_id="COMMANDE_VALIDÉE"] {
+  background-color: rgba(39, 184, 53, 0.8);
 }
-[data-table_id="4"] {
-  background-color: rgba(16, 189, 90, 0.8);
+[data-table_id="EN_FABRICATION"] {
+  background-color: rgba(227, 214, 70, 0.8);
 }
-[data-table_id="5"] {
-  background-color: rgba(168, 1, 4, 0.8);
+[data-table_id="FABRIQUÉ"] {
+  background-color: rgba(168, 149, 93, 0.8);
 }
-[data-table_id="7"] {
-  background-color: rgba(16, 189, 4, 0.8);
+[data-table_id="LIVRÉ"] {
+  background-color: rgba(26, 196, 88, 0.8);
+}
+[data-table_id="ARCHIVÉ"] {
+  background-color: rgba(163, 159, 147, 0.8);
+}
+[data-table_id="NEUTRE"] {
+  background-color: rgba(192, 205, 209, 0.8);
 }
 
 ._rank {
@@ -241,6 +246,7 @@ dd {
 }
 
 #supp {
+  display: none;
   background-color: black;
   padding: 10px;
   color: #fff;
