@@ -3,28 +3,54 @@
 <?php
   	$admin = valider("isAdmin","SESSION");  
   	$idUser = valider("idUser","SESSION");
+  	$categ = valider("categ");
 
 	if (!valider("connecte","SESSION")) {
   		header("Location:index.php?view=connexion");
   		die("");
 	}
 ?>
+<!-- Css galerie -->
+<link rel="stylesheet" type="text/css" href="./slick/slick.css">
+<link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
+
+<style type="text/css">
+    .slick-prev:before,
+    .slick-next:before {
+      color: black;
+    }
+
+    .slick-prev{
+      left:-10px;
+    }
+
+    .test{
+      max-width:250px;
+      max-height:250px; 
+    }
+    .test2{
+      width: 320px ; 
+      height : 320px;
+    }
+
+</style>
 
 <!-- Bootstrap core JavaScript -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
+<script src="slick/slick.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 
 // -------- MODELES JQUERY --------------//
 
   var tab = [];
 
-  var jArticle = $('<div class="col-lg-4 col-md-6 mb-4">')
-                  .append('<div class="card h-100"><img class="card-img-top"> <div class="card-body fond">');
+  var jArticle = $('<div class="test2 col-lg-4 col-md-6 mb-4">')
+                  .append('<div class="card h-100"><img class="test card-img-top"> <div class="card-body fond">');
       
                     
-  var jCatgegorie = $('<div class=row></div>');
+  var jCatgegorie = $('<div class="regular slick row"></div>');
   
   var jWarning = $('<div>Aucun résultat ne correspond à votre recherche</div>');
 
@@ -33,20 +59,16 @@
   var jLien = $('<a href="#">');
 
   var jMenu=$('<a href="#" class="list-group-item">').click(function(){
-  				var stateObj = { foo: "bar" };
-  				$nomCategorie = $(this).html();
-  				$idCategorie = $(this).attr("id");
+                $nomCategorie = $(this).html();
                 $couleurCategorie = $(this).css("color");
-                
-                console.log("idCat="+$idCategorie);
-                
-              	history.pushState(stateObj, "Catalogue", "index.php?view=catalogue&categorie="+$idCategorie);
-                
                 $(".col-lg-9").empty(); // on vide l'ancien contenu affiché
                 $(".col-lg-9").append(jtitre.html($nomCategorie).css("color", $couleurCategorie).clone(true));
                 $(".col-lg-9").append(jCatgegorie
                               .attr("id",$nomCategorie)
                               .clone(true));
+
+                var stateObj = { foo: "bar" };
+                history.pushState(stateObj, "categorie", "index.php?view=catalogue&categ="+$nomCategorie);
                 remplirCatgegorieV2();
   });
 
@@ -101,7 +123,9 @@
                   .append($('<img class="card-img-top" src="./ressources/plus.jpg">')
                   	.click(function(){
                   		console.log("redirection...");
-                  		document.location.href="./index.php?view=creerArticle";
+                      var categ = $(this).parent().parent().prop("id");
+                      console.log("categ=>"+categ);
+                      document.location.href="./index.php?view=creerArticle&categorie="+categ;
                   	}) // fin function 
                   );// fin append
 
@@ -131,7 +155,7 @@
                       $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
                       $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
-                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
+                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id)
                                                  .attr("id",oRep[i].id)
                                                  );
                       if(admin == 1 || admin == 2){ 
@@ -175,7 +199,7 @@
                 $("#" + oRep[i].id +" .card-img-top").attr('src',"./images/"+oRep[i].image);
                 $("#"+ oRep[i].id +" .card-body").append(jLien.clone(true)
                                                  .html(oRep[i].titre)
-                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
+                                                 .attr("href","./index.php?view=article&produit="+oRep[i].id)
                                                  .attr("id",oRep[i].id)
                                                  );
                 if(admin == 1 || admin == 2){ 
@@ -336,6 +360,7 @@
  var admin ="<?php echo $admin; ?>";
  var idUser ="<?php echo $idUser; ?>";
  console.log("admin =>" + admin); 
+ var categLoad = "<?php echo $categ; ?>";
 
 //------------ CRÉATION DE LA PAGE D'ACCUEIL LORSQUE QUE LE CATALOGUE EST CHARGÉ-----------//  
    $(document).ready(function(){
@@ -349,8 +374,6 @@
     $(".col-lg-3").append(jAddDevis.clone(true));
     remplirMenu();
   });// fin de la fonction de chargement
-
-///////////////////////////////// TODO : RENDRE LE CODE QUI SUIT PLUS OPTIMAL !!!! ///////////////////////////:
 
   function remplirCatgegorieV1(){ // ACCUEIL
   
@@ -372,7 +395,12 @@
                                                 console.log(oRep);
 
                                                 if(oRep.length != 0){ 
-                                                  for (var i =0; i<3;i++){
+                                                  for (var i =0; i<9;i++){
+                                                  
+                                                  if ( i >= oRep.length ){ 
+                                                    console.log("OUTTTTTTTTTTTT!!!!!!");
+                                                    break; 
+                                                  }
                                                   
                                                    couleurBord = couleur;
 
@@ -386,13 +414,21 @@
                                                                                     .attr("href","./index.php?view=article&produit="+oRep[i].id+"&categorie="+$(lien).prop("id"))
                                                                                     .attr("id",oRep[i].id)
                                                                                     );
-                                                   // TODO : AJOUTER FLÈCHE !!!
 
                                                    if(admin == 1 || admin == 2){ 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconTrash.data("idFerrure",oRep[i].id).clone(true)); 
                                                       $("#"+ oRep[i].id +" .card-body").append(iconPencil.data("idFerrure",oRep[i].id).clone(true));
                                                     }// fin if admin 
                                                   }//fin for
+                                                  
+                                                  // TRANSFORME LA DIV EN GALERIE
+                                                  $(lien).slick({
+                                                      dots: true,
+                                                      infinite: true,
+                                                      slidesToShow: 3,
+                                                      slidesToScroll: 3
+                                                    });
+                                                  
                                                 }// fin if    
                                               },// fin succes
                                               error : function(jqXHR, textStatus) {
@@ -403,15 +439,21 @@
       });  
   }
 
-  function remplirCatgegorieV2(){ // 1 CATEGORIE
+  function remplirCatgegorieV2(categLoad=null){ // 1 CATEGORIE
   
   var couleurBord;
   
     $(".col-lg-9 .row").each(function(){  
                                       var couleur= $(this).prev().css("color");
-                                      var nom = $(this).prop("id");
-                                      if (nom == "Tout")
-                                        nom = null ; // si catgéogirie est null alors on va vercher toute les catégorie
+                                      
+                                      if(categLoad == null) {
+		                                  var nom = $(this).prop("id");
+		                                  if (nom == "Tout")
+		                                    nom = null ; // si catégorie est null alors on va chercher toutes les catégories
+		                              }
+		                              else
+		                              	var nom = categLoad ;
+		                              
                                       var lien = $(this);
 
                                       $.ajax({
@@ -471,10 +513,9 @@
         type : "POST",
         success:function (oRep){
           console.log(oRep);
-          $("body").prepend("<div id='ajoutDevOK'>Le devis a bien été créé</div>");
            $("#newD").dialog( "close" ); // ferme la pop up
            $("#newC").remove(); // supprime la pop up 
-
+			$("body").prepend("<div id='ajoutDevOK'>Le devis a bien été créé</div>");
         },// fin succes
         error : function(jqXHR, textStatus) {
           console.log("erreur");
@@ -535,7 +576,7 @@
             couleurCat = "black";
           if(oRep[i].nomCategorie != "Tout")
           $(".list-group").append(jMenu.css("color", couleurCat).clone(true)
-            .html(oRep[i].nomCategorie).attr("id", "categ"+oRep[i].id));
+            .html(oRep[i].nomCategorie));
 
           if(oRep[i].nomCategorie != "Tout"){ 
              $(".col-lg-9").append(jtitre.html(oRep[i].nomCategorie).css("color", couleurCat).clone(true)); 
@@ -546,8 +587,12 @@
         }// fin for
         $(".list-group").append(jMenu.css("color", "black").clone(true)
             .html("Tout"));
-          //TODO: si qq ch dans URL, appeler V2 pour n'afficher que la catégorie (btn retour categ)
-          remplirCatgegorieV1(); 
+            
+          if(categLoad != null && categLoad != ""){ 
+            $(".list-group-item:contains('"+categLoad+"')").click();
+          } 
+          else 
+          	remplirCatgegorieV1(); 
       },// fin succes
       dataType: "json"
     });// fin requête ajax

@@ -34,7 +34,7 @@
   var chgt = 0 ; // boolean pour savoir s'il y a eu des changements lors de la modification et donc en consequence exécuter une requetes de modif ou non
   var msgLoad = "<?php echo $msg; ?>";
   var modeEdition=0
-  if(idArticle != null || idArticle != "")
+  if(idArticle != null && idArticle != "")
     modeEdition=1; 
 
 //************************** MODELE JQUERY DONNÉES FERRURES**************************//
@@ -212,11 +212,6 @@
  		 //requestCreatePrixFerrures(); OK
  		 //requestCreteOptionsFerrures(); OK
  		 //requestAddImgFerrure(); OK
- 		//requestAddPdfFerrures();  OK
-    if(stopAjout ==0){ 
-	    // window.alert("Ferrure ajoutée dans la base");
-	    // location.reload();
-	}
  	}); 
 
   var jInputModifFer = $('</br><input class="create" type="submit" value="ENREGISTRER LES MODIFICATIONS">').click(function(){
@@ -413,8 +408,8 @@
  	 	var titre,description,tags,categorie ; 
  	 	if( titre = infosManquantesImportantes("titre"))
     if( description = infosManquantesImportantes("description"))
-    if( tags = infosManquantesImportantes("motsCles"))
  	 	{ 
+			var tags = $("#motsCles").val();
  	 		var categorie = $("#categorie").val();
       var finition = $("#finition").val();
       var matiere =  $("#matiere").val();
@@ -423,6 +418,13 @@
       if(modif==0){
         tags = tags + ";" + titre + ";" + $("#categorie").find('option:selected').html() + ";" + $("#matiere").find('option:selected').html() + ";" 
         + $("#finition").find('option:selected').html() ; 
+	if( $("#formPdf file") != ""){
+          var lienPdf = $("#formPdf #file").val(); 
+          var tabLien = lienPdf.split("\\");
+          var planPdf = tabLien[tabLien.length - 1] ;
+          planPdf = planPdf.split(".");
+          tags = tags + ";" + planPdf[planPdf.length-2]; 
+        }
         requestAjaxCreerFerrure(titre,description,categorie,tags,matiere,finition); 
       }
 
@@ -490,12 +492,14 @@
                             return;
                         }
                     });
-                } else{
-                    if(mode="pdf"){  
-                    alert("Plan manquant pour le pdf");
-                    displayErreur("Pdf manquant"); 
-                    }
-                    else{
+                } // fin if (files.length > 0)
+
+		else{
+                    // if(mode=="pdf"){  
+                    // alert("Plan manquant pour le pdf");
+                    // displayErreur("Pdf manquant"); 
+                    // }
+                    if (mode=="img"){
                       alert("Image manquante");
                       displayErreur("Selectionner une image"); 
                     }
@@ -554,6 +558,7 @@
                 console.log("pas modif Dims"+nom);
             }
  					}
+	console.log("AJOUT=>"+stopAjout);
         if(stopAjout == 1){
           if(modif==0){ 
             requestDeleteFerrure(idFerrure); 
@@ -763,14 +768,23 @@
       }
     }
 
-    if(modif==0 && (lienImg =="" || lienPdf =="")){ // insinue que les images ou pdf ne sont pas bon 
-        console.log("erreur image");
+    if(modif==0 && (lienImg =="")){ // insinue que l'image n'est pas bon
         requestDeleteFerrure(idFerrure); 
         return ;
       } 
     else{
-      if (modif ==0)
-        requestAjaxCreerFerrure2(img,pdf,pdf,idFerrure);
+      if (modif ==0){
+        if(lienPdf != "")
+          requestAjaxCreerFerrure2(img,pdf,pdf,idFerrure);
+        else
+          requestAjaxCreerFerrure2(img,null,null,idFerrure);
+
+          //requestAddPdfFerrures();  OK
+      if(stopAjout ==0){ 
+        window.alert("Ferrure ajoutée dans la base");
+        location.reload();
+      }
+      }
       if (modif==1 && chgt==1){
         console.log("changement img ou pdf !!"); 
       } 
@@ -844,8 +858,9 @@
  	}
 
   function displayErreur(msg){
-    stopAjout = 1 ;
     if(modeEdition ==0){ 
+	stopAjout = 1;
+	console.log("STOP");
       $("#erreur").html(msg).show(); 
     }
     else{

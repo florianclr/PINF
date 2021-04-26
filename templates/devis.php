@@ -45,7 +45,6 @@ $pseudo = valider("pseudo","SESSION");
  	var jTr =$("<tr></tr>");
 
   var jButtonChgtDate=$('<input id="mailDate" type="button" value="Informer le propriétaire du changement de date de livraison"></input>').click(function(){
-    // TODO: mail !!!
     var date = $("#datepicker").val();
     console.log(date); 
     $(this).remove(); 
@@ -58,22 +57,54 @@ $pseudo = valider("pseudo","SESSION");
     '<option value="DEMANDE_COMMANDE">DEMANDE_COMMANDE</option>'+
     '<option value="COMMANDE_VALIDÉE">COMMANDE_VALIDÉE</option>'+
     '<option value="EN_FABRICATION">EN_FABRICATION</option>'+
-    '<option value="FABRIQUÉ">FABRIQUÉ</option>'+
     '<option value="LIVRÉ">LIVRÉ</option>'+
     '<option value="ARCHIVÉ">ARCHIVÉ</option>'+
     '</select>"').change(function(){
+        console.log("aaaaa");
         var newEtat = $(this).val(); 
-        var select = $(this)
+        var select = $(this); 
+        var date = $("#datePicker").val(); 
+        var oldEtat = $("#etat").data("current");
+        console.log("old=>"+oldEtat);
+    
+        if( (newEtat == 'LIVRÉ' || newEtat == 'EN_FABRICATION') &&  date==null){
+          alert("Veuillez sélectionner une date de livraison avant de changer l'état");
+          $(this).val($("#etat").data("current"));
+          return ; 
+        }
+        if (newEtat == 'COMMANDE_VALIDÉE'){
+          $("#dateLivraison").replaceWith(jDate.clone(true));
+          datePicker();
+          $("#datepicker").val("");
+        }
+
+        if ( newEtat=="EN_CRÉATION" && (oldEtat != "EN_CRÉATION" || oldEtat != "DEMANDE_COMMANDE") ){
+          alert("Impossible de revenir dans cette état !!!");
+          return ; 
+        }
+
+        if ( newEtat =="LIVRÉ" && (oldEtat == "EN_CRÉATION" || oldEtat =="DEMANDE_COMMANDE")){
+          alert("Impossible de livrer le devis il doit d'abord être passé en commande ");
+          return ; 
+        }
+
+        if (oldEtat == "EN_FABRICATION" && newEtat =="COMMANDE_VALIDÉE"){
+          console.log("GOOD");
+          $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>'));
+          annulerDevis(idDevis); 
+        }
+
         $.ajax({
         url: "libs/dataBdd.php?action=MajEtat&idDevis="+idDevis+"&etat="+newEtat,
         type : "PUT",
         success: function(oRep){
             console.log(oRep);
-            console.log($("#mailEtat").index())
-            if( $("#mailEtat").index() == -1){ 
-              $(select).after(jButtonChgtEtat.clone(true));
-              $(select).after("</br>");  
-          }
+            console.log("success");
+            var table = $("h2:contains('" + newEtat+"')").parent().parent();
+            var copie = $("#devis"+idDevis); 
+            copie.appendTo(table);
+            console.log(table); 
+            select.data("current",newEtat); 
         },
         error : function(jqXHR, textStatus) {
           console.log("erreur");
@@ -86,7 +117,6 @@ $pseudo = valider("pseudo","SESSION");
  	//DEMANDE_COMMANDE
  	//COMMANDE_VALIDÉE
  	//EN_COURS_DE_FABRICATION
- 	//RÉALISE
  	//LIVRÉ
  	//ARCHIVÉ
 
@@ -120,7 +150,7 @@ $pseudo = valider("pseudo","SESSION");
     
   });
 
-  var jDate = $('<dd> <input type="text" id="datepicker"></dd>');
+  var jDate = $('<input autocomplete="off" type="text" id="datepicker">');
 
  	var jButton = $('<input type="button" id="commander" value="Passer la commande"/>').click(function () {
   		var btn = $(this); 
@@ -263,7 +293,7 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                       genDetailsDevis(idDevis);
                       e.preventDefault();
                       $(".st_table_header").toggle();
-                      $('.test, html, body').toggleClass('open'); // .detail indique quel classe ouvrir
+                      $('.test, html, body').toggleClass('open'); // indique quelle classe cacher/montrer
                     });
 
               	// INSERTION DEVIS DANS LE TABLEAU
@@ -288,7 +318,7 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                     		console.log("test");
                     	}
 
-                    	jligne = $('<div class="st_row"></div>').append(jTd.clone(true).append(oRep[i].numeroDevis))
+                    	jligne = $('<div class="st_row"></div>').attr("id","devis"+oRep[i].id).append(jTd.clone(true).append(oRep[i].numeroDevis))
                     			.append(jTd.clone(true).append(oRep[i].nomProjet))
                     			.append(jTd.clone(true).append(oRep[i].nomClient))
                 
@@ -364,16 +394,15 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                     $("#numDevis").html(oRep[0].numeroDevis);
                     $("#dateCreation").html(oRep[0].dateCreation);
 
-                    console.log("TESTDATE");
-                       console.log(oRep[0].dateLivraison); 
+                    console.log(oRep[0].dateLivraison); 
 
-                    if(admin==0 ||(admin==1 || admin==2 && oRep[0].etat=="ARCHIVÉ")){
-                      $("#datepicker").replaceWith($('<p id="dateLivraison"></p>').html(oRep[0].dateLivraison));
+                    if(admin==0 || (oRep[0].etat=="ARCHIVÉ" || oRep[0].etat=="EN_CRÉATION" || oRep[0].etat=="DEMANDE_COMMANDE")){
+                      $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>').html(oRep[0].dateLivraison));
                     }
 
-					if(oRep[0].etat=="COMMANDE_VALIDÉE" || oRep[0].etat=="EN_FABRICATION") {
+					if( (oRep[0].etat=="COMMANDE_VALIDÉE" || oRep[0].etat=="EN_FABRICATION") && (admin ==1 || admin ==2)) {
                       if( oRep[0].dateLivraison != null  ){ 
-                        $("#dateLivraison").replaceWith(jDate.clone(true));
+                        $("#datepicker").replaceWith(jDate.clone(true));
                         datePicker();
                          console.log("TESTDATE2");
                          console.log(oRep[0].dateLivraison); 
@@ -398,12 +427,16 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                       }
                       else{
                         $("#etat").empty();
-                      $("#etat").prepend(jSelectEtat);
+                      $("#etat").prepend(jSelectEtat.clone(true));
                       $('#etat select option[value="' + oRep[0].etat +'"]').prop('selected', true);
+                      console.log("DATAAAA");
+                      $("#etat").data("current",oRep[0].etat);
                       }
                     }
-                    else 
-                      $("#etat").html(oRep[0].etat);
+                    else {
+                    	$("#etat").empty();
+                      	$("#etat").html(oRep[0].etat);
+                    }
 
                     if(oRep[0].commentaire == "" || oRep[0].commentaire == null)
                     	$("#coms").html("Aucun commentaire");
@@ -420,6 +453,9 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                     if(admin==0 && oRep[0].etat=="EN_CRÉATION"){
                       $("#articles").after(jButton); 
                     }
+                    
+                    if( (admin == 0 && (oRep[0].etat=="EN_CRÉATION" || oRep[0].etat=="DEMANDE_COMMANDE" ) ) || admin ==2 || admin == 1 )
+                      $("#supp").show();
 
                    	prixTotal = oRep[0].PrixTotal ; 
                    	genFerruresDevis(idDevis);
@@ -474,7 +510,7 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                  });
 
 
- 		if($("#etat").text()=="EN_CRÉATION")$("#supp").hide();
+ 		//if($("#etat").text()=="EN_CRÉATION")$("#supp").hide();
  	}
 
 
@@ -582,6 +618,8 @@ function datePicker() {
               $("#dateLivraison").after("</br>"); 
               
               $('#etat option[value="EN_FABRICATION"]').prop('selected', true); 
+              $("#etat").data("current","EN_FABRICATION");
+              alert("Devis passé en fabrication !");
           }
         },
         error : function(jqXHR, textStatus) {
@@ -702,27 +740,49 @@ function sendMail(mailDest) {
  	});
 
 function SupprimerDevis() {
-  
-    $.ajax({
-    url: "libs/dataBdd.php?action=SuppDevis&idDevis="+idDevis+"&idUser="+idUser,
-          type : "DELETE",
-          success: function(oRep){
-           console.log(oRep);
-            $("#articles").empty();
-              $(".st_table_header").toggle();
-              $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
-              $('#'+idDevis).parent().parent().remove();
-              var stateObj = { foo: "bar" };
-              history.pushState(stateObj, "Devis", "index.php?view=devis");
 
-          },
-          error : function(jqXHR, textStatus) {
-              console.log("erreur");
-          },
-          dataType: "json"
-          });
+    var ans = confirm("Confirmer la supression du devis");
+    if (ans){ 
+      $.ajax({
+      url: "libs/dataBdd.php?action=SuppDevis&idDevis="+idDevis+"&idUser="+idUser,
+            type : "DELETE",
+            success: function(oRep){
+             console.log(oRep);
+                $("#articles").empty();
+                $(".st_table_header").toggle();
+                $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
+                $('#'+idDevis).parent().parent().remove();
+                var stateObj = { foo: "bar" };
+                history.pushState(stateObj, "Devis", "index.php?view=devis");
 
+            },
+            error : function(jqXHR, textStatus) {
+                console.log("erreur");
+            },
+            dataType: "json"
+            });
+    }
 }
+
+
+function annulerDevis(idDevis) {
+
+      console.log("Annulation du devis " + idDevis);
+
+      $.ajax({
+              url: "libs/dataBdd.php",
+              data:{"action":"AnnulerDevis","idDevis":idDevis},
+              type : "GET",
+              success:function (oRep){
+                console.log("devis annulé");
+                },
+
+                error: function(jqXHR, textStatus) {
+                    console.log("erreur");
+                    },
+                    dataType: "json"
+              });
+  }
 
 
     </script>

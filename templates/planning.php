@@ -163,8 +163,29 @@
                   })
 
                 .appendTo("#contenu");
+                $("#contenu").append("<br>")
 
+                $("<input type='button' value='Livrer la commande' class='infoButtons'>").click(function () {
 
+                    var ans = confirm("Confirmer la livraison du devis ? (le propriétaire en sera informé)");
+
+                    if (ans) {
+                      var subject = "Commande livré pour  " + oRep[0].nomProjet;
+                      var body = "Votre commande pour " + oRep[0].nomProjet + " (" + oRep[0].numeroProjet + ")" + " est prête";
+                      mailClient(idDevis, subject, body);
+                      // TODO : fonction livré 
+                      livrerDevis(idDevis); 
+                      $("input[value='Mettre en attente']").remove();
+                    }
+
+                  })
+
+                .appendTo("#contenu");
+
+                if (oRep[0].etat == "LIVRÉ" || oRep[0].etat == "ARCHIVÉ" ){
+                  $("input[value='Livrer la commande']").remove();
+                  $("input[value='Mettre en attente']").remove();
+                }
               },
                 error : function(jqXHR, textStatus) {
                     console.log("erreur");
@@ -348,6 +369,22 @@
       });
   }
 
+  function livrerDevis(idDevis){
+    $.ajax({
+              url: "libs/dataBdd.php" + "?action=LiverDevis&idDevis=" + idDevis,
+              data:{"action":"LiverDevis","idDevis":idDevis},
+              type : "PUT",
+              success:function (oRep){
+                console.log("devis livré");
+                },
+
+                error: function(jqXHR, textStatus) {
+                    console.log("erreur");
+                    },
+                    dataType: "json"
+              });
+  }
+
   function convertirDate(date) {
 
     tabDate = date.split('-');
@@ -382,10 +419,10 @@
 
   #external-events h4 {
     font-size: 16px;
-		font-weight: bold;
+	font-weight: bold;
     margin-top: 0;
     padding-top: 1em;
-		padding: 10px;
+	padding: 10px;
   }
 
   #external-events .fc-event {
@@ -442,6 +479,10 @@
 		background-color: #353a40;
   }
 
+  .livre{
+    background-color: lightgreen ; 
+  }
+
 </style>
 
 <body>
@@ -456,8 +497,6 @@
       </div>
 
       <p>
-<!--         <input type='checkbox' id='drop-remove' />
-        <label for='drop-remove'>remove after drop</label> -->
       </p>
       
     </div>
@@ -468,10 +507,10 @@
 
     </div>
     
-  </div>
     <div id="infos">
 	<div id="titreInfos">Informations du devis</div>
     <div id="contenu"></div>
+  </div>
   </div>
 
 </body>
