@@ -267,6 +267,14 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 			$SQL="SELECT * FROM `devis` ORDER BY etat"; 
 		return parcoursRs(SQLSelect($SQL));
 	}
+
+	function getAjoutDevisUser($idUser){
+		if($idUser != null)
+			$SQL="SELECT * FROM `devis` WHERE refCA='$idUser' AND etat='EN_CRÉATION'"; 
+		else
+			$SQL="SELECT * FROM `devis` WHERE etat='EN_CRÉATION'"; 
+		return parcoursRs(SQLSelect($SQL));
+	}
 	
 	function getInfosDevis($idDevis){
 		$SQL="SELECT * FROM `devis` WHERE id='$idDevis'"; 

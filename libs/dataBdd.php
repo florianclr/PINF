@@ -347,6 +347,19 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             }
             break; 
+
+			case'GET_ajoutDevisUser';
+            if($idUser=valider("idUser")){
+
+                if($admin == 0){ 
+                     $tab = getAjoutDevisUser($idUser);
+                }
+                else{
+                     $tab = getAjoutDevisUser(null);
+                }      
+                echo(json_encode($tab));
+            }
+            break; 
             
             case 'GET_listerFerruresDevis' :
                 if($devis=valider("idDevis"))
