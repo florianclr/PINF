@@ -43,8 +43,6 @@
   var areOpt = 1;
 
   var jImg=$('<div class="card h-100" id="imgProduct"><img class="card-img-top" alt=""/></div>');
-  
-  var jRetour = $("<a href=''>< Retour à la catégorie</a>");
 
   var jTitre=$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
@@ -145,16 +143,19 @@
   			  var inputSupr;
 
               if ($(this).prop("checked") == true) {
+              	console.log($(this).parent().parent().prop("id"));
               	$("#warning").remove();
                 $(this).parent().append(jQuantiteOpt.clone(true));
               	$("#qteOpt").attr('max', qte);
               	
               	prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);	
+
               	prixDisplay += prixTot;
               	console.log(prixDisplay);
               	ancienCoeff = 1;
               	$("#majPrix").html(prixDisplay);
-              	
+
+			              	
               }
               else if ($(this).prop("checked") == false) {
                 inputSupr = $(this).parent().find('input[type="number"]'); // on cherche dans le parent un input number 
@@ -337,36 +338,53 @@
 						type : "POST",
 						success: function(oRep){
 							console.log(oRep);
-                			$("#popUpDevis").remove(); // supprime la pop up
-							$("#ajoutOK").remove();
-                			$(".contenu").append('<div id="ajoutOK">La ferrure a bien été ajoutée au devis</div>');
-                			prixTemp = 0;
-                			prixTot = 0;
-                			prixDisplay = 0;
-                			qte = 1;
+
+                $("#popUpDevis #options tr").each(function(){
+                if($('input:checkbox[id="checkOpt"]').prop("checked", true)){
+
+                   console.log("oRep1 "+oRep);
+                  $.ajax({
+                    url: "libs/dataBdd.php",
+                    data:{"action":"OptionDevis","idFerrureDevis":oRep,"idOption":$(this).prop("id"),"qte":$(this).parent().find("td").eq(0).find('input').eq(1).val()},
+                    type : "POST",
+                    success:function (oRep){
+                     console.log(oRep);
+
+                    },// fin succes
+                    error : function(jqXHR, textStatus) {
+                      console.log("erreur");
+                    },
+
+                    dataType: "json"
+                  });// fin requête ajax
+                
+                }
+              });
+
+              $("#popUpDevis").remove(); // supprime la pop up
+              $("#ajoutOK").remove();
+                      $(".contenu").append('<div id="ajoutOK">La ferrure a bien été ajoutée au devis</div>');
+                      prixTemp = 0;
+                      prixTot = 0;
+                      prixDisplay = 0;
+                      qte = 1;
 						},
 						error : function(jqXHR, textStatus) {
 						  console.log("erreur");  
 						},
 						dataType: "json"
 					});
-				}
+
+					}
 					
              },
              "Quitter": function() {
-             	prixTemp = 0;
-		        prixTot = 0;
-		        prixDisplay = 0;
-		        qte = 1;
                 $(this).dialog("close"); // ferme la pop up 
                 $(this).remove(); // supprime la pop up
              },
          },
          close: function() { // lorsqu'on appuie sur la croix pour fermer la pop-up 
-			prixTemp = 0;
-            prixTot = 0;
-            prixDisplay = 0;
-            qte = 1;
+            console.log("Fermeture du pop-up");
             $(this).remove(); // supprime la pop up 
          }
       }); 
@@ -383,7 +401,6 @@ function genInfos() {
         console.log(oRep);
         console.log(couleurFond);
         
-        $(".product").before(jRetour.clone(true).attr('href', "index.php?view=catalogue&categorie=categ"+oRep[0].refcategories+"#"));
         $(".product").append(jTitre.clone(true).html(oRep[0].titre));
         $("#titleProduct").css("background-color", couleurFond);
         $(".row").prepend(jImg.clone(true));
@@ -623,12 +640,12 @@ function finirCommande() {
 	$("#titlePrix").append(" €");
 	
 	// select devis
-	$("#popUpDevis").append('<label for="devis" id="titleDev">Choisissez un devis préexistant : </label>');
+	$("#popUpDevis").append('<label for="devis" id="titleDev">Choisissez un devis en cours de création : </label>');
 	$("#popUpDevis").append(jDevis.clone(true));
 	
 	$.ajax({
 		url: "libs/dataBdd.php",
-		data:{"action":"DevisUser","idUser":idUser},
+		data:{"action":"ajoutDevisUser","idUser":idUser},
 		type : "GET",
 		success: function(oRep){
 			console.log(oRep);
