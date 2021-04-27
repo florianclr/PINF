@@ -26,12 +26,18 @@ a {
 p {
   margin-top: 0.7em;
 }
+
+label {
+	margin-left: 5px;
+	padding: 10px;
+	color: white;
+}
+
 .warning {
   color: rgb(62, 148, 236);
 }
 .st_viewport {
   margin: 30px;
-  max-height: 500px;
   margin-bottom: 100px;
   overflow: auto;
 }
@@ -149,8 +155,10 @@ pre {
 
 .buttonsCenter {
 	display: flex;
+	margin-top: 0;
 	align-items: center;
 	justify-content: center;
+	color: black;
 }
 
 #addD {
