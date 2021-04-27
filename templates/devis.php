@@ -265,6 +265,12 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 
   });
 
+var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="archive" id="dispArchive"/><label for="archive">Afficher les devis archivés</label></div>').click(function() {
+			  $(".st_viewport").empty();
+              generateTableUser(idUser);
+              console.log("click");
+  });
+
  	// ------ GENERATION TABELAU NON ADMIN ---//
 
  	function generateTableUser(idUser){
@@ -281,7 +287,6 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                     console.log(oRep);
                     etat = "" ;
 
-              // MYSTÈRE PQ QUAND ON LE MET EN VAR GLOBALE ÇA MARCHE PAS !!! //
                     var jlien=$("<a class='button' href='#'></a>").click(function(e){
                       console.log("test!!!");
                       idDevis = $(this).prop("id");console.log(idDevis);
@@ -295,9 +300,18 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
                       $(".st_table_header").toggle();
                       $('.test, html, body').toggleClass('open'); // indique quelle classe cacher/montrer
                     });
+                    
+                    var length;
+                    
+                    // si case cochée, on affiche les devis archivés
+                    if ($("#dispArchive").prop("checked") == true)
+                    	length = oRep.length;
+                    else
+                    	length = oRep.length - 1;
+                    
 
               	// INSERTION DEVIS DANS LE TABLEAU
-                    for (var i = 0; i < oRep.length; i++) { 
+                    for (var i = 0; i < length; i++) { 
                     	if(oRep[i].dateLivraison == null)
                     		dateLivraison = "indéfini"; 
                     	else 
@@ -736,7 +750,7 @@ function sendMail(mailDest) {
  		console.log(idDevis);
  		generateTableUser(idUser);
 		$(".st_viewport").after(jAddDevis.clone(true));
-		
+		$(".st_viewport").before(jDisplayArchive.clone(true));
  	});
 
 function SupprimerDevis() {
