@@ -217,10 +217,14 @@
   var jInputModifFer = $('</br><input class="create" type="submit" value="ENREGISTRER LES MODIFICATIONS">').click(function(){
     resetErreur(); 
     requestCreerFerrure(1); 
-    if(stopAjout ==0)
-    $("#uploadOK").html("Modification(s) enregistrée(s)").show();
+    if(stopAjout ==0) {
+    	$("#uploadOK").html("Modification(s) enregistrée(s)").show();
+    	setTimeout(function() {
+    		document.location.href="./index.php?view=catalogue";
+    	}, 2000);
+    }
     else
-      $("#uploadOK").html("Toutes les  modifications ont été enregistrées exeptées celles en rouges").show();
+      $("#uploadOK").html("Toutes les modifications ont été enregistrées exceptées celles en rouge").show();
   }); 
 
 //************************** GÉNÉRATIONS DES MODÈLES **************************//
@@ -444,7 +448,7 @@
       }
       if(modif ==1){ 
         chgt=0; 
-        requestCreateDimsFerrures(idArticle,1)
+        requestCreateDimsFerrures(idArticle,1);
         }
       }
  	 	}
@@ -782,7 +786,7 @@
           //requestAddPdfFerrures();  OK
       if(stopAjout ==0){ 
         window.alert("Ferrure ajoutée dans la base");
-        location.reload();
+        document.location.href="./index.php?view=catalogue";
       }
       }
       if (modif==1 && chgt==1){
@@ -1043,7 +1047,8 @@
             + "&matiere=" + matiere + "&finition=" + finition + "&idF=" + refFerrure,
             type : "PUT",
             success : function(oRep){
-             console.log("Ferrure modifiée , id => "); console.log(oRep); 
+             console.log("Ferrure modifiée , id => "); 
+             console.log(oRep); 
              //requestCreateDimsFerrures(oRep,1);
             },
             error : function(oRep){
@@ -1155,7 +1160,7 @@
             type : "PUT",
             success : function(oRep){
               console.log("Image et plan importés!"); console.log(oRep); 
-              return; 
+              return;
             },
             error : function(oRep){
               console.log("error"); 

@@ -143,7 +143,8 @@
               success:function (oRep){
               console.log(oRep);
               if (oRep != null) {
-            
+            	var stateObj = { foo: "bar" };
+                history.pushState(stateObj, "keyword", "index.php?view=catalogue&keyword="+$('#mot').val());
                 $(".col-lg-9").empty();
                 $(".col-lg-9").append($('<div class="row"></div>'));
                 for (var i = 0; i <oRep.length; i++) {

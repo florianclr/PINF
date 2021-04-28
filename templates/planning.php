@@ -64,39 +64,69 @@
         // is the "remove after drop" checkbox checked?
         /*if (document.getElementById('drop-remove').checked) {
           // if so, remove the element from the "Draggable Events" list si on veut supprimer l'événement une fois placé dans le calendrier : normalement oui, dans tous les cas */
-          console.log(arg);
-          var ladiv = arg.draggedEl // l'ancienne div dans la liste
+          var idDevis = info.event.id;
+          
+          $.ajax({
+              url: "libs/dataBdd.php",
+              data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
+              type : "GET",
+              success:function (oRep){
+								console.log(oRep);
+								if (oRep[0].etat != "LIVRÉ" && oRep[0].etat != "ARCHIVÉ") {
+								  var ladiv = arg.draggedEl // l'ancienne div dans la liste
 
-          var newEventID = $(ladiv).children().data("id"); // l'id du devis droppé depuis la liste
-          var newEventDate = arg.dateStr;                  // sa date à enregistrer dans la BDD
+								  var newEventID = $(ladiv).children().data("id"); // l'id du devis droppé depuis la liste
+								  var newEventDate = arg.dateStr;                  // sa date à enregistrer dans la BDD
 
-          planifierDevis(newEventDate, newEventID);
+								  planifierDevis(newEventDate, newEventID);
 
-          arg.draggedEl.parentNode.removeChild(arg.draggedEl);
+								  arg.draggedEl.parentNode.removeChild(arg.draggedEl);
 
-          location.reload();
+								  location.reload();
+								}
+              },
+                error : function(jqXHR, textStatus) {
+                    console.log("erreur");
+                    },
+                    dataType: "json"
+              });
+          
         //}
       },
 
       eventDrop: function(info) {
-          console.log(info.event)
+      		var idDevis = info.event.id;
+          console.log(info.event);
           // alert(info.event.title + "ID" + info.event.id + " was dropped on " + (info.event.start));
-          var eventID = info.event.id;
-          var dateString = info.event.start.toISOString().substr(0,10);
+          $.ajax({
+          		url: "libs/dataBdd.php",
+              data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
+              type : "GET",
+              success:function (oRep){
+								console.log(oRep);
+								if (oRep[0].etat != "LIVRÉ" && oRep[0].etat != "ARCHIVÉ") {
+								  var eventID = info.event.id;
+								  var dateString = info.event.start.toISOString().substr(0,10);
 
-          var eventDate = new Date(dateString);
+								  var eventDate = new Date(dateString);
 
-          eventDate.setDate(eventDate.getDate() + 1);
+								  eventDate.setDate(eventDate.getDate() + 1);
+								  
+								  dateString = eventDate.toISOString().substr(0,10);
+								  console.log(dateString);
+								  console.log(eventID);
+
+								  planifierDevis(dateString, eventID);
+								}
+              },
+                error: function(jqXHR, textStatus) {
+                    console.log("erreur");
+                },
+                    dataType: "json"
+              });
           
-          dateString = eventDate.toISOString().substr(0,10);
-          console.log(dateString);
-          console.log(eventID)
-
-          planifierDevis(dateString, eventID);
-
-          // TODO : regarder la doc pour suppression
-          // 
         },
+        
         eventClick: function(info) {
 
           var idDevis = info.event.id;
@@ -340,12 +370,29 @@
                   var eventStart = this.dateLivraison;
                   console.log(eventID);
 
-                  calendar.addEvent({
+									if (this.etat == "LIVRÉ") {
+										calendar.addEvent({
                       id: eventID,
                       title: eventTitle,
                       start: eventStart,
+											backgroundColor: "green",
+											borderColor: "darkgreen",
+											droppable: false,
                       allDay: true
                     });
+									}
+									else {
+										calendar.addEvent({
+                      id: eventID,
+                      title: eventTitle,
+                      start: eventStart,
+                      textColor: "black",
+											backgroundColor: "gold",
+											borderColor: "orange",
+                      allDay: true
+                    });
+									}
+                  
                 });
 
               },
@@ -393,6 +440,46 @@
 
     return newDate;
   }
+  
+  function afficherArchives() {
+  
+  	
+			$.ajax({
+		          url: "libs/dataBdd.php",
+		          data:{"action":"DevisArchives"},
+		          type : "GET",
+		          success:function (oRep){
+		              console.log(oRep);
+		              $.each( oRep, function(event) {
+		                var eventID = this.id;
+		                var eventTitle = this.nomProjet;
+		                var eventStart = this.dateLivraison;
+		                console.log(eventID);
+
+										// si case cochée, on affiche les devis archivés
+    								if ($("#dispArchive").prop("checked") == true) {
+				              calendar.addEvent({
+				                  id: eventID,
+				                  title: eventTitle,
+				                  start: eventStart,
+				                  backgroundColor: "darkgrey",
+				                  borderColor: "grey",
+				                  droppable: false,
+				                  allDay: true
+				              });
+				            }
+				            else {
+				            	console.log("decoch");
+				            	// TODO: masquer l'event avec une fonction de FullCalendar
+				            	location.reload();
+				            }
+		              });
+
+		            },
+		          dataType: "json"
+		    });
+			
+  }
 
 </script>
 <style>
@@ -401,6 +488,10 @@
     margin-top: 65px;
     font-size: 14px;
     font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  }
+  
+  label {
+  	margin-left: 5px;
   }
 
   #external-events {
@@ -419,10 +510,10 @@
 
   #external-events h4 {
     font-size: 16px;
-	font-weight: bold;
+		font-weight: bold;
     margin-top: 0;
     padding-top: 1em;
-	padding: 10px;
+		padding: 10px;
   }
 
   #external-events .fc-event {
@@ -466,6 +557,18 @@
 		font-weight: bold;
 		font-size: 16px;
 		padding: 10px;
+	}
+	
+	#archi {
+		position: fixed;
+    left: 0px;
+    top: 650px;
+    width: 250px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background: #eee;
+    text-align: left;
+    margin: 20px; 
 	}
 
   #contenu {
@@ -511,6 +614,11 @@
 	<div id="titreInfos">Informations du devis</div>
     <div id="contenu"></div>
   </div>
+  
+  <div id="archi">
+  <input type="checkbox" name="archive" id="dispArchive" onclick="afficherArchives();"/><label for="archive">Afficher les devis archivés</label>
+  </div>
+  
   </div>
 
 </body>
