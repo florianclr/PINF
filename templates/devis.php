@@ -36,7 +36,7 @@ $pseudo = valider("pseudo","SESSION");
 	var pseudo = "<?php echo $pseudo; ?>"; // TODO : sert plus à rien ??
  	var prixTotal=0;
  	var tab ;
-  var categorie;
+  var categorie, flag = 0;
 
  	//----- MODELE JQUERY -----//
 
@@ -141,7 +141,7 @@ $pseudo = valider("pseudo","SESSION");
         dataType: "json"
     });
     
-    var subject="information sur votre devis [ "+numDevis+" ] [ "+nomProjet+" ]";
+    var subject="Information sur votre devis [ "+numDevis+" ] [ "+nomProjet+" ]";
     if(commentaire=="Aucun commentaire")
       var body="Votre devis est en "+etat;
     else 
@@ -174,7 +174,7 @@ $pseudo = valider("pseudo","SESSION");
 
 var jTitre =$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
-var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimensions</td><td id="option">Option</td><td>Couleur</td><td>Prix</td></tr></table>');
+var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimensions</td><td id="option">Option</td><td>ID couleur</td><td>Prix</td></tr></table>');
 
 var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td></td><td></td><td></td><td id='prixTot'></td></tr>"); 
 
@@ -674,6 +674,8 @@ function mailClient(idDevis, subject, body) {
                     },
 
                     success: function(response) {
+                    	if (flag == 1)
+                    		SupprimerDevis();
                     },
 
                     error: function(response) { 
@@ -752,30 +754,43 @@ function sendMail(mailDest) {
 		$(".st_viewport").after(jAddDevis.clone(true));
 		$(".st_viewport").before(jDisplayArchive.clone(true));
  	});
+ 	
+function SupprimerDevisInt() {
+	var ans = confirm("Confirmer la supression du devis ? Pour prévenir de la suppression, un mail sera envoyé au créateur du devis.");
+    if (ans){ 
+		flag = 1;
+		
+		// envoi du mail
+		var numDevis=$("#numDevis").html();
+		var nomProjet=$("#nomProjet").html();
+		var subject = "Devis du projet " + nomProjet + " supprimé";
+		var body = "Le devis n° " + numDevis + " du projet "+ nomProjet +" créé par vous a été supprimé par vous-même ou un administrateur du site.";
+		mailClient(idDevis, subject, body);
+	}
+}
 
 function SupprimerDevis() {
 
-    var ans = confirm("Confirmer la supression du devis");
-    if (ans){ 
+   
       $.ajax({
       url: "libs/dataBdd.php?action=SuppDevis&idDevis="+idDevis+"&idUser="+idUser,
             type : "DELETE",
             success: function(oRep){
              console.log(oRep);
-                $("#articles").empty();
+              $("#articles").empty();
                 $(".st_table_header").toggle();
                 $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
                 $('#'+idDevis).parent().parent().remove();
                 var stateObj = { foo: "bar" };
                 history.pushState(stateObj, "Devis", "index.php?view=devis");
-
+                flag = 0;
             },
             error : function(jqXHR, textStatus) {
                 console.log("erreur");
             },
             dataType: "json"
             });
-    }
+    
 }
 
 
@@ -866,7 +881,7 @@ function annulerDevis(idDevis) {
       <button class='close' id="close">
         Fermer
       </button>
-       <input type="button" id="supp" class="supp" value="Supprimer" onclick="SupprimerDevis();" />
+       <input type="button" id="supp" class="supp" value="Supprimer" onclick="SupprimerDevisInt();" />
     </div>
   </div>
 

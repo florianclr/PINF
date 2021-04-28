@@ -332,6 +332,7 @@
 				}
 				
 				if (flag == 1 && flagA == 1 && flagB == 1 && flagC == 1) {
+				
 					$.ajax({
 						url: "libs/dataBdd.php",
 						data:{"action":"AjouterAuDevis","idUser":idUser, "refFerrures":produit, "refDevis":$("#listeDevis option:selected").val(), "quantite":qte, "a":dimA, "b":dimB, "c":dimC, "prix": prixDisplay, "couleur":couleurF},
