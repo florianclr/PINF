@@ -373,6 +373,11 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		return parcoursRs(SQLSelect($SQL));
 	}
 
+	function getDevisArchives() {
+		$SQL="SELECT * FROM devis WHERE dateLivraison IS NOT NULL AND etat='ARCHIVÉ'";
+		return parcoursRs(SQLSelect($SQL));
+	}
+
 	function planifierDevis($id, $date) {
 		$SQL="UPDATE devis SET dateLivraison='$date', etat='EN_FABRICATION' WHERE id='$id'";
 		return SQLUpdate($SQL);

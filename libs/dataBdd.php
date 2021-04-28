@@ -497,6 +497,11 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
+			case 'GET_DevisArchives' :
+                $tab = getDevisArchives();
+                echo(json_encode($tab));
+            break;
+
             case 'POST_PlanifierDevis' :
                 if($id=valider("id"))
                 if($date=valider("date"))
