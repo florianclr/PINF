@@ -358,7 +358,7 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 		$SQL="INSERT INTO ferruresDevis (refFerrures,refDevis,quantite,a,b,c,prix,couleur) VALUES ('$refFerrures','$refDevis','$quantite','$a','$b','$c','$prix','$couleur');
 			UPDATE devis SET PrixTotal=PrixTotal+$prix WHERE id='$refDevis'";
 		
-		return SQLUpdate($SQL);
+		return SQLInsert($SQL);
 	}
 	
 	/***********************************************************/
