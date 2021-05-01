@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Mar 19 Janvier 2021 à 11:25
--- Version du serveur :  5.7.32-0ubuntu0.18.04.1
+-- Généré le :  Sam 01 Mai 2021 à 16:28
+-- Version du serveur :  5.7.33-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,20 +28,43 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `catalogue` (
   `id` int(11) NOT NULL,
-  `nomCategorie` varchar(255) NOT NULL
+  `nomCategorie` varchar(255) NOT NULL,
+  `couleur` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `catalogue`
 --
 
-INSERT INTO `catalogue` (`id`, `nomCategorie`) VALUES
-(1, 'Vidéo'),
-(2, 'Audio'),
-(3, 'Affichage'),
-(4, 'Accés Sécurité'),
-(5, 'CFO CFA'),
-(6, 'Tout');
+INSERT INTO `catalogue` (`id`, `nomCategorie`, `couleur`) VALUES
+(1, 'Vidéo', '#0000CD'),
+(2, 'Audio', '#8B0000'),
+(3, 'Affichage', '#9ACD32'),
+(4, 'Accès / Sécurité', '#4B0082'),
+(5, 'CFO / CFA', '#008B8B'),
+(6, 'Tout', '#000000'),
+(8, 'Test', '#e7650d');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `couleursFerrures`
+--
+
+CREATE TABLE `couleursFerrures` (
+  `id` int(11) NOT NULL,
+  `couleur` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `couleursFerrures`
+--
+
+INSERT INTO `couleursFerrures` (`id`, `couleur`) VALUES
+(1, 'Noir'),
+(2, 'Gris foncé'),
+(3, 'Gris'),
+(4, 'Autre');
 
 -- --------------------------------------------------------
 
@@ -56,11 +79,23 @@ CREATE TABLE `devis` (
   `nomProjet` varchar(255) NOT NULL,
   `nomClient` varchar(255) NOT NULL,
   `dateCreation` date NOT NULL,
-  `etat` varchar(255) NOT NULL,
+  `etat` enum('EN_CRÉATION','DEMANDE_COMMANDE','COMMANDE_VALIDÉE','EN_FABRICATION','LIVRÉ','ARCHIVÉ') DEFAULT 'EN_CRÉATION',
   `dateLivraison` date DEFAULT NULL,
   `commentaire` text,
-  `PrixTotal` float NOT NULL
+  `PrixTotal` float DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `devis`
+--
+
+INSERT INTO `devis` (`id`, `numeroDevis`, `refCA`, `nomProjet`, `nomClient`, `dateCreation`, `etat`, `dateLivraison`, `commentaire`, `PrixTotal`) VALUES
+(1, '11', 1, 'essai', 'essai', '2021-02-23', 'ARCHIVÉ', '2021-04-30', NULL, 1305),
+(2, '23', 1, 'Ferme', 'Benoit', '2021-02-23', 'DEMANDE_COMMANDE', NULL, NULL, 0),
+(4, '2', 1, 'Chantier1', 'Jeanne', '2021-04-09', 'LIVRÉ', '2021-04-01', 'Aucun commentaire', 952),
+(8, '4', 2, 'Chantier3', 'Pierre', '2021-03-30', 'LIVRÉ', '2021-05-12', 'Aucun commentaire', 0),
+(11, '12', 4, 'Chantier6', 'Johnson', '2021-04-24', 'EN_FABRICATION', '2021-05-06', NULL, 0),
+(14, '1234', 2, 'testNew', 'Beubeu', '2021-04-28', 'EN_CRÉATION', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -77,6 +112,16 @@ CREATE TABLE `dimension` (
   `incluePrix` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Contenu de la table `dimension`
+--
+
+INSERT INTO `dimension` (`id`, `min`, `max`, `refFerrures`, `nom`, `incluePrix`) VALUES
+(1, 20, 50, 1, 'a', 0),
+(2, 80, 100, 1, 'b', 0),
+(3, 0.7, 3, 2, 'a', 1),
+(4, 2.1, 5.7, 2, 'b', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -85,11 +130,11 @@ CREATE TABLE `dimension` (
 
 CREATE TABLE `ferrures` (
   `id` int(11) NOT NULL,
-  `image` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `refMatiere` int(11) NOT NULL,
   `refFinition` int(11) NOT NULL,
-  `numeroPlan` varchar(255) NOT NULL,
-  `planPDF` varchar(255) NOT NULL,
+  `numeroPlan` varchar(255) DEFAULT NULL,
+  `planPDF` varchar(255) DEFAULT NULL,
   `refcategories` int(11) NOT NULL,
   `description` text NOT NULL,
   `titre` varchar(255) NOT NULL,
@@ -101,14 +146,21 @@ CREATE TABLE `ferrures` (
 --
 
 INSERT INTO `ferrures` (`id`, `image`, `refMatiere`, `refFinition`, `numeroPlan`, `planPDF`, `refcategories`, `description`, `titre`, `tags`) VALUES
-(1, 'image1', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau ', 'support video'),
-(2, 'image2', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable', 'support video'),
-(3, 'image3', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable', 'scocle vidéo'),
-(4, 'image4', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant', 'video'),
-(5, 'image1', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier', ''),
-(6, 'image2', 1, 1, '03-0235-001', 'pdf', 2, 'applique', 'applique', ''),
-(7, 'image3', 1, 1, '03-0136-001', 'pdf', 2, 'suspente', 'suspente', ''),
-(8, 'image4', 1, 1, '03-0237-001', 'pdf', 2, 'drapeau', 'drapeau', '');
+(1, 'image1.jpeg', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau ', 'support video'),
+(2, 'image2.jpeg', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable', 'support video'),
+(3, 'image1.jpeg', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable', 'scocle vidéo'),
+(4, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant', 'video'),
+(5, 'image1.jpeg', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier', ''),
+(9, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF10', 2, 'TEST', 'test ferrure', 'ferrure'),
+(10, 'image1.jpeg', 2, 2, '03-0174-00', 'PDF11', 2, 'TEST', 'test ferrure 2', 'ferrure'),
+(11, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF4', 8, 'test', 'ferrure test', 'test'),
+(18, 'Q3.png', 1, 1, 'SDA2-TP5.pdf', 'SDA2-TP5.pdf', 8, 'frgh', 'qsdcfvg', 'efrgth;qsdcfvg;Test;Acier S235JR;Thermolaqué'),
+(24, 'addFriendPicture.png', 1, 1, 'ISIM TP4 2016.pdf', 'ISIM TP4 2016.pdf', 8, 'n', 'new', 'u;new;Test;Acier S235JR;Thermolaqué'),
+(25, 'addFriendPicture.png', 1, 1, 'secret (1).pdf', 'secret (1).pdf', 8, 'n', 'new2', 'u;new;Test;Acier S235JR;Thermolaqué'),
+(26, 'Truck-Blue.png', 1, 1, 'null', 'null', 8, 'this', 'this', ';this;Test;Acier S235JR;Thermolaqué;undefined'),
+(29, 'zenity-information-screenshot.png', 1, 1, 'null', 'null', 8, 'zertgy', 'hey', 'edqfrgthy;hey;Test;Acier S235JR;Thermolaqué;undefined'),
+(30, 'webclip-icon.png', 1, 1, 'null', 'null', 8, 'edfrgh', 'test3', 'rfgtrh;test3;Test;Acier S235JR;Thermolaqué;undefined'),
+(31, 'tree.jpg', 1, 1, 'null', 'null', 8, 'fdghnj,fbgnh', 'dvfbgnh', ';dvfbgnh;Test;Acier S235JR;Thermolaqué;undefined');
 
 -- --------------------------------------------------------
 
@@ -124,8 +176,21 @@ CREATE TABLE `ferruresDevis` (
   `a` float DEFAULT NULL,
   `b` float DEFAULT NULL,
   `c` float DEFAULT NULL,
-  `prix` float NOT NULL
+  `prix` float NOT NULL,
+  `couleur` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `ferruresDevis`
+--
+
+INSERT INTO `ferruresDevis` (`id`, `refFerrures`, `refDevis`, `quantite`, `a`, `b`, `c`, `prix`, `couleur`) VALUES
+(16, 1, 1, 1, 20, 80, -1, 308, 2),
+(18, 1, 1, 1, 20, 80, -1, 343, 3),
+(19, 1, 1, 2, 20, 80, -1, 346, 1),
+(21, 1, 1, 1, 20, 80, -1, 308, 2),
+(22, 1, 4, 3, 21, 100, -1, 554, 2),
+(28, 2, 4, 1, 0.7, 2.1, -1, 398, 2);
 
 -- --------------------------------------------------------
 
@@ -184,7 +249,29 @@ CREATE TABLE `option` (
 
 INSERT INTO `option` (`id`, `nom`, `prix`, `refFerrures`) VALUES
 (1, 'Plus-value contre plaqué', 6, 1),
-(2, 'Plus-value hauteur / ml', 35, 1);
+(2, 'Plus-value hauteur / ml', 35, 1),
+(4, 'test', 10, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `optionDevis`
+--
+
+CREATE TABLE `optionDevis` (
+  `quantité` int(11) NOT NULL,
+  `refOption` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `refFerrureDevis` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `optionDevis`
+--
+
+INSERT INTO `optionDevis` (`quantité`, `refOption`, `id`, `refFerrureDevis`) VALUES
+(1, 1, 1, 16),
+(1, 2, 2, 16);
 
 -- --------------------------------------------------------
 
@@ -234,7 +321,7 @@ CREATE TABLE `utilisateur` (
   `id` int(11) NOT NULL,
   `nom` varchar(255) NOT NULL,
   `prenom` varchar(255) NOT NULL,
-  `mdp` varchar(255) NOT NULL,
+  `mdp` varchar(255) DEFAULT NULL,
   `mail` varchar(255) NOT NULL,
   `telephone` int(11) NOT NULL,
   `connecte` tinyint(1) DEFAULT '0',
@@ -246,7 +333,11 @@ CREATE TABLE `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mdp`, `mail`, `telephone`, `connecte`, `admin`) VALUES
-(1, 'benoit', 'admin', 'admin', 'admin@admin.com', 215, 1, 1);
+(1, 'benoit', 'admin', 'admin', 'benoit.blart@ig2i.centralelille.fr', 123, 0, 0),
+(2, 'Sueur', 'Jeanne', 'jeanne', 'jsu62n@orange.fr', 679296422, 0, 1),
+(3, 'Faget', 'Pierre', 'pierro', 'pierre@ig2i.fr', 1234, 0, 2),
+(4, 'Dumont', 'Mathilde', 'math', 'mathilde@ig2i.fr', 101, 0, 0),
+(5, 'Durand', 'Isabelle', '1b1802', 'isa@ig2i.fr', 909, 0, 1);
 
 --
 -- Index pour les tables exportées
@@ -256,6 +347,12 @@ INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mdp`, `mail`, `telephone`, `c
 -- Index pour la table `catalogue`
 --
 ALTER TABLE `catalogue`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `couleursFerrures`
+--
+ALTER TABLE `couleursFerrures`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -287,7 +384,8 @@ ALTER TABLE `ferrures`
 ALTER TABLE `ferruresDevis`
   ADD PRIMARY KEY (`id`),
   ADD KEY `refDevis` (`refDevis`),
-  ADD KEY `refFerrures` (`refFerrures`);
+  ADD KEY `refFerrures` (`refFerrures`),
+  ADD KEY `couleur` (`couleur`);
 
 --
 -- Index pour la table `finition`
@@ -307,6 +405,14 @@ ALTER TABLE `matiere`
 ALTER TABLE `option`
   ADD PRIMARY KEY (`id`),
   ADD KEY `refFerrures` (`refFerrures`);
+
+--
+-- Index pour la table `optionDevis`
+--
+ALTER TABLE `optionDevis`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `optioDevis_ibfk_2` (`refOption`),
+  ADD KEY `optioDevis_ibfk_3` (`refFerrureDevis`);
 
 --
 -- Index pour la table `prix`
@@ -329,27 +435,32 @@ ALTER TABLE `utilisateur`
 -- AUTO_INCREMENT pour la table `catalogue`
 --
 ALTER TABLE `catalogue`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT pour la table `couleursFerrures`
+--
+ALTER TABLE `couleursFerrures`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `devis`
 --
 ALTER TABLE `devis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT pour la table `dimension`
 --
 ALTER TABLE `dimension`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `ferrures`
 --
 ALTER TABLE `ferrures`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 --
 -- AUTO_INCREMENT pour la table `ferruresDevis`
 --
 ALTER TABLE `ferruresDevis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 --
 -- AUTO_INCREMENT pour la table `finition`
 --
@@ -364,7 +475,12 @@ ALTER TABLE `matiere`
 -- AUTO_INCREMENT pour la table `option`
 --
 ALTER TABLE `option`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT pour la table `optionDevis`
+--
+ALTER TABLE `optionDevis`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
 -- AUTO_INCREMENT pour la table `prix`
 --
@@ -374,7 +490,7 @@ ALTER TABLE `prix`
 -- AUTO_INCREMENT pour la table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- Contraintes pour les tables exportées
 --
@@ -404,13 +520,21 @@ ALTER TABLE `ferrures`
 --
 ALTER TABLE `ferruresDevis`
   ADD CONSTRAINT `ferruresDevis_ibfk_1` FOREIGN KEY (`refDevis`) REFERENCES `devis` (`id`),
-  ADD CONSTRAINT `ferruresDevis_ibfk_2` FOREIGN KEY (`refFerrures`) REFERENCES `ferrures` (`id`);
+  ADD CONSTRAINT `ferruresDevis_ibfk_2` FOREIGN KEY (`refFerrures`) REFERENCES `ferrures` (`id`),
+  ADD CONSTRAINT `ferruresDevis_ibfk_3` FOREIGN KEY (`couleur`) REFERENCES `couleursFerrures` (`id`);
 
 --
 -- Contraintes pour la table `option`
 --
 ALTER TABLE `option`
   ADD CONSTRAINT `option_ibfk_1` FOREIGN KEY (`refFerrures`) REFERENCES `ferrures` (`id`);
+
+--
+-- Contraintes pour la table `optionDevis`
+--
+ALTER TABLE `optionDevis`
+  ADD CONSTRAINT `optioDevis_ibfk_2` FOREIGN KEY (`refOption`) REFERENCES `option` (`id`),
+  ADD CONSTRAINT `optioDevis_ibfk_3` FOREIGN KEY (`refFerrureDevis`) REFERENCES `ferruresDevis` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `prix`
