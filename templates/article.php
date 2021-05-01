@@ -340,13 +340,16 @@
 						success: function(oRep){
 							console.log(oRep);
 
-                $("#popUpDevis #options tr").each(function(){
+                $("#popUpDevis #options #qteOpt").each(function(){
                 if($('input:checkbox[id="checkOpt"]').prop("checked", true)){
-
-                   console.log("oRep1 "+oRep);
+				
+                   /*console.log("ID ferrureDevis -> "+oRep);
+                   console.log("ID option -> "+$(this).parent().parent().prop("id"));
+                   console.log("qte opt -> "+$(this).val());*/
+                   
                   $.ajax({
                     url: "libs/dataBdd.php",
-                    data:{"action":"OptionDevis","idFerrureDevis":oRep,"idOption":$(this).prop("id"),"qte":$(this).parent().find("td").eq(0).find('input').eq(1).val()},
+                    data:{"action":"OptionDevis","idFerrureDevis":oRep,"idOption":$(this).parent().parent().prop("id"),"qte":$(this).val()},
                     type : "POST",
                     success:function (oRep){
                      console.log(oRep);

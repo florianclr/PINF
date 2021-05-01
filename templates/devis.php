@@ -174,7 +174,7 @@ $pseudo = valider("pseudo","SESSION");
 
 var jTitre =$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
-var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimensions</td><td id="option">Option</td><td>ID couleur</td><td>Prix</td></tr></table>');
+var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimension(s)</td><td id="option">Option(s)</td><td>ID couleur</td><td>Prix</td></tr></table>');
 
 var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td></td><td></td><td></td><td id='prixTot'></td></tr>"); 
 
@@ -498,7 +498,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="a
 
 
 			        	$("#lig0")
-			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td></td><td id="dim'+i+'"">dim1 : '+oRep[i].a+' dim2 : '+oRep[i].b+' dim3 : '+oRep[i].c+'</td><td>'+oRep[i].couleur+'</td><td class="tabDevis"id="prix'+i+'""></tr>'));
+			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td></td><td id="dim'+i+'""><b>dim1 : </b>'+oRep[i].a+'</br><b>dim2 : </b>'+oRep[i].b+'</br><b>dim3 : </b>'+oRep[i].c+'</td><td>'+oRep[i].couleur+'</td><td class="tabDevis"id="prix'+i+'""></tr>'));
 
 			        	console.log($("#etat").text());
 			        	if($("#etat").text() =="EN_CRÉATION"  ||( admin==1 || admin==2)){
@@ -542,13 +542,13 @@ function insererOption(id,i) {
 
                         if($("#opt").length >0){
 
-                          var option="</br>- "+oRep[j].nom +"<b> x"+oRep[j].quantité+"</b>";
+                          var option="- "+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br>";
                           $("#opt").append(option);
                           console.log("exist");
                         }
                         else {
-
-                        $("#dim"+i).after('<td id="opt">- '+oRep[j].nom +"<b> x"+oRep[j].quantité+"</b></td>"); 
+						// création de la case option si elle n'existe pas
+                        $("#dim"+i).after('<td id="opt">- '+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br></td>"); 
                       }
 
 

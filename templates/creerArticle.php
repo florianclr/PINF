@@ -219,9 +219,6 @@
     requestCreerFerrure(1); 
     if(stopAjout ==0) {
     	$("#uploadOK").html("Modification(s) enregistrée(s)").show();
-    	setTimeout(function() {
-    		document.location.href="./index.php?view=catalogue";
-    	}, 2000);
     }
     else
       $("#uploadOK").html("Toutes les modifications ont été enregistrées exceptées celles en rouge").show();
@@ -522,8 +519,8 @@
 
  			if(tab[i].checked == true){
  				var nom = tab[i].value;
- 				if(min = verifInputTableau(tab[i+1].value,"Tableau des dimensions","dimention minimale",ligne,"number",1,tab[i+1]))
- 					if(max = verifInputTableau(tab[i+2].value,"Tableau des dimensions","dimention maximale",ligne,"number",1,tab[i+2])){
+ 				if(min = verifInputTableau(tab[i+1].value,"tableau des dimensions","Dimension minimale",ligne,"number",1,tab[i+1]))
+ 					if(max = verifInputTableau(tab[i+2].value,"tableau des dimensions","Dimension maximale",ligne,"number",1,tab[i+2])){
  						if($('input:radio[value='+nom+']').prop("checked") == true)
               incluePrix = 1 ;
             else 
@@ -816,7 +813,7 @@
  		if(contenu.trim() == ""){ // La méthode trim() permet de retirer les blancs en début et fin de chaîne. 
  		//Les blancs considérés sont les caractères d'espacement (espace, tabulation, espace insécable, etc.) 
  		//ainsi que les caractères de fin de ligne (LF, CR, etc.).
-        var msg = idElement + " vide !!" ; 
+        var msg = idElement + " vide !" ; 
         $("#"+idElement).addClass("error");
     		console.log(msg);
         displayErreur(msg); 
@@ -842,7 +839,7 @@
  		}
 
  		if(typeInput="number" && valueInput < valMin){
- 			var msg = nomCol + " érroné dans le " + nomTab + " à la ligne " + numLigne ; 
+ 			var msg = nomCol + " erronée dans le " + nomTab + " à la ligne " + numLigne ; 
  			console.log(msg); 
       displayErreur(msg);
       $(refError).addClass("error"); 
@@ -869,7 +866,7 @@
     }
     else{
       msgAct=$("#erreur").html(); 
-      $("#erreur").html(msgAct+"<br>"+msg).show();
+      $("#erreur").html(msgAct+msg).show();
     }
   }
 

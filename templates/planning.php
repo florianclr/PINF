@@ -64,15 +64,7 @@
         // is the "remove after drop" checkbox checked?
         /*if (document.getElementById('drop-remove').checked) {
           // if so, remove the element from the "Draggable Events" list si on veut supprimer l'événement une fois placé dans le calendrier : normalement oui, dans tous les cas */
-          var idDevis = info.event.id;
           
-          $.ajax({
-              url: "libs/dataBdd.php",
-              data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
-              type : "GET",
-              success:function (oRep){
-								console.log(oRep);
-								if (oRep[0].etat != "LIVRÉ" && oRep[0].etat != "ARCHIVÉ") {
 								  var ladiv = arg.draggedEl // l'ancienne div dans la liste
 
 								  var newEventID = $(ladiv).children().data("id"); // l'id du devis droppé depuis la liste
@@ -83,13 +75,6 @@
 								  arg.draggedEl.parentNode.removeChild(arg.draggedEl);
 
 								  location.reload();
-								}
-              },
-                error : function(jqXHR, textStatus) {
-                    console.log("erreur");
-                    },
-                    dataType: "json"
-              });
           
         //}
       },
@@ -117,6 +102,10 @@
 								  console.log(eventID);
 
 								  planifierDevis(dateString, eventID);
+								}
+								else {
+									alert("Le changement de date n'a pas pu être pris en compte car la commande n'est plus en fabrication.");
+									location.reload();
 								}
               },
                 error: function(jqXHR, textStatus) {
