@@ -11,7 +11,6 @@
 
 $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
-  
 
 if ($checked = valider("remember", "COOKIE")) $checked = "checked"; 
 
@@ -36,7 +35,11 @@ var popupCreate = $("<div id='popup' title='Créer un compte'>")
 				.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
 				.append($("<label class='champ'>Prénom :</label><input type='text' id='firstname'></br>"))
     			.append($("<label class='champ'>Mail :</label><input type='email' id='mail'></br>"))
-				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>")); 
+				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>"));
+				
+var popupMdp = $("<div id='popupM' title='Changer le mot de passe'>")
+                .append($('<label class="champ">Ancien mot de passe :</label><input type="password" id="ancienMdp"><label for="displayPasse1" id="labelDisplayPasse1"><input type="checkbox" id="displayPasse1" onclick="Afficher();"/>Afficher</label></br>'))
+                .append($('<label class="champ">Nouveau mot de passe :</label><input type="password" id="nouveauMdp"> <label for="displayPasse2" id="labelDisplayPasse2"><input type="checkbox" id="displayPasse2" onclick="Afficher();"/>Afficher</label></br>'));
 
 
 function connexion() {
@@ -95,30 +98,17 @@ function updateInfos(idUser) {
 	if ($connecte)
 	{
 		?>
-		var passe = '<?php echo $passe;?>';
+		//var passe = '<?php echo $passe;?>';
 		var mail = '<?php echo $mail;?>';
 		var tel = '<?php echo $tel;?>';
 
-		var newPasse = $.trim($("#passe").val());
+		//var newPasse = $.trim($("#passe").val());
 		var newMail = $.trim($("#mail").val());
 		var newTel = $.trim($("#tel").val());
 
-		console.log(newPasse);
+		//console.log(newPasse);
 		console.log(newMail);
 		console.log(newTel);
-
-		if (passe != newPasse)
-		{
-			$.ajax({
-                    url: "libs/dataBdd.php?action=Info&info=mdp&value="+newPasse,
-                    type : "PUT",
-                    success: function (oRep){
-                    	console.log(oRep);
-						$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
-                    },
-                    dataType: "json"
-                });
-		}
 
 		if (mail != newMail)
 		{
@@ -211,7 +201,7 @@ function sendMail(mailDestinataire) {
 
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
-		var subject = "Demande d\'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
+		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
 		var body = "Veuillez valider ou refuser la cr&eacute;ation du compte sur votre page administrateur.";
 
 		$.ajax({
@@ -292,14 +282,57 @@ function emailDoublon(){
             });
 }
 
-$(document).ready(function() {
-	$("#displayPasse").click(function() {
-		if ($("#displayPasse").prop("checked") == true)
-			$("#passe").attr("type", "text");
-		else if ($("#displayPasse").prop("checked") == false)
-			$("#passe").attr("type", "password");
-	});
-});
+function changerMdp() {
+	$("#modifOK").remove(); 
+    $("#compte").append(popupMdp.clone(true));
+    $("#popupM").dialog({
+         modal: true, // permet de rendre le reste de la page inaccesible tant que la pop up est ouverte
+         height: 330,
+         width: 400,
+         buttons: { // on ajoute des boutons à la pop up 
+             "Changer": function(){
+             	oldMdp = $("#ancienMdp").val();
+				newMdp = $("#nouveauMdp").val();
+             	$.ajax({
+                    url: "libs/dataBdd.php?action=changeMdp&oldMdp="+ oldMdp + "&newMdp=" + newMdp ,
+                    type : "PUT",
+                    success: function (oRep){
+                    	console.log(oRep);
+						$("#compte").before("<div id='modifOK'>Mot de passe changés </div>");
+                    },
+                    error: function(oRep){
+                    	$("#compte").before("<div id='modifOK'>Ancien ou nouveau mot de passe invalide</div>"); 
+                    },
+                    dataType: "json"
+                });
+                $(this).dialog("close"); // ferme la pop up 
+                $(this).remove(); // supprime la pop up
+             },
+             "Annuler": function() {
+                   $(this).dialog("close"); // ferme la pop up 
+                   $(this).remove(); // supprime la pop up
+             },
+         },
+         close: function() { // lorsque on appui sur la croix pour fermer la pop up 
+            console.log("Fermeture du pop-up");
+            $(this).remove(); // supprime la pop up 
+         }
+    }); // DOC jquery UI : https://jqueryui.com/dialog/#modal-message
+}
+
+function Afficher() {
+
+    if ($("#displayPasse1").prop("checked") == true)
+            $("#ancienMdp").attr("type", "text");
+        else if ($("#displayPasse1").prop("checked") == false)
+            $("#ancienMdp").attr("type", "password");
+
+        if ($("#displayPasse2").prop("checked") == true)
+            $("#nouveauMdp").attr("type", "text");
+        else if ($("#displayPasse2").prop("checked") == false)
+            $("#nouveauMdp").attr("type", "password");
+
+}
 
 </script>
 
@@ -311,18 +344,14 @@ if ($connecte)
 ?>
 	<br/><br/>
 	<div id="compte">
-			<h1 class="my-4">Mon compte</h1>
-			<h4>Modifier mes informations</h4><br/>
-			Mot de passe : <input type="password" id="passe"  value="<?php echo $passe;?>"/>
-			<label for="displayPasse" id="labelDisplayPasse">
-				<input type="checkbox" id="displayPasse"/>
-				Afficher
-			</label>
-			<br/><br/>
-			Mail : <input type="text" id="mail" value="<?php echo $mail;?>"/><br/><br/>
-			Tél : <input type="text" id="tel"  value="<?php echo $tel;?>"/><br/><br/>
-			<input type="submit" name="action" value="Valider" onclick="updateInfos('<?php echo $_SESSION["idUser"];?>');"/><br/><br/>
-	</div>
+            <h1 class="my-4">Mon compte</h1>
+            <h4>Modifier mes informations</h4><br/>
+            <input type="submit" value="Modifier le mot de passe" onclick="changerMdp();"/>
+            <br/><br/>
+            Mail : <input type="text" id="mail" value="<?php echo $mail;?>"/><br/><br/>
+            Tél : <input type="text" id="tel"  value="<?php echo $tel;?>"/><br/><br/>
+            <input type="submit" name="action" value="Valider" onclick="updateInfos('<?php echo $_SESSION["idUser"];?>');"/><br/><br/>
+    </div>
 	<br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 <?php
