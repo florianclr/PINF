@@ -123,18 +123,16 @@ function destinataire($idUser,$idUserD)
 
 /****************************************************************************/
 
-function verifUserBdd($login,$passe)
+function verifUserBdd($login)
 {
-	// Vérifie l'identité d'un utilisateur 
-	// dont les identifiants sont passes en paramètre
-	// renvoie faux si user inconnu
-	// renvoie l'id de l'utilisateur si succès
-
-	$SQL="SELECT id FROM utilisateur WHERE mail='$login' AND mdp='$passe'";
-
-	return SQLGetChamp($SQL);
-	// si on avait besoin de plus d'un champ
-	// on aurait du utiliser SQLSelect
+    // Vérifie l'identité d'un utilisateur 
+    // dont les identifiants sont passes en paramètre
+    // renvoie faux si user inconnu
+    // renvoie l'id de l'utilisateur si succès
+    $SQL="SELECT id FROM utilisateur WHERE mail='$login'";
+    return SQLGetChamp($SQL);
+    // si on avait besoin de plus d'un champ
+    // on aurait du utiliser SQLSelect
 }
 
 
@@ -181,6 +179,11 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	$SQL="INSERT INTO utilisateur (nom, prenom, mail, telephone)  VALUES ('$nom', '$prenom', '$mail', '$telephone')";
 	return SQLInsert($SQL);
 } 
+
+function getMdp($login){
+    $SQL="SELECT mdp FROM utilisateur WHERE mail='$login'";
+    return SQLGetChamp($SQL);
+}
 
 
 	function ajouterPrix($prixU, $refFerrures,$qteMin,$qteMax,$dimMin, $dimMax)

@@ -18,10 +18,16 @@ include_once "modele.php";	// Car on utilise la fonction connecterUtilisateur()
  * @param string $password
  * @return false ou true ; un effet de bord est la création de variables de session
  */
+
+
 function verifUser($login,$password)
 {
-	
-	$id = verifUserBdd($login,$password);
+	$hash = getMdp($login);
+	if(password_verify($password,$hash)==1){
+		$id = verifUserBdd($login);
+	}
+	else 
+		$id = null ; 
 
 	if (!$id) return false; 
 	$tab=getCompte($id, 2);
@@ -35,8 +41,25 @@ function verifUser($login,$password)
 	$_SESSION["connecte"] = true;
 	$_SESSION["heureConnexion"] = date("H:i:s");
 	$_SESSION["isAdmin"] = isAdmin($id);
+	$_SESSION["mail"] = $login ; 
 
 	return true;	
+}
+
+function changeMdp($oldPassword,$newPassword){
+
+	$login = $_SESSION["mail"] ; 
+	$hash = getMdp($login);
+
+	if(password_verify($oldPassword,$hash)==1){
+
+		$newHash=password_hash($newPassword,PASSWORD_DEFAULT,['cost' => 12]); 
+		updateInfo($_SESSION['idUser'],"mdp", $newHash);
+		return true ; 
+	}
+
+	else
+		return false ; 
 }
 
 ?>

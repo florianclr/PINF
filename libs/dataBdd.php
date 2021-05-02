@@ -22,32 +22,32 @@ if ($action = valider("action"))
 
 	switch($request) {	
 		case 'GET_Connexion' : 
-									if ($login = valider("login"))
-									if ($passe = valider("passe")){
+                                    if ($login = valider("login"))
+                                    if ($passe = valider("passe")){
 
-									if(verifUser($login,$passe)){
+                                    if(verifUser($login,$passe)){
 
-										//die($_SESSION['idUser']); // pour debug !!!!!!
-										if (valider("remember")) {
-										setcookie("login",$login , time()+60*60*24*30,"/");
-										setcookie("passe",$passe, time()+60*60*24*30,"/");
-										setcookie("remember",true, time()+60*60*24*30,"/");
-										} 
-										else {
-										setcookie("login","", time()-3600,"/");
-										setcookie("passe","", time()-3600,"/");
-										setcookie("remember",false, time()-3600,"/");
-										//die($_SESSION['idUser']); // pour debug !!!!!!
+                                        //die($_SESSION['idUser']); // pour debug !!!!!!
+                                        if (valider("remember")) {
+                                        setcookie("login",$login , time()+60*60*24*30,"/");
+                                        setcookie("passe",$passe, time()+60*60*24*30,"/");
+                                        setcookie("remember",true, time()+60*60*24*30,"/");
+                                        } 
+                                        else {
+                                        setcookie("login","", time()-3600,"/");
+                                        setcookie("passe","", time()-3600,"/");
+                                        setcookie("remember",false, time()-3600,"/");
+                                        //die($_SESSION['idUser']); // pour debug !!!!!!
 
-										}
-										// On écrit seulement après cette entête
+                                        }
+                                        // On écrit seulement après cette entête
 
-										echo($_SESSION['idUser']); 
-									}
-								}
-								//die("test");
-								
-			break ; 
+                                        echo($_SESSION['idUser']); 
+                                    }
+                                }
+                                //die("test");
+                                
+            break ; 
 
 			case 'GET_Deconnexion' :
 				if($_SESSION["connecte"] = true){
@@ -113,6 +113,15 @@ if ($action = valider("action"))
 					echo(json_encode($tab));
 				}
 			break;
+			
+			case 'PUT_changeMdp': 
+            
+                if($oldMdp=valider("oldMdp"))
+                if($newdMdp=valider("newMdp")){
+                    if(changeMdp($oldMdp,$newdMdp)==true)
+                       echo($_SESSION['idUser']);                         
+                }
+            break;
 
 			case 'GET_Prix' :
                 if($idProduit=valider("idProduit"))
