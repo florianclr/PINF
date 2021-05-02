@@ -68,9 +68,9 @@ $pseudo = valider("pseudo","SESSION");
         console.log("old=>"+oldEtat);
     
         if( (newEtat == 'LIVRÉ' || newEtat == 'EN_FABRICATION') &&  date==null){
-          alert("Veuillez sélectionner une date de livraison avant de changer l'état");
+          alert("Veuillez sélectionner une date de livraison avant de changer l'état.");
           $(this).val($("#etat").data("current"));
-          return ; 
+          return; 
         }
         if (newEtat == 'COMMANDE_VALIDÉE'){
           $("#dateLivraison").replaceWith(jDate.clone(true));
@@ -79,13 +79,13 @@ $pseudo = valider("pseudo","SESSION");
         }
 
         if ( newEtat=="EN_CRÉATION" && (oldEtat != "EN_CRÉATION" || oldEtat != "DEMANDE_COMMANDE") ){
-          alert("Impossible de revenir dans cette état !!!");
-          return ; 
+          alert("Impossible de revenir dans cet état !");
+          return; 
         }
 
         if ( newEtat =="LIVRÉ" && (oldEtat == "EN_CRÉATION" || oldEtat =="DEMANDE_COMMANDE")){
-          alert("Impossible de livrer le devis il doit d'abord être passé en commande ");
-          return ; 
+          alert("Impossible de livrer le devis car il doit d'abord être passé en commande.");
+          return; 
         }
 
         if (oldEtat == "EN_FABRICATION" && newEtat =="COMMANDE_VALIDÉE"){
@@ -116,7 +116,7 @@ $pseudo = valider("pseudo","SESSION");
  	//EN_CRÉATION
  	//DEMANDE_COMMANDE
  	//COMMANDE_VALIDÉE
- 	//EN_COURS_DE_FABRICATION
+ 	//EN_FABRICATION
  	//LIVRÉ
  	//ARCHIVÉ
 
@@ -141,11 +141,11 @@ $pseudo = valider("pseudo","SESSION");
         dataType: "json"
     });
     
-    var subject="Information sur votre devis [ "+numDevis+" ] [ "+nomProjet+" ]";
+    var subject="Information sur votre devis ["+numDevis+"] ["+nomProjet+"]";
     if(commentaire=="Aucun commentaire")
-      var body="Votre devis est en "+etat;
+      var body="Votre devis est pass&eacute; dans l'&eacute;tat : "+etat;
     else 
-    	var body="Votre devis est en "+etat+" commentaire : "+commentaire;
+    	var body="Votre devis est pass&eacute; dans l'&eacute;tat : "+etat+". L'administrateur a ajout&eacute; le commentaire suivant : "+commentaire;
     mailClient(idDevis, subject, body);
     
   });
@@ -174,13 +174,13 @@ $pseudo = valider("pseudo","SESSION");
 
 var jTitre =$('<div class="card h-100" id="titleProduct"><h4 class="card-title"></h4></div>');
 
-var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimension(s)</td><td id="option">Option(s)</td><td>ID couleur</td><td>Prix</td></tr></table>');
+var jTable=$('<table id="FerrureDevis"><tr id="lig0"><td class="tabDevis"></td><td>Ferrure</td><td>Quantité</td><td>Dimension(s)</td><td id="option">Option(s)</td><td>Couleur</td><td>Prix</td></tr></table>');
 
 var jLignePrixTot = $("<tr id='ligPrixTot'><td>Prix total</td><td></td><td></td><td></td><td></td><td></td><td id='prixTot'></td></tr>"); 
 
 var jImg=$('<img  class="imgSuppArtDevis" src="./ressources/moins.png"/>').click(function(){
 	
-	var prix=parseInt($(this).parent().parent().find('td').eq(3).html());
+	var prix=parseInt($(this).parent().parent().find('td').eq(6).html());
   	var ancienPrix=parseInt($("#prixTot").html());
 
 
@@ -265,11 +265,12 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
 
   });
 
-var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="archive" id="dispArchive"/><label for="archive">Afficher les devis archivés</label></div>').click(function() {
-			  $(".st_viewport").empty();
-              generateTableUser(idUser);
-              console.log("click");
-  });
+var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher les devis archivés</label></div>') 
+                  .append($('<input type="checkbox" name="archive" id="dispArchive"/>').change(function(){
+                    $("#tabDevis").empty();
+                    generateTableUser(idUser);
+                    console.log("click");
+}));
 
  	// ------ GENERATION TABELAU NON ADMIN ---//
 
@@ -279,8 +280,14 @@ var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="a
  		var etat ; 
  		var nbTab = 0; 
  		var tabAct ;
+ 		var archive = 0; 
+
+		console.log("ARCHIVÉ ou pas");
+		if ($("#dispArchive").prop("checked") == true)
+		  archive=1; 
+      
  		$.ajax({
-              url: "libs/dataBdd.php?action=DevisUser&idUser="+idUser,
+              url: "libs/dataBdd.php?action=DevisUser&idUser="+idUser+"&archive="+archive,
       				//data:{"action":"AllDevis","idUser":idUser},
       				type : "GET",
                     success:function (oRep){ 
@@ -297,23 +304,15 @@ var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="a
 
                       genDetailsDevis(idDevis);
                       e.preventDefault();
-                      $(".st_table_header").toggle();
+                      $("#tabDevis").hide();
                       $('.test, html, body').toggleClass('open'); // indique quelle classe cacher/montrer
                     });
                     
-                    var length;
-                    
-                    // si case cochée, on affiche les devis archivés
-                    if ($("#dispArchive").prop("checked") == true)
-                    	length = oRep.length;
-                    else
-                    	length = oRep.length - 1;
-                    
 
               	// INSERTION DEVIS DANS LE TABLEAU
-                    for (var i = 0; i < length; i++) { 
+                    for (var i = 0; i < oRep.length; i++) { 
                     	if(oRep[i].dateLivraison == null)
-                    		dateLivraison = "indéfini"; 
+                    		dateLivraison = "indéfini";
                     	else 
                     		dateLivraison = oRep[i].dateLivraison;
 
@@ -321,7 +320,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="a
                     		etat = oRep[i].etat ;
                     		tabAct = "tab"+ nbTab;
                     		// $(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ nbTab +'" id="' + tabAct + '">').clone(true));
-                    		$(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ oRep[i].etat +'" id="' + tabAct + '">').clone(true));
+                    		$("#tabDevis").append($('<div class="st_wrap_table" data-table_id="'+ oRep[i].etat +'" id="' + tabAct + '">').clone(true));
                     		$("#" + tabAct).append(jHeaderTab.clone(true));
                     		$("#" + tabAct +" .title_tab").html(etat); 
                     		if(admin == 1 || admin == 2){// ajout d'une colone pour afficher le créateur du devis 
@@ -357,7 +356,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><input type="checkbox" name="a
                     if(idDevis != ""){
                       var nbH = $(".st_table_header");
                       console.log(nbH);
-                      $(".st_table_header").toggle();
+                      $("#tabDevis").toggle();
                       genDetailsDevis(idDevis);
                       $('.test, html, body').toggleClass('open');
                     }//fin if
@@ -540,15 +539,15 @@ function insererOption(id,i) {
                     if(oRep.length!=0){
                       for (var j =0; j < oRep.length; j++){
 
-                        if($("#opt").length >0){
+                        if($("#opt"+i).length >0){
 
                           var option="- "+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br>";
-                          $("#opt").append(option);
+                          $("#opt"+i).append(option);
                           console.log("exist");
                         }
                         else {
-						// création de la case option si elle n'existe pas
-                        $("#dim"+i).after('<td id="opt">- '+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br></td>"); 
+                        // création de la case option si elle n'existe pas
+                        $("#dim"+i).after('<td id="opt'+i+'">- '+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br></td>"); 
                       }
 
 
@@ -559,8 +558,8 @@ function insererOption(id,i) {
                     $("#dim"+i).after('<td id="opt"></td>'); 
 
                   }
-                    
-                    
+
+
                   },
                   error : function(jqXHR, textStatus) {
                     console.log("erreur");
@@ -594,22 +593,20 @@ function insererOption(id,i) {
 
 
 
- 	// ---- FERMETURE ONGLET DEVIS ---//
- 	$(document).ready(function(){
- 		$('.close').on('click', function(e) {
- 			// change l'url 
- 			var stateObj = { foo: "bar" };
- 		 	history.pushState(stateObj, "Devis", "index.php?view=devis");
- 			$("#articles").empty();
-  			e.preventDefault();
-  			$(".st_table_header").toggle();
-  			$('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
-		});
-
-    datePicker();
-
-     
-  });
+// ---- FERMETURE ONGLET DEVIS ---//
+     $(document).ready(function(){
+         $('.close').on('click', function(e) {
+      idDevis=""; 
+             // change l'url 
+             var stateObj = { foo: "bar" };
+              history.pushState(stateObj, "Devis", "index.php?view=devis");
+             $("#articles").empty();
+              e.preventDefault();
+              $("#tabDevis").toggle();
+              $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
+        });
+        datePicker();
+        });
 
 function datePicker() {
 
@@ -719,8 +716,8 @@ function sendMail(mailDest) {
 
     var expediteur = "decima-ne-pas-repondre";
     var email = "no-reply@decima.fr";
-    var subject = "Demande de commande du devis n°"+$("#numDevis").text();
-    var body = "Veuillez valider ou refuser le devis n°"+$("#numDevis").text()+" du projet "+$("#nomProjet").text();
+    var subject = "Demande de commande du devis "+$("#numDevis").text();
+    var body = "Veuillez valider ou refuser le devis n&ordm;"+$("#numDevis").text()+" du projet "+$("#nomProjet").text();
 
     $.ajax({
       url: 'PHPMailer/mail.php',
@@ -763,8 +760,8 @@ function SupprimerDevisInt() {
 		// envoi du mail
 		var numDevis=$("#numDevis").html();
 		var nomProjet=$("#nomProjet").html();
-		var subject = "Devis du projet " + nomProjet + " supprimé";
-		var body = "Le devis n° " + numDevis + " du projet "+ nomProjet +" créé par vous a été supprimé par vous-même ou un administrateur du site.";
+		var subject = "Suppression du devis du projet " + nomProjet;
+		var body = "Votre devis n&ordm;" + numDevis + " du projet "+ nomProjet +" a &eacute;t&eacute; supprim&eacute; par vous-m&eacute;me ou un administrateur du site.";
 		mailClient(idDevis, subject, body);
 	}
 }
@@ -818,9 +815,7 @@ function annulerDevis(idDevis) {
 
   <body>
   <main class="st_viewport">
-  <div class="st_wrap_table" data-table_id="0">
-
-  </div>
+  <div id="tabDevis"></div>
   
   <div class='detail test'>
     <div class='detail-container'>

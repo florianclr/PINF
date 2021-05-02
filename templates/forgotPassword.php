@@ -233,7 +233,7 @@ function sendMail(mailDestinataire) {
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
 		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
-		var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
+		var body = "Veuillez valider ou refuser la cr&eacute;ation du compte sur votre page administrateur.";
 
 		$.ajax({
 			url: 'PHPMailer/mail.php',
@@ -298,7 +298,7 @@ function forgotPassword() {
 				var expediteur = "decima-ne-pas-repondre";
 				var email = "no-reply@decima.fr";
 				var subject = "Mot de passe oublié";
-				var body = "Voici le code permettant de vous connecter à votre compte Décima : " + word;
+				var body = "Voici le code permettant de vous connecter &agrave; votre compte D&eacute;cima : " + word;
 
 				$.ajax({
 					url: 'PHPMailer/mail.php',

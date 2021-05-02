@@ -144,7 +144,7 @@
 
                     if (ans) {
                       var subject = "Annulation de la livraison du devis " + oRep[0].nomProjet;
-                      var body = "La date de livraison de votre devis " + oRep[0].nomProjet + " (" + oRep[0].numeroProjet + ")" + " a été annulée, il n'est plus en fabrication";
+                      var body = "La date de livraison de votre devis " + oRep[0].nomProjet + " (" + oRep[0].numeroDevis + ")" + " a &eacute;t&eacute; annul&eacute;e, il n'est plus en fabrication.";
                       mailClient(idDevis, subject, body);
                       annulerDevis(idDevis);
                     }
@@ -172,11 +172,11 @@
           
                       dateString = eventDate.toISOString().substr(0,10);
 
-                      console.log("la date :")
-                      console.log(dateString)
+                      console.log("la date :");
+                      console.log(dateString);
 
                       var subject = "Date de livraison du devis " + oRep[0].nomProjet;
-                      var body = "La livraison de votre devis " + oRep[0].nomProjet + " est prévue pour le " + convertirDate(dateString);
+                      var body = "La livraison de votre devis " + oRep[0].nomProjet + " est pr&eacute;vue pour le " + convertirDate(dateString);
                       mailClient(idDevis, subject, body);
                     }
                   })
@@ -189,8 +189,8 @@
                     var ans = confirm("Confirmer la livraison du devis ? (le propriétaire en sera informé)");
 
                     if (ans) {
-                      var subject = "Commande livré pour  " + oRep[0].nomProjet;
-                      var body = "Votre commande pour " + oRep[0].nomProjet + " (" + oRep[0].numeroProjet + ")" + " est prête";
+                      var subject = "Livraison de la commande " + oRep[0].nomProjet;
+                      var body = "Votre commande pour " + oRep[0].nomProjet + " (" + oRep[0].numeroDevis + ")" + " est pr&ecirc;te.";
                       mailClient(idDevis, subject, body);
                       // TODO : fonction livré 
                       livrerDevis(idDevis); 
@@ -431,9 +431,7 @@
   }
   
   function afficherArchives() {
-  
-  	
-			$.ajax({
+  		$.ajax({
 		          url: "libs/dataBdd.php",
 		          data:{"action":"DevisArchives"},
 		          type : "GET",
@@ -447,20 +445,47 @@
 
 										// si case cochée, on affiche les devis archivés
     								if ($("#dispArchive").prop("checked") == true) {
-				              calendar.addEvent({
-				                  id: eventID,
-				                  title: eventTitle,
-				                  start: eventStart,
-				                  backgroundColor: "darkgrey",
-				                  borderColor: "grey",
-				                  droppable: false,
-				                  allDay: true
-				              });
+    									if (!archivesPlanifiees) {
+						            calendar.addEvent({
+						                id: eventID,
+						                title: eventTitle,
+						                start: eventStart,
+						                backgroundColor: "darkgrey",
+						                borderColor: "grey",
+						                droppable: false,
+						                allDay: true
+						            });
+						            
+						            var archivesPlanifiees = true;
+                      }
+                      else {
+                        var tabEvents = calendar.getEvents();
+
+                        tabEvents.forEach(function(event) {
+                        console.log(event.backgroundColor);
+
+                        var couleur = event.backgroundColor;
+
+                        if (couleur == "darkgrey") {
+                          event.setProp('display', 'none');
+                        }
+                      });
+						        	}
 				            }
 				            else {
 				            	console.log("decoch");
 				            	// TODO: masquer l'event avec une fonction de FullCalendar
-				            	location.reload();
+				            	var tabEvents = calendar.getEvents();
+
+                      tabEvents.forEach(function(event) {
+                        console.log(event.backgroundColor);
+
+                        var couleur = event.backgroundColor;
+
+                        if (couleur == "darkgrey") {
+                          event.setProp('display', 'none');
+                        }
+                      });
 				            }
 		              });
 

@@ -455,7 +455,7 @@ function sendMail(mdp,mailD) {
 	var email = "no-reply@decima.fr";
 	var subject = "Mot de passe du compte ";
 
-	var body = "Votre compte a été validé, votre mot de passe est : "+mdp+"\n et votre login est : "+mailD +"\n. Pour vous connecter, rendez vous sur http://185.30.209.4/PINF/";
+	var body = "Votre compte a été validé, votre mot de passe est <b>"+mdp+"</b> et votre login est <b>"+mailD +"</b>. Pour vous connecter, rendez vous sur http://185.30.209.4/PINF/";
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',

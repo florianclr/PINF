@@ -76,7 +76,7 @@ function createPopUp(){
 		 width: 400,
          buttons: { // on ajoute des boutons à la pop up 
              "Envoyer ma demande": function(){
-               	getMail();  // envoi d'un mail
+               	emailDoublon();  // envoi d'un mail
              },
              "Annuler": function() {
                	$(this).dialog("close"); // ferme la pop up 
@@ -211,8 +211,8 @@ function sendMail(mailDestinataire) {
 
 		var expediteur = "decima-ne-pas-repondre";
 		var email = "no-reply@decima.fr";
-		var subject = "Demande d'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
-		var body = "Veuillez valider ou refuser la création du compte sur votre page administrateur";
+		var subject = "Demande d\'ouverture de compte de " + $.trim(firstname) + " " + $.trim(surname);
+		var body = "Veuillez valider ou refuser la cr&eacute;ation du compte sur votre page administrateur.";
 
 		$.ajax({
 			url: 'PHPMailer/mail.php',
@@ -265,6 +265,31 @@ function getMail() {
 function validateEmail($email) {
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,6})?$/;
   return emailReg.test( $email );
+}
+
+function emailDoublon(){
+     var mail = $("#mail").val().trim();
+     $.ajax({
+                url: "libs/dataBdd.php",
+                data:{"action":"VerifMail","mail":mail},
+                type : "GET",
+                success:function (oRep){
+                 console.log(oRep);
+                 if(oRep==false){
+                     getMail();
+                 }
+                 else{
+                 	$("#mail").css("border", "1px solid red");
+                    $("#popup").append("<div id='erreurMail'>Cette adresse mail est déjà prise</div>");
+                    $("#erreurMail").show();
+                 }
+             },
+            error : function(jqXHR, textStatus)
+            {
+                console.log("erreur");
+            },
+            dataType: "json"
+            });
 }
 
 $(document).ready(function() {
