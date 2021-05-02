@@ -17,20 +17,19 @@ function listerCategories($cat)
 function listerArticles($categorie,$nombre)
 {
 
-	if($categorie != null && $nombre != null ){
-		$SQL="SELECT ferrures.* FROM ferrures,catalogue WHERE ferrures.refcategories=catalogue.id AND catalogue.nomCategorie='$categorie' LIMIT $nombre" ;
-	}
+    if($categorie != null && $nombre != null ){
+        $SQL="SELECT ferrures.* FROM ferrures,catalogue WHERE ferrures.refcategories=catalogue.id AND catalogue.nomCategorie='$categorie' LIMIT $nombre" ;
+    }
 
-	else if($categorie != null && $nombre == null){ 
-	$SQL="SELECT ferrures.* FROM ferrures,catalogue WHERE ferrures.refcategories=catalogue.id AND catalogue.nomCategorie='$categorie' " ;
-	}
-	
-	else if($categorie == null && $nombre == null){ 
-	$SQL="SELECT ferrures.* FROM ferrures" ;
-	}
+    else if($categorie != null && $nombre == null){ 
+    $SQL="SELECT ferrures.* FROM ferrures,catalogue WHERE ferrures.refcategories=catalogue.id AND catalogue.nomCategorie='$categorie' ORDER BY id DESC" ;
+    }
+    
+    else if($categorie == null && $nombre == null){ 
+    $SQL="SELECT ferrures.* FROM ferrures" ;
+    }
 
-	return parcoursRs(SQLSelect($SQL));
-
+    return parcoursRs(SQLSelect($SQL));
 }
 
 function getProduit($id)
@@ -160,6 +159,11 @@ function deconnecterUtilisateur($idUser)
 	SQLUpdate($SQL);
 }
 
+function verifMail($mail){
+	$SQL="SELECT mail FROM utilisateur WHERE mail='$mail'";
+    return SQLGetChamp($SQL);
+}
+
 function getInfo($idUser, $info)
 {
 	$SQL="SELECT $info FROM utilisateur WHERE id='$idUser'";
@@ -255,18 +259,27 @@ function creerCompte($nom, $prenom, $mail, $telephone)
 	}
 	
 	function listerFerruresDevis($idDevis)
-	{
-		$SQL="SELECT * FROM ferruresDevis WHERE refDevis='$idDevis'";
-		return parcoursRs(SQLSelect($SQL));
-	}
+    {
+        $SQL="SELECT ferruresDevis.*,couleursFerrures.couleur FROM ferruresDevis,couleursFerrures WHERE refDevis='$idDevis' AND couleursFerrures.id=ferruresDevis.couleur";
+        return parcoursRs(SQLSelect($SQL));
+    }
 	
-	function getDevisUser($idUser){
-		if($idUser != null)
-			$SQL="SELECT * FROM `devis` WHERE refCA='$idUser' ORDER BY etat"; 
-		else
-			$SQL="SELECT * FROM `devis` ORDER BY etat"; 
-		return parcoursRs(SQLSelect($SQL));
-	}
+	function getDevisUser($idUser,$archive){
+        if($idUser != null){
+            if($archive==1)
+                $SQL="SELECT * FROM devis WHERE refCA='$idUser' ORDER BY etat"; 
+            else 
+                $SQL="SELECT * FROM devis WHERE refCA='$idUser' AND etat!='ARCHIVÉ' ORDER BY etat"; 
+        }
+        else{
+            if($archive==1)
+                $SQL="SELECT * FROM devis ORDER BY etat"; 
+            else 
+                $SQL="SELECT * FROM devis WHERE etat!='ARCHIVÉ' ORDER BY etat"; 
+        }
+
+        return parcoursRs(SQLSelect($SQL));
+    }
 
 	function getAjoutDevisUser($idUser){
 		if($idUser != null)

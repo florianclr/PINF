@@ -55,6 +55,13 @@ if ($action = valider("action"))
 					echo(session_destroy());
 				}
 			break;
+			
+			case 'GET_VerifMail':
+                if($mail=valider("mail")){
+                    $tab=verifMail($mail);
+                }
+                echo(json_encode($tab));
+            break;
 
 			case 'GET_Categories' :
 				$tab=listerCategories(null);
@@ -337,16 +344,17 @@ if ($action = valider("action"))
             
             case'GET_DevisUser';
             if($idUser=valider("idUser")){
-
+            $archive = valider("archive");
                 if($admin == 0){ 
-                     $tab = getDevisUser($idUser);
+                     $tab = getDevisUser($idUser,$archive);
                 }
                 else{
-                     $tab = getDevisUser(null);
+                    //echo("admin");
+                     $tab = getDevisUser(null,$archive);
                 }      
                 echo(json_encode($tab));
             }
-            break; 
+            break;  
 
 			case'GET_ajoutDevisUser';
             if($idUser=valider("idUser")){
