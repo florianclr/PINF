@@ -269,7 +269,7 @@ body {
 	margin-bottom: 40%;
 }
 
-#erreur {
+#erreur, #erreurMail {
 	display: none;
 	margin-bottom: 20px;
 	margin-left: 2%;
