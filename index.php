@@ -13,12 +13,7 @@ Les formulaires de toutes les vues générées enverront leurs données vers la 
 	include_once "libs/maLibUtils.php";
 
 	// on récupère le paramètre view éventuel 
-	$view = valider("view"); 
-	/* valider automatise le code suivant :
-	if (isset($_GET["view"]) && $_GET["view"]!="")
-	{
-		$view = $_GET["view"]
-	}*/
+	$view = valider("view");
 
 	// S'il est vide, on charge la vue accueil par défaut
 	if (!$view) $view = "connexion"; 
@@ -31,7 +26,7 @@ Les formulaires de toutes les vues générées enverront leurs données vers la 
 	// si l'utilisateur n'est pas connecté 
 
 	include("templates/header.php");
-
+	
 	// En fonction de la vue à afficher, on appelle tel ou tel template
 	switch($view)
 	{
@@ -39,7 +34,7 @@ Les formulaires de toutes les vues générées enverront leurs données vers la 
 		default : // si le template correspondant à l'argument existe, on l'affiche
 			if (file_exists("templates/$view.php"))
 				include("templates/$view.php");
-
+				
 	}
 
 

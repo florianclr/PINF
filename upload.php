@@ -67,8 +67,7 @@ if ($uploadOk == 0) {
   }
   if($mode != "testPdf"){ 
   if (move_uploaded_file($_FILES["file"]["tmp_name"],$target_file)) {
-      echo 1 ; 
-    //echo "The file ". htmlspecialchars( basename( $_FILES["file"]["name"])). "has been uploaded.";
+      echo 1 ;
   } else {
 		$test=move_uploaded_file($_FILES["file"]["tmp_name"],$target_file);
 		echo $test;
