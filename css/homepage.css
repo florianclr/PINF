@@ -1,10 +1,6 @@
-/*!
- * Start Bootstrap - Shop Homepage (https://startbootstrap.com/template/shop-homepage)
- * Copyright 2013-2020 Start Bootstrap
- * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
- */
+/*----------------------------------CATALOGUE---------------------------------------*/
  
- /*couleur de la bannière : #353a40*/
+/* couleur de la bannière : #353a40 */
 
 body {
   	padding-top: 56px;
@@ -18,7 +14,6 @@ body {
 }
 
 .categorie{
-	/*border: solid lightpink 2px;*/
 	text-align: center;
 	display: block;
 	margin: 10px; 
@@ -144,7 +139,7 @@ body {
 }
 
 /*------------------------------------ICONS-----------------------------------------*/
-/*TODO : CORRIGER ZOOM ICON !!!*/
+
 .trashButton{
 	position: absolute;
 	max-height: 30px; 
@@ -178,16 +173,10 @@ body {
 	margin-top: -3px;
 }
 
-/*.card-body a {
-	border: 1px solid red ; 
-	width: 5px ; 
-	size:20px; 
-}*/
-
 /******************************** COMPTE **********************************/
 
 #modifOK {
-		margin-top: -50px;
+	margin-top: -50px;
     margin-bottom: 30px;
     margin-left: 30%;
     margin-right: 30%;

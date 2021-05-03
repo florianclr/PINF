@@ -1,7 +1,4 @@
 /******************************** AJOUTER PRODUIT **********************************/
-/*MERCI !!! : https://www.w3schools.com/howto/howto_css_two_columns.asp*/
-
-/*PISTE POUR REMPLACER CERTAINS ELEMENT DE LA BOSTRAP :https://www.w3schools.com/css/css_image_gallery.asp*/
 
 #titlePage {
 	text-align: center;
@@ -79,7 +76,7 @@
  	max-height: 40px; 
  }
 
- /* Create two equal columns that floats next to each other */
+ /* Faire "flotter" 2 colonnes l'une à côté de l'autre */
 .column {
   float: left;
   width: 50%;
