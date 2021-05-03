@@ -63,10 +63,9 @@
   var jQuantiteOpt = $('<input type="number" id="qteOpt" value="1" min="1"/>').change(function() {
   
   				var nouveauCoeff;
-  				console.log("ancienCoeff="+ancienCoeff);
-  
+  	
+					// quantité négative
   				if (parseInt($(this).val(), 10) <= 0) {
-      				console.log("VALEUR NEGATIVE");
       				$("#indic").append("<div id='warning'>La quantité de l'option est négative ou nulle</div>");
 		  			prixDisplay = prixTemp;
 		  			$('input:checkbox[id="checkOpt"]').prop("checked", false);
@@ -76,8 +75,8 @@
         			$("#majPrix").html(prixDisplay);
       			}
       				
+						// quantité trop grande
       			if (parseInt($(this).val(), 10) > parseInt(qte, 10)) {
-      				console.log("VALEUR TROP GRANDE");
       				$("#indic").append("<div id='warning'>La quantité de l'option est supérieure à la quantité globale choisie</div>");
 		  			prixDisplay = prixTemp;
 		  			$('input:checkbox[id="checkOpt"]').prop("checked", false);
@@ -90,15 +89,11 @@
       			else if (parseInt($(this).val(), 10) <= parseInt(qte, 10) && parseInt($(this).val(), 10) > 0) {
         			prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
               		nouveauCoeff = $(this).val();
-              		console.log(nouveauCoeff);
-              		console.log(ancienCoeff);
               		
               		// augmente quantité
               		if (nouveauCoeff > ancienCoeff) {
-              			console.log("tes+");
               			if (prixDisplay == prixTemp) {
               				prixDisplay += prixTot*nouveauCoeff;
-		          			// prixDisplay += prixTot*(nouveauCoeff-ancienCoeff);
 		          			$("#majPrix").html(prixDisplay);
 		          		}
 		          		else
@@ -106,23 +101,19 @@
 		          			$("#majPrix").html(prixDisplay);
               		}
                 	
-					// diminue quantité	
+									// diminue quantité	
                 	if (nouveauCoeff < ancienCoeff) {
-                		console.log("tes-");
                 		prixDisplay -= prixTot*(ancienCoeff-nouveauCoeff);
                 		$("#majPrix").html(prixDisplay);
               		}
               		ancienCoeff = nouveauCoeff;
-              		
-              		console.log("maj prix avec un input :");
-                	console.log(prixDisplay);
       			}
   });
 
   var jQuantite = $('<div id="quantite">Quantité = <input type="number" id="qteFerrure" value="1" min="1"/></div>').change(function() {
   
+					// quantité négative
   				if ($("#qteFerrure").val() <= 0) {
-  					console.log("VALEUR NEGATIVE");
   					$('input:checkbox[id="checkOpt"]').prop("checked", false);
         			$("#qteOpt").remove();
   					$("#warning").remove();
@@ -143,7 +134,6 @@
   			  var inputSupr;
 
               if ($(this).prop("checked") == true) {
-              	console.log($(this).parent().parent().prop("id"));
               	$("#warning").remove();
                 $(this).parent().append(jQuantiteOpt.clone(true));
               	$("#qteOpt").attr('max', qte);
@@ -151,7 +141,6 @@
               	prixTot = parseInt($(this).parent().parent().find('td').eq(2).html(), 10);	
 
               	prixDisplay += prixTot;
-              	console.log(prixDisplay);
               	ancienCoeff = 1;
               	$("#majPrix").html(prixDisplay);
 
@@ -165,8 +154,6 @@
                 if (nouveauCoeff <= qte && nouveauCoeff > 0) {
                 	prixTot = nouveauCoeff*parseInt($(this).parent().parent().find('td').eq(2).html(), 10);
                 	prixDisplay -= prixTot;
-                	console.log("prix total :");
-                	console.log(prixDisplay);
                 	$("#majPrix").html(prixDisplay);
                 }
                 	
@@ -214,7 +201,7 @@
       $("#popUpDevis").append(jQuantite.clone(true));
       $("#popUpDevis").append('<div id="indicQ">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
       // prix correspondant
-    // tabelau prix copie
+    // tableau prix copie
       $("#popUpDevis").append(jclonePrix);
       $("#popUpDevis").append("<br><br>");
     // label tab options
@@ -223,7 +210,7 @@
     		// Tableau options copie
       		$("#popUpDevis").append(jcloneOption);
       		$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
-    		// pour chaque option on ajoute une checkbox pour l'inclure ou pas ds le prix
+    		// pour chaque option on ajoute une checkbox pour l'inclure ou pas dans le prix
       		$("#popUpDevis #options tr").each(function(){
         		$(this).prepend(jCheckBox.clone(true));
       		});
@@ -244,13 +231,6 @@
              
              	qte = $("#qteFerrure").val();
 				if ($("#listeDevis option:selected").text() != '--' && qte > 0) {
-					/*
-					console.log($("#listeDevis option:selected").val());
-					console.log("prixDisplay="+prixDisplay);
-					console.log("qte="+qte);
-					console.log("produit="+produit);
-					console.log("isPrixInclude="+isPrixInclude);
-					*/
 					
 					// vérif des dimensions
 					if ($(".a").val() != undefined && $(".a").val() != '' && parseFloat($(".a").val()) >= parseFloat($(".a").prop("min")) && parseFloat($(".a").val()) <= parseFloat($(".a").prop("max")))
@@ -310,10 +290,6 @@
 							dimC = -1;
 					}
 					
-					console.log(dimA);
-					console.log(dimB);
-					console.log(dimC);
-					
 					// vérif des couleurs
 					if ($("input[type=radio]:checked").val() != undefined)
 						couleurF = $("input[type=radio]:checked").val();
@@ -342,10 +318,6 @@
 
                 $("#popUpDevis #options #qteOpt").each(function(){
                 if($('input:checkbox[id="checkOpt"]').prop("checked", true)){
-				
-                   /*console.log("ID ferrureDevis -> "+oRep);
-                   console.log("ID option -> "+$(this).parent().parent().prop("id"));
-                   console.log("qte opt -> "+$(this).val());*/
                    
                   $.ajax({
                     url: "libs/dataBdd.php",
@@ -388,14 +360,12 @@
              },
          },
          close: function() { // lorsqu'on appuie sur la croix pour fermer la pop-up 
-            console.log("Fermeture du pop-up");
             $(this).remove(); // supprime la pop up 
          }
       }); 
     });
   
-	// T1
-
+// TABLEAU INFOS //
 function genInfos() {
   $.ajax({
     url: "libs/dataBdd.php",
@@ -403,7 +373,6 @@ function genInfos() {
     type : "GET",
     success: function(oRep){
         console.log(oRep);
-        console.log(couleurFond);
         
         $(".product").append(jTitre.clone(true).html(oRep[0].titre));
         $("#titleProduct").css("background-color", couleurFond);
@@ -463,8 +432,7 @@ function genTabPrix(){
             $("#prix tbody").append($('<tr id="0"></tr>').append($('<td></td>').html("PU")));
             compt++;
         }
-        nbDim = compt; 
-        console.log("compt="+compt);
+        nbDim = compt;
         while (compt > 0) {
           $("#prix").after($("</br>"));
           compt--;  
@@ -488,7 +456,6 @@ function genTabPrix(){
           var ligne = 0 ; 
           for(var j=0;j<oRep.length;j+=nbqte){
                         ligne = j/nbqte ;
-                        console.log(ligne);
                         for(var k= j;k<j+nbqte;k++ )
                           $('#'+ligne).append($('<td class="prixUnit"></td>').html(oRep[k].prixU+" €"));
                       }
@@ -503,8 +470,7 @@ function genTabPrix(){
   
 }
   
-  // OPTION
-
+// TABLEAU OPTIONS //
 function genTabOption(){
    $.ajax({
     url: "libs/dataBdd.php",
@@ -521,7 +487,6 @@ function genTabOption(){
 		         compt++;
         	}
           
-		    console.log("compt="+compt);
 		    while (compt > 0) {
 			   	$("#options").after($("</br>"));
 			  	compt--;  
@@ -595,7 +560,6 @@ function listerDimensions() {
 				 if (i == oRep.length-1)
 				 	$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
 			}
-			console.log(isPrixInclude);
 		}
 			
 		calculPrix();
@@ -681,7 +645,6 @@ function calculPrix() {
 				prixDisplay -= prixTemp;
 				prixTemp = parseInt(oRep,10)*qte;
 				prixDisplay += parseInt(oRep,10)*qte;
-				console.log(prixDisplay);
 				$("#majPrix").html(prixDisplay);
 			},
 			error : function(jqXHR, textStatus) {
@@ -700,7 +663,6 @@ function calculPrix() {
 				prixDisplay -= prixTemp;
 				prixTemp = parseInt(oRep,10)*qte;
 				prixDisplay += parseInt(oRep,10)*qte;
-				console.log(prixDisplay);
 				$("#majPrix").html(prixDisplay);
 			},
 			error : function(jqXHR, textStatus) {
@@ -711,7 +673,7 @@ function calculPrix() {
 	}
 }
   
-  // CHARGEMENT PAGE
+// CHARGEMENT PAGE //
 $(document).ready(function(){
     genInfos();
 });
@@ -729,7 +691,7 @@ $(document).ready(function(){
     
     </div>
 
-  <!-- Bootstrap core JavaScript -->
+  <!-- Bootstrap -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>

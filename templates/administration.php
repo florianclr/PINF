@@ -6,9 +6,6 @@
 	include_once "libs/modele.php"; 
 	include_once "libs/maLibForms.php";
 
-	// on sélectionne une rubrique différente du site dans le menu
-	//$(".sr-only").html("(current)");
-
 $idUser = valider("idUser","SESSION");
 
 if(valider("connecte","SESSION")){
@@ -28,7 +25,7 @@ else {
 }
 
 ?>
-<!-- Bootstrap core JavaScript -->
+<!-- Bootstrap -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -44,7 +41,6 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 									if($("#admin").is(":checked"))
 										var promouvoir="1";
 									else var promouvoir="0";
-									console.log(promouvoir);
 				 					$.ajax({
                     					url: "libs/dataBdd.php?action=Accepter&idUser="+$(this).prop("id")+"&admin="+admin+"&promouvoir="+promouvoir,
                     					type : "PUT",
@@ -192,7 +188,6 @@ var JMenuSelectF =$('<label for="listeFinition">Liste des finitions : </label> <
 
 		else {
 			 	$("#popupF").remove(); // supprime la pop up
-				// TODO: mettre warning pour changer finition > ferrures en question
 				$("#infoSA").append("<div id='warning'>Impossible de supprimer une finition paramétrée pour des ferrures déjà existantes</div>");
 		}
 
@@ -262,7 +257,6 @@ var JMenuSelectM =$('<label for="listeMatiere">Liste des matières : </label> <s
 	    }
 	    else {
 	    	 	$("#popupMat").remove(); // supprime la pop up
-	        // TODO: mettre warning pour changer matière > ferrures en question
 	        $("#infoSA").append("</br><div id='warning'>Impossible de supprimer une matière paramétrée pour des ferrures déjà existantes</div>");
 	    }
 
@@ -273,7 +267,7 @@ var JMenuSelectM =$('<label for="listeMatiere">Liste des matières : </label> <s
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
 
@@ -360,7 +354,7 @@ var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinatair
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
 
