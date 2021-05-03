@@ -2,6 +2,8 @@
 
 include_once("maLibSQL.pdo.php");
 
+// ************************ CATALOGUE ***************************
+
 function listerCategories($cat)
 {
     if($cat!=null){
@@ -37,6 +39,8 @@ function getProduit($id)
     $SQL="SELECT ferrures.*, matiere.nomM, finition.nomF, catalogue.nomCategorie FROM ferrures,finition,matiere,catalogue WHERE finition.id=ferrures.refFinition AND matiere.id=ferrures.refMatiere AND ferrures.id='$id' AND ferrures.refcategories=catalogue.id";
     return parcoursRs(SQLSelect($SQL));
 }
+
+// **********************************************************
 
 function getPrix($id,$qteMin,$qteMax)
 {
@@ -92,6 +96,8 @@ function getCompte($id,$etat)
 
 }
 
+// **************************** MOT DE PASSE OUBLIE *****************************
+
 function getCompteByMail($mail) {
 	$SQL="SELECT * FROM utilisateur WHERE mail LIKE '$mail'";
 	return parcoursRs(SQLSelect($SQL));
@@ -101,6 +107,8 @@ function getCompteExiste($mail) {
 	$SQL="SELECT EXISTS(SELECT * FROM utilisateur WHERE mail LIKE '$mail')";
 	return SQLGetChamp($SQL);
 }
+
+// **************************** ADMINISTRATION *****************************
 
 function accepterCompte($mdp, $idUser,$promouvoir)
 {
@@ -121,7 +129,7 @@ function destinataire($idUser,$idUserD)
     return SQLUpdate($SQL);
 }
 
-/****************************************************************************/
+// **************************** MOT DE PASSE OUBLIE *****************************
 
 function verifUserBdd($login)
 {
@@ -131,8 +139,6 @@ function verifUserBdd($login)
     // renvoie l'id de l'utilisateur si succès
     $SQL="SELECT id FROM utilisateur WHERE mail='$login'";
     return SQLGetChamp($SQL);
-    // si on avait besoin de plus d'un champ
-    // on aurait du utiliser SQLSelect
 }
 
 
@@ -156,6 +162,8 @@ function deconnecterUtilisateur($idUser)
 	$SQL ="UPDATE utilisateur SET connecte='0' WHERE id='$idUser'"; 
 	SQLUpdate($SQL);
 }
+
+// **************************** CONNEXION / COMPTE *****************************
 
 function verifMail($mail){
 	$SQL="SELECT mail FROM utilisateur WHERE mail='$mail'";
@@ -185,6 +193,7 @@ function getMdp($login){
     return SQLGetChamp($SQL);
 }
 
+// **************************** CREER UNE FERRURE *****************************
 
 	function ajouterPrix($prixU, $refFerrures,$qteMin,$qteMax,$dimMin, $dimMax)
 	{
@@ -237,6 +246,8 @@ function getMdp($login){
         return parcoursRs(SQLSelect($SQL));
     }
     
+    // **************************** CATALOGUE *****************************
+    
     function creerCategorie($nomC,$couleur)
 	{
 		$SQL="INSERT INTO catalogue (nomCategorie,couleur)  VALUES ('$nomC','$couleur')";
@@ -260,6 +271,8 @@ function getMdp($login){
     	$SQL="INSERT INTO devis (numeroDevis,refCA,nomProjet,nomClient,dateCreation,etat)  VALUES ('$numDevis','$refCA','$nomProjet','$nomClient','$dateCreation','$etat')";
     	return SQLInsert($SQL);
 	}
+	
+	// **************************** DEVIS *****************************
 	
 	function listerFerruresDevis($idDevis)
     {
@@ -325,8 +338,7 @@ function getMdp($login){
         $SQL="UPDATE devis SET PrixTotal=PrixTotal-(SELECT prix FROM ferruresDevis WHERE id='$idFerrureDevis') WHERE id='$idDevis';
                 DELETE FROM optionDevis WHERE refFerrureDevis='$idFerrureDevis';
                DELETE FROM ferruresDevis WHERE id='$idFerrureDevis'";
-        return SQLUpdate($SQL); 
-
+        return SQLUpdate($SQL);
     }
     
     function getOptionDevis($refFerrureDevis)
@@ -342,13 +354,12 @@ function getMdp($login){
 	} 
 
 	function supprimerDevis($idDevis){
-	// CLÉS ÉTRANGÈRES ENTRE FERRURESDEVIS ET OPTIONDEVIS EN CASCADE POUR SUPPRIMER !!!
 		$SQL=" DELETE FROM  ferruresDevis WHERE ferruresDevis.refDevis ='$idDevis';
 			   DELETE FROM  devis WHERE id = '$idDevis';";
     	return SQLDelete($SQL);
 	}
 	
-	/***********************************************************/
+	// **************************** ARTICLE *****************************
 
 	function listerDimensionsFerrure($idF) {
 		$SQL="SELECT * FROM `dimension` WHERE refFerrures='$idF'"; 
@@ -377,7 +388,7 @@ function getMdp($login){
 		return SQLInsert($SQL);
 	}
 	
-	/***********************************************************/
+	// **************************** PLANNING *****************************
 	
 	function getDevisEnAttente() {
 		$SQL="SELECT * FROM devis WHERE dateLivraison IS NULL AND etat IN('COMMANDE_VALIDÉE')";
@@ -422,7 +433,7 @@ function getMdp($login){
 		return SQLGetChamp($SQL);
 	}
     
-    /***********************************************************/
+    // **************************** ADMINISTRATION *****************************
     
     function listerMatieres() {
 		$SQL="SELECT * FROM matiere";
@@ -449,7 +460,7 @@ function getMdp($login){
 		return SQLDelete($SQL);
 	}
 	
-	/***********************************************************/
+	// **************************** CREER UNE FERRURE *****************************
 	
 	function updateFerrure($categorie,$finiton,$matiere,$titre,$description,$tag,$idF)
 	{

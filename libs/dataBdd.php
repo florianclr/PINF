@@ -17,17 +17,17 @@ $admin = valider("isAdmin","SESSION");
 if ($action = valider("action"))
 {
 
-	$request .= $method . "_" . $action ; 
-	//die($request); 
+	$request .= $method . "_" . $action ;
 
 	switch($request) {	
+		// ************************ CONNEXION ***************************
 		case 'GET_Connexion' : 
                                     if ($login = valider("login"))
                                     if ($passe = valider("passe")){
 
                                     if(verifUser($login,$passe)){
 
-                                        //die($_SESSION['idUser']); // pour debug !!!!!!
+                                        //die($_SESSION['idUser']); // pour debug
                                         if (valider("remember")) {
                                         setcookie("login",$login , time()+60*60*24*30,"/");
                                         setcookie("passe",$passe, time()+60*60*24*30,"/");
@@ -37,7 +37,7 @@ if ($action = valider("action"))
                                         setcookie("login","", time()-3600,"/");
                                         setcookie("passe","", time()-3600,"/");
                                         setcookie("remember",false, time()-3600,"/");
-                                        //die($_SESSION['idUser']); // pour debug !!!!!!
+                                        //die($_SESSION['idUser']); // pour debug
 
                                         }
                                         // On écrit seulement après cette entête
@@ -45,7 +45,6 @@ if ($action = valider("action"))
                                         echo($_SESSION['idUser']); 
                                     }
                                 }
-                                //die("test");
                                 
             break ; 
 
@@ -63,6 +62,7 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
+			// ************************ CATALOGUE ***************************
 			case 'GET_Categories' :
 				$tab=listerCategories(null);
 				echo(json_encode($tab));
@@ -94,7 +94,7 @@ if ($action = valider("action"))
 				}
 
 				else
-					$tab = listerArticles(null,null); // on veut toutes les ferures
+					$tab = listerArticles(null,null); // affiche toutes les ferrures
 					echo(json_encode($tab));
 			break;
 
@@ -103,6 +103,8 @@ if ($action = valider("action"))
                 $tab=getProduit($idProduit);
                 echo(json_encode($tab));
             break;
+            
+            // ************************ COMPTE ***************************
 
 			case 'POST_Compte' :
             	if ($surname = valider("surname"))
@@ -114,14 +116,15 @@ if ($action = valider("action"))
 				}
 			break;
 			
-			case 'PUT_changeMdp': 
-            
+			case 'PUT_changeMdp':
                 if($oldMdp=valider("oldMdp"))
                 if($newdMdp=valider("newMdp")){
                     if(changeMdp($oldMdp,$newdMdp)==true)
                        echo($_SESSION['idUser']);                         
                 }
             break;
+            
+            // **********************************************************
 
 			case 'GET_Prix' :
                 if($idProduit=valider("idProduit"))
@@ -162,6 +165,8 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
             
+            // ************************ MOT DE PASSE OUBLIE ***************************
+            
             case 'PUT_Info' :
 				if ($value = valider("value"))
 				if ($info = valider("info"))
@@ -183,6 +188,8 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             }
             break;
+            
+            // ************************ ADMINISTRATION ***************************
 
 			case 'GET_CompteAttente' :
                 if($admin=valider("admin")){
@@ -230,14 +237,14 @@ if ($action = valider("action"))
 		            echo(json_encode($tab));
                 }
             break;
-            
-            /***********************************************************/
 
             case 'DELETE_Ferrure' : 
             	if($idFerrure=valider("id"))
             		$tab = supprimerFerrures($idFerrure); 
             		echo(json_encode($tab)); 
             break ; 
+            
+            // ************************ CREER UNE FERRURE ***************************
 
             case 'POST_Ferrure1' : 
             	if($titre=valider("titre"))
@@ -246,7 +253,6 @@ if ($action = valider("action"))
             	if($refCategorie=valider("categorie"))
             	if($refMatiere=valider("matiere"))
             	if($refFinition=valider("finition")){
-            	//creerFerrure1($refMatiere, $refFinition, $refcategories, $description,$titre,$tags)
             		$id = creerFerrure1($refMatiere, $refFinition, $refCategorie, $description,$titre,$tags);
             		echo(json_encode($id));
             	}
@@ -260,7 +266,6 @@ if ($action = valider("action"))
             	if($min=valider("min"))
             	if($max=valider("max"))
             	if($refFerrure=valider("refFerrure")){
-            	//function ajouterDimension($min,$max, $refFerrures, $nom, $incluePrix)
             		$tab =  ajouterDimension($min,$max, $refFerrure, $nom, $incluePrix);
             		echo(json_encode($tab));
             	}
@@ -270,7 +275,6 @@ if ($action = valider("action"))
             	if($nom=valider("nom"))
             	if($prix=valider("prix"))
             	if($refFerrure=valider("refFerrure")){
-            	//function ajouterOption($nom, $prix, $refFerrures)
             		$tab = ajouterOption($nom, $prix, $refFerrure);
             		echo(json_encode($tab));
             	}
@@ -296,11 +300,10 @@ if ($action = valider("action"))
             	if($pdf=valider("pdf"))
             	if($numPlan=valider("numPlan"))
             	if($refFerrure=valider("refFerrure")){
-            	//function creerFerrure2($id,$image, $numeroPlan, $planPDF)
             		$tab = creerFerrure2($refFerrure,$img, $numPlan, $pdf);
             		echo(json_encode($tab));
             	}
-            break ; 
+            break ;
             
             case'GET_TabPrix':
                 if($idProduit=valider("idProduit")){
@@ -308,6 +311,8 @@ if ($action = valider("action"))
                     echo(json_encode($tab));
                 }
             break;
+            
+            // ************************ CATALOGUE ***************************
             
             case 'POST_CreerCategorie' :
                 if($admin=valider("admin"))
@@ -342,6 +347,8 @@ if ($action = valider("action"))
                     echo(json_encode($tab));
             break ;
             
+            // ************************ DEVIS ***************************
+            
             case 'GET_Devis' :
                 if($devis=valider("idDevis"))
                 if($idUser=valider("idUser"))
@@ -358,7 +365,6 @@ if ($action = valider("action"))
                      $tab = getDevisUser($idUser,$archive);
                 }
                 else{
-                    //echo("admin");
                      $tab = getDevisUser(null,$archive);
                 }      
                 echo(json_encode($tab));
@@ -459,7 +465,7 @@ if ($action = valider("action"))
                 }
             break ; 
             
-            /****************************************************/
+            // ************************ ARTICLE ***************************
 
 			case 'GET_listerDimensionsFerrure' :
                 if($idProduit=valider("idProduit"))
@@ -502,7 +508,7 @@ if ($action = valider("action"))
                 }
             break;
             
-            /****************************************************/
+            // ************************ PLANNING ***************************
             
             case 'GET_DevisEnAttente' :
                 $tab = getDevisEnAttente();
@@ -553,7 +559,7 @@ if ($action = valider("action"))
                 }   
             break; 
 
-			/****************************************************/
+			// ************************ ADMINISTRATION ***************************
 			
 			case 'GET_Finitions' :
                 $tab=listerFinitions();
@@ -593,7 +599,7 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
 
-			/***************************************************************/
+			// ************************ CREER UNE FERRURE ***************************
 
             case 'PUT_Ferrure' : 
 

@@ -5,7 +5,7 @@
 Ce fichier définit diverses fonctions permettant de faciliter la production de mises en formes complexes : 
 tableaux, formulaires, ...
 */
-// Exemple d'appel :  mkLigneEntete($data,array('pseudo', 'couleur', 'connecte'));
+
 function mkLigneEntete($tabAsso,$listeChamps=false)
 {
 	// Fonction appelée dans mkTable, produit une ligne d'entête
@@ -97,11 +97,6 @@ function mkTable($tabData,$listeChamps=false)
 // $selected contient l'identifiant de l'option à sélectionner par défaut
 // si $champLabel2 est défini, il indique le nom d'une autre case du tableau 
 // servant à produire les labels des options
-
-// exemple d'appel : 
-// $users = listerUtilisateurs("both");
-// mkSelect("idUser",$users,"id","pseudo");
-// TESTER AVEC mkSelect("idUser",$users,"id","pseudo",2,"couleur");
 
 function mkSelect($nomChampSelect, $tabData,$champValue, $champLabel,$selected=false,$champLabel2=false)
 {
