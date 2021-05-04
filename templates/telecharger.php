@@ -1,8 +1,7 @@
 <?php
   
   include_once "../libs/maLibUtils.php";
-// chemin physique de la page courante 
- //die(__FILE__);
+	// chemin physique de la page courante
 
 $plan=valider("pdf");
 
@@ -10,7 +9,6 @@ $plan=valider("pdf");
   // pour renommer la ressource du point de vue du navigateur
   echo("test");
 
-  // TODO : changer le chemin du fichier pdf
   $name = '../plan/'.$plan; 
 
   header("Content-Type: application/pdf");  

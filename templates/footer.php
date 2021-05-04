@@ -28,7 +28,7 @@ function deconnexion() {
       <p class="m-0 text-center text-white">Copyright &copy; Déci'2i</p>
       <p class="m-0 text-center text-white">
       <?php
-    // Si l'utilisateur est connecte, on affiche un lien de deconnexion 
+    // Si l'utilisateur est connecté, on affiche un lien de déconnexion 
     if (valider("connecte","SESSION"))
     {
       echo "Utilisateur <b>$_SESSION[pseudo]</b> connecté depuis <b>$_SESSION[heureConnexion]</b> &nbsp; "; 

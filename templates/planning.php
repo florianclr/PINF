@@ -10,13 +10,13 @@
 <link href='fullcalendar/lib/main.css' rel='stylesheet' />
 <script src='fullcalendar/lib/main.js'></script>
 
- <!-- Bootstrap core JavaScript -->
+ <!-- Bootstrap -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
 <script>
 
-  //-------- VAR GLOBALE ----- //
+  //-------- VAR ------- //
   var admin ="<?php echo $admin; ?>";
   var idUser = "<?php echo $idUser; ?>";
 
@@ -81,8 +81,6 @@
 
       eventDrop: function(info) {
       		var idDevis = info.event.id;
-          console.log(info.event);
-          // alert(info.event.title + "ID" + info.event.id + " was dropped on " + (info.event.start));
           $.ajax({
           		url: "libs/dataBdd.php",
               data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
@@ -98,8 +96,6 @@
 								  eventDate.setDate(eventDate.getDate() + 1);
 								  
 								  dateString = eventDate.toISOString().substr(0,10);
-								  console.log(dateString);
-								  console.log(eventID);
 
 								  planifierDevis(dateString, eventID);
 								}
@@ -126,8 +122,6 @@
               data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
               type : "GET",
               success:function (oRep){
-
-
                 console.log(oRep);
                 var idDevis = oRep[0].id;
                 $("#contenu").data("id", idDevis);
@@ -161,8 +155,6 @@
 
                       var Id = $("#contenu").data("id");
                       devis = calendar.getEventById(Id);
-                      console.log("devis");
-                      console.log(devis.start);
 
                       var dateString = devis.start.toISOString().substr(0,10);
 
@@ -171,9 +163,6 @@
                       eventDate.setDate(eventDate.getDate() + 1);
           
                       dateString = eventDate.toISOString().substr(0,10);
-
-                      console.log("la date :");
-                      console.log(dateString);
 
                       var subject = "Date de livraison du devis " + oRep[0].nomProjet;
                       var body = "La livraison de votre devis " + oRep[0].nomProjet + " est pr&eacute;vue pour le " + convertirDate(dateString);
@@ -192,7 +181,6 @@
                       var subject = "Livraison de la commande " + oRep[0].nomProjet;
                       var body = "Votre commande pour " + oRep[0].nomProjet + " (" + oRep[0].numeroDevis + ")" + " est pr&ecirc;te.";
                       mailClient(idDevis, subject, body);
-                      // TODO : fonction livré 
                       livrerDevis(idDevis); 
                       $("input[value='Mettre en attente']").remove();
                     }
@@ -218,7 +206,6 @@
 
       getDevisEnAttente();
     getDevisPlanifies();
-  // addEvent("hello", 2);
 
 });
 
@@ -235,8 +222,6 @@
               data:{"action":"Devis","idDevis":idDevis,"idUser":idUser},
               type : "GET",
               success:function (oRep){
-
-
                 console.log(oRep);
                 var idDevis = oRep[0].id;
                 $("#contenu").data("id", idDevis);
@@ -277,15 +262,14 @@
 
   function annulerDevis(idDevis) {
 
-      console.log("Annulation du devis " + idDevis);
-
+      // Annulation du devis
       $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"AnnulerDevis","idDevis":idDevis},
               type : "GET",
               success:function (oRep){
 
-                console.log("devis annulé");
+                console.log("Devis annulé");
                 location.reload();
 
 
@@ -301,8 +285,7 @@
 
   function mailClient(idDevis, subject, body) {
 
-      console.log("Envoi d'un mail au client du devis " + idDevis);
-
+      // Envoi d'un mail au client du devis
       $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"MailClient","idDevis":idDevis},
@@ -357,7 +340,6 @@
                   var eventID = this.id;
                   var eventTitle = this.nomProjet;
                   var eventStart = this.dateLivraison;
-                  console.log(eventID);
 
 									if (this.etat == "LIVRÉ") {
 										calendar.addEvent({
@@ -411,7 +393,7 @@
               data:{"action":"LiverDevis","idDevis":idDevis},
               type : "PUT",
               success:function (oRep){
-                console.log("devis livré");
+                console.log("Devis livré");
                 },
 
                 error: function(jqXHR, textStatus) {
@@ -441,9 +423,8 @@
 		                var eventID = this.id;
 		                var eventTitle = this.nomProjet;
 		                var eventStart = this.dateLivraison;
-		                console.log(eventID);
 
-										// si case cochée, on affiche les devis archivés
+										// si la case est cochée, on affiche les devis archivés
     								if ($("#dispArchive").prop("checked") == true) {
     									if (!archivesPlanifiees) {
 						            calendar.addEvent({
@@ -462,7 +443,6 @@
                         var tabEvents = calendar.getEvents();
 
                         tabEvents.forEach(function(event) {
-                        console.log(event.backgroundColor);
 
                         var couleur = event.backgroundColor;
 
@@ -473,12 +453,9 @@
 						        	}
 				            }
 				            else {
-				            	console.log("decoch");
-				            	// TODO: masquer l'event avec une fonction de FullCalendar
 				            	var tabEvents = calendar.getEvents();
 
                       tabEvents.forEach(function(event) {
-                        console.log(event.backgroundColor);
 
                         var couleur = event.backgroundColor;
 

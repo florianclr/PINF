@@ -6,9 +6,6 @@
 	include_once "libs/modele.php"; 
 	include_once "libs/maLibForms.php";
 
-	// on sélectionne une rubrique différente du site dans le menu
-	//$(".sr-only").html("(current)");
-
 $login = valider("login", "COOKIE");
 $passe = valider("passe", "COOKIE");
   
@@ -20,15 +17,12 @@ if(valider("connecte","SESSION")) {
 	$passe = getInfo($_SESSION["idUser"], "mdp");
 	$mail = getInfo($_SESSION["idUser"], "mail");
 	$tel = getInfo($_SESSION["idUser"], "telephone");
-	// echo $passe;
-	// echo $mail;
-	// echo $tel;
 } 
 else 
 	$connecte = 0;
 
 ?>
-<!-- Bootstrap core JavaScript -->
+<!-- Bootstrap -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -47,7 +41,6 @@ function connexion() {
 	var passe = $("#passe").val();
 	if($("#remember").is(":checked"))var remember="1";
 	else var remember="0";
-	console.log(remember);
 
 	$.ajax({
                 url: "libs/dataBdd.php",
@@ -86,11 +79,10 @@ function createPopUp(){
                	$(this).remove(); // supprime la pop up
              },
          },
-         close: function() { // lorsque on appui sur la croix pour fermer la pop up 
-            console.log("Fermeture du pop-up");
+         close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
             $(this).remove(); // supprime la pop up 
          }
-	}); // DOC jquery UI : https://jqueryui.com/dialog/#modal-message
+	}); // DOC jquery UI pop-up : https://jqueryui.com/dialog/#modal-message
 }
 
 function updateInfos(idUser) {
@@ -105,10 +97,6 @@ function updateInfos(idUser) {
 		var newPasse = $.trim($("#passe").val());
 		var newMail = $.trim($("#mail").val());
 		var newTel = $.trim($("#tel").val());
-
-		console.log(newPasse);
-		console.log(newMail);
-		console.log(newTel);
 
 		if (passe != newPasse)
 		{
@@ -182,7 +170,7 @@ function sendMail(mailDestinataire) {
 	var ok = true;
 
 	if (surname == "") {
-		console.log("NOM PAS OK");
+		// Nom invalide
 		ok = false;
 		$("#surname").css("border", "1px solid red");
 	}
@@ -190,7 +178,7 @@ function sendMail(mailDestinataire) {
 		$("#surname").css("border", "");
 
 	if (firstname == "") {
-		console.log("PRENOM PAS OK");
+		// Prénom invalide
 		ok = false;
 		$("#firstname").css("border", "1px solid red");
 	}
@@ -198,7 +186,7 @@ function sendMail(mailDestinataire) {
 		$("#firstname").css("border", "");
 
 	if (mail == "" || !validateEmail(mail)) {
-		console.log("MAIL PAS OK");
+		// Mail invalide
 		ok = false;
 		$("#mail").css("border", "1px solid red");
 	}
@@ -206,17 +194,12 @@ function sendMail(mailDestinataire) {
 		$("#mail").css("border", "");
 
 	if (tel == "") {
-		console.log("TEL PAS OK");
+		// Téléphone invalide
 		ok = false;
 		$("#tel").css("border", "1px solid red");
 	}
 	else
 		$("#tel").css("border", "");
-
-	console.log(surname);
-	console.log(firstname);
-	console.log(mail);
-	console.log(tel);
 
 	if (ok) {
 
@@ -293,8 +276,6 @@ function forgotPassword() {
 					
 				}
 
-				console.log(word);
-
 				var expediteur = "decima-ne-pas-repondre";
 				var email = "no-reply@decima.fr";
 				var subject = "Mot de passe oublié";
@@ -317,9 +298,7 @@ function forgotPassword() {
 
 						var nbEssais = 3;
 						$("#Envoyer").click(
-											function() { 
-												console.log($("#mailInput").val());
-												console.log(word);
+											function() {
 
 												nbEssais--;
 												if (nbEssais) {
@@ -331,17 +310,11 @@ function forgotPassword() {
 															    type : "GET",
 															    dataType: "json",
 															    success:function (oRep) {
-															    	console.log("oRep")
 															    	console.log(oRep);
 
 															    	var login = oRep[0].mail;
 															    	var passe = oRep[0].mdp;
 															    	// connexion
-
-															    	console.log("login");
-															    	console.log(login)
-															    	console.log("passe");
-															    	console.log(passe);
 
 																	$.ajax({
 													                url: "libs/dataBdd.php",
@@ -349,10 +322,9 @@ function forgotPassword() {
 													                type : "GET",
 													               
 													                success:function (oRep) {
-													                	console.log("reponseConnexion")
-																	 	console.log(oRep);
-																	 	document.location.href="./index.php?view=catalogue";
-																	 	alert("Vous avez été reconnecté à votre compte. Nous vous recommandons vivement de changer votre mot de passe dans la section Connexion/Compte");
+																					 	console.log(oRep);
+																					 	document.location.href="./index.php?view=catalogue";
+																					 	alert("Vous avez été reconnecté à votre compte. Nous vous recommandons vivement de changer votre mot de passe dans la section Connexion/Compte");
 																
 																 		},
 																	error : function(jqXHR, textStatus) {

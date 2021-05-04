@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 if (!valider("connecte","SESSION")){
   header("Location:index.php?view=connexion");
   die("");
@@ -22,23 +19,23 @@ $pseudo = valider("pseudo","SESSION");
   <script src="jquery-ui/jquery-ui.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap core JavaScript -->
+    <!-- Bootstrap -->
     <script type="text/javascript">
-    // SOURCE : 
- 	//https://freefrontend.com/css-tables/
+    // SOURCES : 
+ 	// https://freefrontend.com/css-tables/
  	// https://codepen.io/wortmann/pen/BNNZLb
  	// https://codepen.io/nikhil8krishnan/pen/WvYPvv
 
-    //-------- VAR GLOBALE ----- //
+    //-------- VAR ----- //
  	var admin ="<?php echo $admin; ?>";
  	var idUser = "<?php echo $idUser; ?>";
  	var idDevis = "<?php echo $idDevis; ?>";
-	var pseudo = "<?php echo $pseudo; ?>"; // TODO : sert plus à rien ??
+	var pseudo = "<?php echo $pseudo; ?>";
  	var prixTotal=0;
  	var tab ;
   var categorie, flag = 0;
 
- 	//----- MODELE JQUERY -----//
+ 	//----- MODELES JQUERY -----//
 
  	var jTd =$("<div class='st_column _rank'></div>");
 	var jTdSmall =$("<div class='st_column _btnDevis'></div>");
@@ -46,12 +43,9 @@ $pseudo = valider("pseudo","SESSION");
 
   var jButtonChgtDate=$('<input id="mailDate" type="button" value="Informer le propriétaire du changement de date de livraison"></input>').click(function(){
     var date = $("#datepicker").val();
-    console.log(date); 
-    $(this).remove(); 
-    //$("#source").prependTo("#destination");
+    $(this).remove();
   });
 
-// TODO : récupérer tout les etats possbiles  depuis la bdd
  	var jSelectEtat=$('<select name="etat" id="etat">' +
     '<option value="EN_CRÉATION">EN_CRÉATION</option>'+
     '<option value="DEMANDE_COMMANDE">DEMANDE_COMMANDE</option>'+
@@ -60,12 +54,10 @@ $pseudo = valider("pseudo","SESSION");
     '<option value="LIVRÉ">LIVRÉ</option>'+
     '<option value="ARCHIVÉ">ARCHIVÉ</option>'+
     '</select>"').change(function(){
-        console.log("aaaaa");
         var newEtat = $(this).val(); 
         var select = $(this); 
         var date = $("#datePicker").val(); 
         var oldEtat = $("#etat").data("current");
-        console.log("old=>"+oldEtat);
     
         if( (newEtat == 'LIVRÉ' || newEtat == 'EN_FABRICATION') &&  date==null){
           alert("Veuillez sélectionner une date de livraison avant de changer l'état.");
@@ -89,7 +81,6 @@ $pseudo = valider("pseudo","SESSION");
         }
 
         if (oldEtat == "EN_FABRICATION" && newEtat =="COMMANDE_VALIDÉE"){
-          console.log("GOOD");
           $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>'));
           annulerDevis(idDevis); 
         }
@@ -99,11 +90,9 @@ $pseudo = valider("pseudo","SESSION");
         type : "PUT",
         success: function(oRep){
             console.log(oRep);
-            console.log("success");
             var table = $("h2:contains('" + newEtat+"')").parent().parent();
             var copie = $("#devis"+idDevis); 
             copie.appendTo(table);
-            console.log(table); 
             select.data("current",newEtat); 
         },
         error : function(jqXHR, textStatus) {
@@ -127,7 +116,6 @@ $pseudo = valider("pseudo","SESSION");
     var etat = $("#etat option:selected").val(); 
     var numDevis=$("#numDevis").html();
     var nomProjet=$("#nomProjet").html();
-    console.log(commentaire);
     
     $.ajax({
         url: "libs/dataBdd.php?action=MajCommentaire&idDevis="+idDevis+"&commentaire="+commentaire,
@@ -161,8 +149,8 @@ $pseudo = valider("pseudo","SESSION");
 		        console.log(oRep);
             $(btn).remove(); 
             $("#etat").html("DEMANDE_COMMANDE");
-			$(".imgSuppArtDevis").remove();
-			getMail();
+						$(".imgSuppArtDevis").remove();
+						getMail();
 		    },
 		    error : function(jqXHR, textStatus) {
 		      console.log("erreur");
@@ -190,7 +178,6 @@ var jImg=$('<img  class="imgSuppArtDevis" src="./ressources/moins.png"/>').click
           success: function(oRep){
             console.log(oRep);
             var nvPrix=ancienPrix-prix;
-            console.log(nvPrix);
             $("#prixTot").html(nvPrix+"€");
           },
           error : function(jqXHR, textStatus) {
@@ -257,8 +244,7 @@ var jAddDevis=$('<div class="buttonsCenter"><input type="button" id="addD" value
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up 
-      console.log("close!!!!");
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
     });
@@ -269,10 +255,9 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                   .append($('<input type="checkbox" name="archive" id="dispArchive"/>').change(function(){
                     $("#tabDevis").empty();
                     generateTableUser(idUser);
-                    console.log("click");
 }));
 
- 	// ------ GENERATION TABELAU NON ADMIN ---//
+ 	// ------ GENERATION TABLEAU NON ADMIN ------ //
 
  	function generateTableUser(idUser){
  		var jligne ; 
@@ -282,21 +267,18 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
  		var tabAct ;
  		var archive = 0; 
 
-		console.log("ARCHIVÉ ou pas");
 		if ($("#dispArchive").prop("checked") == true)
 		  archive=1; 
       
  		$.ajax({
               url: "libs/dataBdd.php?action=DevisUser&idUser="+idUser+"&archive="+archive,
-      				//data:{"action":"AllDevis","idUser":idUser},
       				type : "GET",
                     success:function (oRep){ 
                     console.log(oRep);
                     etat = "" ;
 
                     var jlien=$("<a class='button' href='#'></a>").click(function(e){
-                      console.log("test!!!");
-                      idDevis = $(this).prop("id");console.log(idDevis);
+                      idDevis = $(this).prop("id");
                       // change l'url 
                       var lien = "index.php?view=devis&idDevis=" + idDevis ; 
                       var stateObj = { foo: "bar" };
@@ -319,16 +301,13 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                     	if(oRep[i].etat != etat){
                     		etat = oRep[i].etat ;
                     		tabAct = "tab"+ nbTab;
-                    		// $(".st_viewport").append($('<div class="st_wrap_table" data-table_id="'+ nbTab +'" id="' + tabAct + '">').clone(true));
                     		$("#tabDevis").append($('<div class="st_wrap_table" data-table_id="'+ oRep[i].etat +'" id="' + tabAct + '">').clone(true));
                     		$("#" + tabAct).append(jHeaderTab.clone(true));
                     		$("#" + tabAct +" .title_tab").html(etat); 
-                    		if(admin == 1 || admin == 2){// ajout d'une colone pour afficher le créateur du devis 
-                    			$("#" + tabAct + " header .st_row div.st_column._year").before(jInfosChrageAff.clone(true)); 
-                    			//.append(jInfosChrageAff).clone(true)
+                    		if(admin == 1 || admin == 2){// ajout d'une colonne pour afficher le créateur du devis 
+                    			$("#" + tabAct + " header .st_row div.st_column._year").before(jInfosChrageAff.clone(true));
                     		}
-                    		nbTab++ ; 
-                    		console.log("test");
+                    		nbTab++ ;
                     	}
 
                     	jligne = $('<div class="st_row"></div>').attr("id","devis"+oRep[i].id).append(jTd.clone(true).append(oRep[i].numeroDevis))
@@ -355,14 +334,13 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                   // CAS OU UN DEVIS EST DÉJÀ CHARGÉ 
                     if(idDevis != ""){
                       var nbH = $(".st_table_header");
-                      console.log(nbH);
                       $("#tabDevis").toggle();
                       genDetailsDevis(idDevis);
                       $('.test, html, body').toggleClass('open');
                     }//fin if
                     },// fin succes
                     error : function(jqXHR, textStatus) {
-                    console.log("erreur");  
+                    	console.log("erreur");  
                     },
                     dataType: "json"
                  });
@@ -376,7 +354,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
 				success: function(oRep){
 				console.log(oRep);
 				$(".nomCa").each(function(){
-					console.log($(this)); 
 					var refCa = $(this).prop("id");
 					for (var i = 0; i < oRep.length; i++) {
 						if(oRep[i].id == refCa)
@@ -407,8 +384,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                     $("#numDevis").html(oRep[0].numeroDevis);
                     $("#dateCreation").html(oRep[0].dateCreation);
 
-                    console.log(oRep[0].dateLivraison); 
-
                     if(admin==0 || (oRep[0].etat=="ARCHIVÉ" || oRep[0].etat=="EN_CRÉATION" || oRep[0].etat=="DEMANDE_COMMANDE")){
                       $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>').html(oRep[0].dateLivraison));
                     }
@@ -417,15 +392,11 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                       if( oRep[0].dateLivraison != null  ){ 
                         $("#datepicker").replaceWith(jDate.clone(true));
                         datePicker();
-                         console.log("TESTDATE2");
-                         console.log(oRep[0].dateLivraison); 
                          var date = oRep[0].dateLivraison ; 
                          var tabDate = date.split('-' );
-                         console.log(tabDate); 
                          $("#datepicker").datepicker("setDate", new Date(tabDate[0],tabDate[1]-1,tabDate[2]));
                       }
-                      else if( oRep[0].dateLivraison == null ){ 
-                        console.log("TESTDATE3");
+                      else if( oRep[0].dateLivraison == null ){
                         $("#dateLivraison").replaceWith(jDate.clone(true));
                         datePicker();
                       	$("#datepicker").val("");
@@ -433,7 +404,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                     }
 
                     if(admin == 1 || admin == 2){
-                      console.log(oRep[0].etat);
                       if(oRep[0].etat == "ARCHIVÉ"){
                         $("#etat").empty();
                         $("#etat").prepend("ARCHIVÉ");
@@ -442,7 +412,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                         $("#etat").empty();
                       $("#etat").prepend(jSelectEtat.clone(true));
                       $('#etat select option[value="' + oRep[0].etat +'"]').prop('selected', true);
-                      console.log("DATAAAA");
                       $("#etat").data("current",oRep[0].etat);
                       }
                     }
@@ -474,7 +443,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                    	genFerruresDevis(idDevis);
                     },// fin succes
                     error : function(jqXHR, textStatus) {
-                    console.log("erreur");  
+                    	console.log("erreur");  
                     },
                     dataType: "json"
                  });
@@ -499,7 +468,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
 			        	$("#lig0")
 			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td></td><td id="dim'+i+'""><b>dim1 : </b>'+oRep[i].a+'</br><b>dim2 : </b>'+oRep[i].b+'</br><b>dim3 : </b>'+oRep[i].c+'</td><td>'+oRep[i].couleur+'</td><td class="tabDevis"id="prix'+i+'""></tr>'));
 
-			        	console.log($("#etat").text());
 			        	if($("#etat").text() =="EN_CRÉATION"  ||( admin==1 || admin==2)){
         					$("#img").prepend(jImg.clone(true).attr("id",oRep[i].id));
         				}
@@ -509,7 +477,6 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
 			        	remplirTab(i,oRep);
 
                  insererOption(oRep[i].id,i);
-			        	//prixTotal+=parseInt(oRep[i].prix);
 
 					}//fin for
 					$("#FerrureDevis tbody").append(jLignePrixTot.clone(true)); 
@@ -517,13 +484,11 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                   
                     },// fin succes
                     error : function(jqXHR, textStatus) {
-                    console.log("erreur");  
+                    	console.log("erreur");  
                     },
                     dataType: "json"
                  });
 
-
- 		//if($("#etat").text()=="EN_CRÉATION")$("#supp").hide();
  	}
 
 
@@ -543,7 +508,6 @@ function insererOption(id,i) {
 
                           var option="- "+oRep[j].nom +"<b> (x"+oRep[j].quantité+")</b></br>";
                           $("#opt"+i).append(option);
-                          console.log("exist");
                         }
                         else {
                         // création de la case option si elle n'existe pas
@@ -576,7 +540,6 @@ function insererOption(id,i) {
 		data:{"action":"Produit","idProduit" :oRep[i].refFerrures},
 			    type : "GET",
 			    success: function(oRep){
-            console.log("oRep");
             console.log(oRep);
 
             var lien = "index.php?view=article&produit=" + oRep[0].id + "&categorie=" + oRep[0].nomCategorie ;
@@ -603,7 +566,7 @@ function insererOption(id,i) {
              $("#articles").empty();
               e.preventDefault();
               $("#tabDevis").toggle();
-              $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
+              $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quelle classe ouvrir
         });
         datePicker();
         });
@@ -644,8 +607,7 @@ function datePicker() {
 
 function mailClient(idDevis, subject, body) {
 
-      console.log("Envoi d'un mail au client du devis " + idDevis);
-
+      // Envoi d'un mail au client du devis
       $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"MailClient","idDevis":idDevis},
@@ -745,8 +707,6 @@ function sendMail(mailDest) {
 }
  	// --- CHARGEMENT PAGE -- //
  	$(document).ready(function(){
- 		console.log(idUser); 
- 		console.log(idDevis);
  		generateTableUser(idUser);
 		$(".st_viewport").after(jAddDevis.clone(true));
 		$(".st_viewport").before(jDisplayArchive.clone(true));
@@ -776,7 +736,7 @@ function SupprimerDevis() {
              console.log(oRep);
               $("#articles").empty();
                 $(".st_table_header").toggle();
-                $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quel classe ouvrir
+                $('.test, html, body, .st_wrap_table').toggleClass('open'); // .detail indique quelle classe ouvrir
                 $('#'+idDevis).parent().parent().remove();
                 var stateObj = { foo: "bar" };
                 history.pushState(stateObj, "Devis", "index.php?view=devis");
@@ -793,14 +753,13 @@ function SupprimerDevis() {
 
 function annulerDevis(idDevis) {
 
-      console.log("Annulation du devis " + idDevis);
-
+      // Annulation du devis
       $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"AnnulerDevis","idDevis":idDevis},
               type : "GET",
               success:function (oRep){
-                console.log("devis annulé");
+                console.log("Devis annulé");
                 },
 
                 error: function(jqXHR, textStatus) {

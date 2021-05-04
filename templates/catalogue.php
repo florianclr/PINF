@@ -35,14 +35,14 @@
 
 </style>
 
-<!-- Bootstrap core JavaScript -->
+<!-- Bootstrap -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
 <script src="slick/slick.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 
-// -------- MODELES JQUERY --------------//
+// -------- VARIABLES ----------//
 
   var tab = [];
 
@@ -83,12 +83,10 @@
       															 width: 400,
                                                       			 buttons: { // on ajoute des boutons à la pop up 
 															        "Oui": function(){
-															        	console.log($(this).data("idFerrure"));
 															        	$.ajax({
                                           url: "libs/dataBdd.php?action=Ferrure&id="+$(this).data("idFerrure"),
                                           type : "DELETE",
                                           success : function(oRep){
-                                            console.log("Ferrure supprimée!!");
                                             console.log(oRep);
                                              $("#popupSuppr").dialog( "close" ); // ferme la pop up
                                           },
@@ -107,8 +105,7 @@
 															          $(this).remove(); // supprime la pop up
 															        },
 															    },
-															      close: function() { // lorsque on appui sur la croix pour fermer la pop up 
-																  console.log("close!!!!");
+															      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
 																  $(this).remove(); // supprime la pop up 
 															      }
                                                       		});
@@ -122,9 +119,7 @@
   var imgAjout = $('<div class="col-lg-4 col-md-6 mb-4">')
                   .append($('<img class="card-img-top" src="./ressources/plus.jpg">')
                   	.click(function(){
-                  		console.log("redirection...");
                       var categ = $(this).parent().parent().prop("id");
-                      console.log("categ=>"+categ);
                       document.location.href="./index.php?view=creerArticle&categorie="+categ;
                   	}) // fin function 
                   );// fin append
@@ -133,9 +128,7 @@
 
   var jRecherche=$('<div id="recherche">')
       .append($('<input type="text" id="mot"/>')).keydown(function(contexte){
-        //console.log(contexte);
         if(contexte.key == "Enter"){
-          console.log($('#mot').val());
             $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"Rechercher","keyword":$('#mot').val()},
@@ -169,7 +162,6 @@
                 }//fin for
 
                 if (oRep.length == 0) {
-                  console.log("pas trouvé");
                   $(".col-lg-9 .row").append(jWarning.clone(true).attr("id","warning"));
                 }
               } // fin oRep != null
@@ -181,14 +173,13 @@
       })
       .append($('<input type="button" id="searchButton" value="Rechercher"/>')
         .click(function(){
-          console.log($('#mot').val());
             $.ajax({
               url: "libs/dataBdd.php",
               data:{"action":"Rechercher","keyword":$('#mot').val()},
               type : "GET",
               success:function (oRep){
                 console.log(oRep);
-    if (oRep != null) {
+    				if (oRep != null) {
             $(".col-lg-9").empty();
             $(".col-lg-9").append($('<div class="row"></div>'));
             for (var i = 0; i <oRep.length; i++) {
@@ -229,7 +220,6 @@
       width: 400,
       buttons: { // on ajoute des boutons à la pop up 
         "Créer": function(){
-        console.log($('#nomC').val());
 
       $.ajax({
         url: "libs/dataBdd.php",
@@ -259,7 +249,7 @@
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
     });
@@ -274,7 +264,6 @@
       width: 400,
       buttons: { // on ajoute des boutons à la pop up 
         "Créer": function(){
-        console.log($('#nomF').val());
 
       $.ajax({
         url: "libs/dataBdd.php",
@@ -315,7 +304,6 @@
       width: 400,
       buttons: { // on ajoute des boutons à la pop up 
         "Créer": function(){
-        console.log($('#nomM').val());
 
       $.ajax({
         url: "libs/dataBdd.php",
@@ -341,7 +329,7 @@
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
     });
@@ -356,11 +344,8 @@
   
   var jPopupDevis=$('<div id="newD" title="Création d\'un devis"><div id="nomCli">Nom du client : </div>').append('<input type="text" id="nomClient"/>').append('<div id="numDev">Numéro du devis :</div>').append('<input type="text" id="numD">').append('<div id="nomPro">Nom du projet :</div>').append('<input type="text" id="nomP"/>');
 
-//-------- VAR GLOBALE ----- //
-
  var admin ="<?php echo $admin; ?>";
  var idUser ="<?php echo $idUser; ?>";
- console.log("admin =>" + admin); 
  var categLoad = "<?php echo $categ; ?>";
 
 //------------ CRÉATION DE LA PAGE D'ACCUEIL LORSQUE QUE LE CATALOGUE EST CHARGÉ-----------//  
@@ -383,8 +368,7 @@
     $(".col-lg-9 .row").each(function(){  
                                       
                                       var couleur= $(this).prev().css("color");
-                                      var nom = $(this).prop("id");
-                                      console.log("remplissage !!" + nom);  
+                                      var nom = $(this).prop("id"); 
                                       var lien = $(this);
 
                                       $.ajax({
@@ -398,8 +382,7 @@
                                                 if(oRep.length != 0){ 
                                                   for (var i =0; i<9;i++){
                                                   
-                                                  if ( i >= oRep.length ){ 
-                                                    console.log("OUTTTTTTTTTTTT!!!!!!");
+                                                  if ( i >= oRep.length ){
                                                     break; 
                                                   }
                                                   
@@ -532,8 +515,7 @@
         $(this).remove(); // supprime la pop up
         },
       },
-      close: function() { // lorsque on appui sur la croix pour fermer la pop up 
-      console.log("close!!!!");
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
       $(this).remove(); // supprime la pop up 
       }
     });
@@ -551,7 +533,6 @@
           for (var i = 0; i < oRep.length; i++) {
             tab.push(oRep[i].couleur);
           }
-          console.log(tab);
       },
     error : function(jqXHR, textStatus) {
         console.log("erreur");
@@ -603,10 +584,10 @@
 
   <body>
 
-    <!-- Page Content -->
+    <!-- Contenu de la page -->
     <div class="container">
 
-      <div class="row"> <!-- <div class="menuCateg row"> -->
+      <div class="row">
 
         <div class="col-lg-3">
 
@@ -619,7 +600,7 @@
 
         <div class="col-lg-9">
 
-            <!-- CONTIENT LES CATGÉOGIRES AVEC LEURS FERRURES -->
+            <!-- CONTIENT LES CATÉGORIES AVEC LEURS FERRURES -->
 
         </div>
         <!-- /.col-lg-9 -->
