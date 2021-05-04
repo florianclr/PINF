@@ -282,7 +282,7 @@ function changerMdp() {
                     type : "PUT",
                     success: function (oRep){
                     	console.log(oRep);
-						$("#compte").before("<div id='modifOK'>Mot de passe changés </div>");
+						$("#compte").before("<div id='modifOK'>Mot de passe changé</div>");
                     },
                     error: function(oRep){
                     	$("#compte").before("<div id='modifOK'>Ancien ou nouveau mot de passe invalide</div>"); 
