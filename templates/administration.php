@@ -409,7 +409,9 @@ var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinatair
 		          $("#popupM").remove(); // supprime la pop up
 		          $("#mail").remove();
 							$('#mailActuel').html('Le destinataire actuel des mails est <b>'+nom+'</b>');
+							$('#mailActuel').css('margin-bottom','40px');
 							$('#chgtDestOK').css('display','block');
+							$('#deleteUser').hide();
 		      },// fin succes
 		      error : function(jqXHR, textStatus) {
 		        console.log("erreur");
@@ -583,8 +585,10 @@ function sendMail(mdp,mailD) {
 	<div class="titreSection">Suppression de finitions / matières</div>
 	<div id="finitions"></div>
 	<div id="matiere"></div>
-	<div class="titreSection" id="deleteUser">Suppression d'utilisateurs</div>
-	<div id="utilisateurs"></div>
+	<div id="deleteUser">
+		<div class="titreSection">Suppression d'utilisateurs</div>
+		<div id="utilisateurs"></div>
+	</div>
 </div>
 </br></br></br></br></br>
 </body>
