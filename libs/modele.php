@@ -444,6 +444,11 @@ function getMdp($login){
 		$SQL="SELECT * FROM finition";
 		return parcoursRs(SQLSelect($SQL));
 	}
+	
+	function listerNoSuperadmins() {
+		$SQL="SELECT * FROM utilisateur WHERE admin!=2";
+		return parcoursRs(SQLSelect($SQL));
+	}
 
 	function listerNbFinition($idF) {
 		$SQL="SELECT COUNT(*) FROM ferrures,finition WHERE finition.id=ferrures.refFinition AND finition.id='$idF'";
@@ -454,9 +459,19 @@ function getMdp($login){
 		$SQL="SELECT COUNT(*) FROM ferrures,matiere WHERE matiere.id=ferrures.refMatiere AND matiere.id='$idM'";
 		 return SQLGetChamp($SQL);
 	}
+	
+	function listerNbDevisUser($idU) {
+		$SQL="SELECT COUNT(*) FROM utilisateur,devis WHERE utilisateur.id=devis.refCA AND utilisateur.id='$idU'";
+		 return SQLGetChamp($SQL);
+	}
 
 	function supprimerMatiereFinition($id,$value) {
 		$SQL="DELETE FROM $value WHERE id='$id'";
+		return SQLDelete($SQL);
+	}
+	
+	function supprimerUser($idU) {
+		$SQL="DELETE FROM utilisateur WHERE id='$idU'";
 		return SQLDelete($SQL);
 	}
 	

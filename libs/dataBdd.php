@@ -571,6 +571,11 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break;
             
+            case 'GET_NoSuperadmins' :
+				$tab=listerNoSuperadmins();
+				echo(json_encode($tab));
+			break;
+            
 			case 'DELETE_Matiere' :
                 if($admin==1 || $admin==2)
                 if($idM=valider("idMatiere"))
@@ -582,6 +587,13 @@ if ($action = valider("action"))
               	if($admin==1 || $admin==2)
                 if($idF=valider("idFinition"))
                   	$tab=supprimerMatiereFinition($idF,"finition");
+                echo(json_encode($tab));
+            break;
+            
+            case 'DELETE_User' :
+                if($admin==2)
+                if($idU=valider("idUser"))
+                    $tab=supprimerUser($idU);
                 echo(json_encode($tab));
             break;
 
@@ -596,6 +608,13 @@ if ($action = valider("action"))
                 if($admin==1 || $admin==2)
                 if($idM=valider("idMatiere"))
                 $tab=listerNbMatiere($idM);
+                echo(json_encode($tab));
+            break;
+            
+            case 'GET_NbDevisUser' :
+                if($admin==2)
+                if($idU=valider("idUser"))
+                $tab=listerNbDevisUser($idU);
                 echo(json_encode($tab));
             break;
 
