@@ -355,7 +355,15 @@ body {
 #newDest {
 	color: darkblue;
 	font-weight: bold;
+}
+
+#mail {
 	margin-bottom: 40px;
+}
+
+#deleteUser {
+	margin-top: 40px;
+	display: none;
 }
 
 .titreSection {
