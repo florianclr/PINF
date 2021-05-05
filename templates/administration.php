@@ -273,7 +273,76 @@ var JMenuSelectM =$('<label for="listeMatiere">Liste des matières : </label> <s
 
     });
 
-	});
+});
+
+var JMenuSelectU =$('<label for="listeUtilisateur">Liste des utilisateurs : </label> <select class="listeAdministration" id="listeUtilisateur"> </select>').click(function () {
+
+		var idU=$(this).val();
+		var nbUser;
+		$("#warning").remove();
+		
+		$.ajax({
+        url: "libs/dataBdd.php?action=NbDevisUser&idUser="+idU,
+        type : "GET",
+        success:function (oRep){
+        	console.log(oRep);
+        	nbUser=oRep;
+        
+
+        },// fin succes
+        error : function(jqXHR, textStatus) {r
+          console.log("erreur");
+        },
+
+        dataType: "json"
+      });// fin requête ajax
+
+		$('body').append(popupUser.clone(true));
+		$("#popupUs").dialog({
+      modal: true, 
+      height: 250,
+      width: 400,
+      buttons: { // on ajoute des boutons à la pop up 
+        "OUI": function(){
+
+        if(nbUser==0){
+	      $.ajax({
+	        url: "libs/dataBdd.php?action=User&idUser="+idU,
+	        type : "DELETE",
+	        success:function (oRep){
+	        	console.log(oRep);
+	        	$("#popupUs").dialog("close"); // ferme la pop up 
+			    $("#popupUs").remove(); // supprime la pop up
+			    $("#listeUtilisateur option:selected").remove();
+	        
+
+	        },// fin succes
+	        error : function(jqXHR, textStatus) {
+	          console.log("erreur");
+	        },
+
+	        dataType: "json"
+	      });// fin requête ajax
+	    }
+	    else {
+	    	$("#popupUs").remove(); // supprime la pop up
+	        $("#infoSA").append("</br><div id='warning'>Veuillez supprimer tous les devis de l'utilisateur avant de le supprimer</div>");
+	    }
+
+
+        },
+        "NON": function() {
+        $(this).dialog("close"); // ferme la pop up 
+        $(this).remove(); // supprime la pop up
+        },
+      },
+      close: function() { // lorsqu'on appuie sur la croix pour fermer la pop up
+      $(this).remove(); // supprime la pop up 
+      }
+
+    });
+
+});
 	
 	
 
@@ -312,6 +381,8 @@ $.ajax({
 var popupFinition = $('<div id="popupF" class="popupAdministration" title="Confirmer la suppression"> <h4 id="warningConfirm">Voulez-vous vraiment supprimer cette finition ?</h4>');
 
 var popupMatiere= $('<div id="popupMat" class="popupAdministration" title="Confirmer la suppression"> <h4 id="warningConfirm">Voulez-vous vraiment supprimer cette matière ?</h4>');
+
+var popupUser= $('<div id="popupUs" class="popupAdministration" title="Confirmer la suppression"> <h4 id="warningConfirm">Voulez-vous vraiment supprimer cet utilisateur ?</h4>');
 
 var popupMail = $('<div id="popupM" class="popupAdministration" title="Confirmer le changement"><h4 id="warningConfirm">Voulez-vous vraiment changer le destinataire des mails ?</h4>');
 
@@ -366,9 +437,13 @@ var jOptionSelect = $('<option></option>');
 $(document).ready(function(){
 
 		if (admin == 1 || admin == 2){
-        selectFinition();
-        selectMatiere();
-    }
+		    selectFinition();
+		    selectMatiere();
+    	}
+    	if (admin == 2) {
+    		$("#deleteUser").show();
+    		selectUser();
+    	}
 
 		$.ajax({
 		    url: "libs/dataBdd.php",
@@ -444,6 +519,27 @@ function selectMatiere() {
   });
 }
 
+function selectUser() {
+
+    $.ajax({
+      url: "libs/dataBdd.php",
+      data:{"action":"NoSuperadmins"},
+      type : "GET",
+      success: function(oRep){
+          console.log(oRep);
+          $('#utilisateurs').append(JMenuSelectU.clone(true));
+          for (var i = 0; i < oRep.length; i++) {
+              $('#listeUtilisateur').append(jOptionSelect.clone(true).val(oRep[i].id).html(oRep[i].prenom+" "+oRep[i].nom));
+          }
+
+      },
+    error : function(jqXHR, textStatus) {
+        console.log("erreur");
+    },
+    dataType: "json"
+  });
+}
+
 function sendMail(mdp,mailD) {
 
 	var email = "no-reply@decima.fr";
@@ -487,6 +583,8 @@ function sendMail(mdp,mailD) {
 	<div class="titreSection">Suppression de finitions / matières</div>
 	<div id="finitions"></div>
 	<div id="matiere"></div>
+	<div class="titreSection" id="deleteUser">Suppression d'utilisateurs</div>
+	<div id="utilisateurs"></div>
 </div>
 </br></br></br></br></br>
 </body>
