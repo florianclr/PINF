@@ -55,11 +55,23 @@ function changeMdp($oldPassword,$newPassword){
 
 		$newHash=password_hash($newPassword,PASSWORD_DEFAULT,['cost' => 12]); 
 		updateInfo($_SESSION['idUser'],"mdp", $newHash);
-		return true ; 
+		return true; 
 	}
 
 	else
-		return false ; 
+		return false; 
+}
+
+function resetMdp($login, $newPassword) {
+
+	$newHash=password_hash($newPassword,PASSWORD_DEFAULT,['cost' => 12]);
+
+	if ($id = verifUserBdd($login)) {
+		updateInfo($id, "mdp", $newHash);
+		return $id;
+	}
+	else
+		return false; 
 }
 
 ?>

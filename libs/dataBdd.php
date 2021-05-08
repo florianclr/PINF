@@ -123,6 +123,14 @@ if ($action = valider("action"))
                        echo($_SESSION['idUser']);                         
                 }
             break;
+
+			case 'POST_resetMdp':
+                if ($login=valider("login"))
+                if ($newMdp=valider("newMdp")) {
+                    $res = resetMdp($login, $newMdp);
+                    echo $res;
+                }
+            break;
             
             // **********************************************************
 
