@@ -208,11 +208,11 @@ if ($action = valider("action"))
 			case 'PUT_Accepter' :
                 if($admin=valider("admin") && $idUser=valider("idUser")){
                     $promouvoir=valider("promouvoir");
-                	$bytes = random_bytes(3);
-					$mdp=bin2hex($bytes);
-					$tab=accepterCompte($mdp,$idUser,$promouvoir);
+                    $bytes = random_bytes(3);
+                    $mdp=bin2hex($bytes);
+                    $tab=accepterCompte(password_hash($mdp,PASSWORD_DEFAULT,['cost' => 12]),$idUser,$promouvoir);
                 }
-                echo(json_encode($tab));
+                 echo(json_encode($mdp));
             break;
             
             case 'DELETE_Refuser' :
