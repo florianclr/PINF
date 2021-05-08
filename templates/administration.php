@@ -38,6 +38,7 @@ var nom;
 var jCompte = $('<div class="attente"></div>');
 var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 									var id=$(this).prop("id");
+									
 									if($("#admin").is(":checked"))
 										var promouvoir="1";
 									else var promouvoir="0";
@@ -47,6 +48,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
                     					success:function (oRep){
 											console.log("Inscrit");
 											console.log(oRep);
+											var mdp = oRep;
 											$.ajax({
 												url: "libs/dataBdd.php",
 												data:{"action":"CompteAttente","admin":admin,"idUser":id},
@@ -54,7 +56,7 @@ var jButtonOK = $('<input type="button" value="Accepter"/>').click(function() {
 												success:function (oRep){
 											 		console.log(oRep);
 											 		for (var i = 0; i <oRep.length; i++) {
-											 			sendMail(oRep[i].mdp,oRep[i].mail);
+											 			sendMail(mdp,oRep[i].mail);
 											 		}
 
 											 		$("#"+id).hide('slow', function() { 
@@ -96,10 +98,11 @@ var jBtnAccepter=$('<input type="button" id="btn" value="Tout accepter"/>').clic
 	$(".attente").each(function () {
 		var id=$(this).prop("id");
 		$.ajax({
-	                url: "libs/dataBdd.php?action=Accepter&idUser="+id+"&admin="+admin,
+	                url: "libs/dataBdd.php?action=Accepter&idUser="+id+"&admin="+admin+"&promouvoir=0",
 	                type : "PUT",
 	                success:function (oRep){
 	                	console.log(oRep);
+	                	var mdp = oRep;
 	                	$.ajax({
 			                url: "libs/dataBdd.php",
 			                data:{"action":"CompteAttente","admin":admin,"idUser":id},
@@ -107,7 +110,7 @@ var jBtnAccepter=$('<input type="button" id="btn" value="Tout accepter"/>').clic
 			                success:function (oRep){
 						 		console.log(oRep);
 						 		for (var i = 0; i <oRep.length; i++) {
-						 			sendMail(oRep[i].mdp,oRep[i].mail);
+						 			sendMail(mdp,oRep[i].mail);
 						 		}
 
 						 		$("#"+id).hide('slow', function() { 
@@ -172,9 +175,10 @@ var JMenuSelectF =$('<label for="listeFinition">Liste des finitions : </label> <
 	        success:function (oRep){
 	        	console.log(oRep);
 	        	$("#popupF").dialog( "close" ); // ferme la pop up 
-	        $("#popupF").remove(); // supprime la pop up
-	        $("#listeFinition option:selected").remove();
-	        
+			    $("#popupF").remove(); // supprime la pop up
+			    $("#listeFinition option:selected").remove();
+			    $('#chgtOK').css('display','block');
+	        	$("#chgtOK").html("La finition a bien été supprimée");
 
 	        },// fin succes
 	        error : function(jqXHR, textStatus) {
@@ -243,9 +247,10 @@ var JMenuSelectM =$('<label for="listeMatiere">Liste des matières : </label> <s
 	        success:function (oRep){
 	        	console.log(oRep);
 	        	$("#popupMat").dialog("close"); // ferme la pop up 
-	        $("#popupMat").remove(); // supprime la pop up
-	        $("#listeMatiere option:selected").remove();
-	        
+			    $("#popupMat").remove(); // supprime la pop up
+			    $("#listeMatiere option:selected").remove();
+	        	$('#chgtOK').css('display','block');
+	        	$("#chgtOK").html("La matière a bien été supprimée");
 
 	        },// fin succes
 	        error : function(jqXHR, textStatus) {
@@ -314,7 +319,8 @@ var JMenuSelectU =$('<label for="listeUtilisateur">Liste des utilisateurs : </la
 	        	$("#popupUs").dialog("close"); // ferme la pop up 
 			    $("#popupUs").remove(); // supprime la pop up
 			    $("#listeUtilisateur option:selected").remove();
-	        
+	        	$('#chgtOK').css('display','block');
+	        	$("#chgtOK").html("L'utilisateur a bien été supprimé");
 
 	        },// fin succes
 	        error : function(jqXHR, textStatus) {
@@ -356,7 +362,7 @@ $.ajax({
 				 	if(oRep.length != 0){
 				 		for (var i = 0; i < oRep.length; i++) {
 				 			$("#listeCompte").append(jCompte.clone(true).attr("id",oRep[i].id)
-				 				.append($('<div class="demande">Demande de <b>'+oRep[i].prenom+' '+oRep[i].nom+'</b></div>'))
+				 				.append($('<div class="demande">Demande de '+oRep[i].prenom+' '+oRep[i].nom+'</div>'))
 				 				.append(jButtonOK.clone(true).attr("id",oRep[i].id))
 				 				.append(jButtonNO.clone(true).attr("id",oRep[i].id))
 				 				.append(jBox.clone(true))
@@ -410,7 +416,8 @@ var JMenu =$('<label id="newDest" for="listeMail">Choisir un nouveau destinatair
 		          $("#mail").remove();
 							$('#mailActuel').html('Le destinataire actuel des mails est <b>'+nom+'</b>');
 							$('#mailActuel').css('margin-bottom','40px');
-							$('#chgtDestOK').css('display','block');
+							$('#chgtOK').css('display','block');
+	        				$("#chgtOK").html("Le destinataire des mails a bien été changé");
 							$('#deleteUser').hide();
 		      },// fin succes
 		      error : function(jqXHR, textStatus) {
@@ -458,16 +465,16 @@ $(document).ready(function(){
 				      $('#mail').append(JMenu.clone(true));
 				      for (var i = 0; i < oRep.length; i++) {
 				          if(oRep[i].admin == 1)
-				          	$('#listeMail').append(jOptionSelect.clone(true).html(oRep[i].nom+" "+oRep[i].prenom).val(oRep[i].id));
+				          	$('#listeMail').append(jOptionSelect.clone(true).html(oRep[i].prenom+" "+oRep[i].nom).val(oRep[i].id));
 				          if(oRep[i].admin == 2) {
-				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].nom+" "+oRep[i].prenom+'</b>');
+				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].prenom+" "+oRep[i].nom+'</b>');
 				          }
 				      }
 						}
 						else {
 							for (var i = 0; i < oRep.length; i++) {
 				          if(oRep[i].admin == 2) {
-				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].nom+" "+oRep[i].prenom+'</b>');
+				          	$('#mailActuel').append('Le destinataire actuel des mails est <b>'+oRep[i].prenom+" "+oRep[i].nom+'</b>');
 				          }
 				      }
 						}
@@ -545,9 +552,9 @@ function selectUser() {
 function sendMail(mdp,mailD) {
 
 	var email = "no-reply@decima.fr";
-	var subject = "Mot de passe du compte ";
+	var subject = "Mot de passe du compte";
 
-	var body = "Votre compte a été validé, votre mot de passe est <b>"+mdp+"</b> et votre login est <b>"+mailD +"</b>. Pour vous connecter, rendez vous sur http://185.30.209.4/PINF/";
+	var body = "Votre compte a &eacute;t&eacute; valid&eacute;, votre mot de passe est <b>"+mdp+"</b> et votre login est <b>"+mailD +"</b>. Pour vous connecter, rendez vous sur http://185.30.209.4/PINF/";
 
 	$.ajax({
 		url: 'PHPMailer/mail.php',
@@ -577,7 +584,7 @@ function sendMail(mdp,mailD) {
 
 <body>
 <div id="listeCompte"></div>
-<div id="chgtDestOK">Le destinataire des mails a bien été changé</div>
+<div id="chgtOK"></div>
 <div id="infoSA">
 	<div class="titreSection">Gestion des mails</div>
 	<div id="mailActuel"></div>

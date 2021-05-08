@@ -31,7 +31,7 @@ else
 var popupCreate = $("<div id='popup' title='Créer un compte'>")
 				.append($("<label class='champ'>Nom :</label><input type='text' id='surname'></br>"))
 				.append($("<label class='champ'>Prénom :</label><input type='text' id='firstname'></br>"))
-    			.append($("<label class='champ'>Mail :</label><input type='email' id='mail'></br>"))
+    			.append($("<label class='champ'>Mail :</label><input type='email' id='email'></br>"))
 				.append($("<label class='champ'>Téléphone :</label><input type='text' id='tel'></br>"));
 				
 var popupMdp = $("<div id='popupM' title='Changer le mot de passe'>")
@@ -96,7 +96,7 @@ function updateInfos(idUser) {
 		var mail = '<?php echo $mail;?>';
 		var tel = '<?php echo $tel;?>';
 
-		var newMail = $.trim($("#mail").val());
+		var newMail = $.trim($("#email").val());
 		var newTel = $.trim($("#tel").val());
 
 		if (mail != newMail)
@@ -134,7 +134,7 @@ function sendMail(mailDestinataire) {
 
 	var surname = $("#surname").val().trim();
 	var firstname = $("#firstname").val().trim();
-	var mail = $("#mail").val().trim();
+	var mail = $("#email").val().trim();
 	var tel = $("#tel").val().trim();
 
 	var ok = true;
@@ -158,10 +158,10 @@ function sendMail(mailDestinataire) {
 	if (mail == "" || !validateEmail(mail)) {
 		// Mail invalide
 		ok = false;
-		$("#mail").css("border", "1px solid red");
+		$("#email").css("border", "1px solid red");
 	}
 	else
-		$("#mail").css("border", "");
+		$("#email").css("border", "");
 
 	if (tel == "") {
 		// Téléphone invalide
@@ -242,7 +242,7 @@ function validateEmail($email) {
 }
 
 function emailDoublon(){
-     var mail = $("#mail").val().trim();
+     var mail = $("#email").val().trim();
      $.ajax({
                 url: "libs/dataBdd.php",
                 data:{"action":"VerifMail","mail":mail},
@@ -253,7 +253,7 @@ function emailDoublon(){
                      getMail();
                  }
                  else{
-                 	$("#mail").css("border", "1px solid red");
+                 	$("#email").css("border", "1px solid red");
                     $("#popup").append("<div id='erreurMail'>Cette adresse mail est déjà prise</div>");
                     $("#erreurMail").show();
                  }
@@ -331,7 +331,7 @@ if ($connecte)
             <h4>Modifier mes informations</h4><br/>
             <input type="submit" value="Modifier le mot de passe" onclick="changerMdp();"/>
             <br/><br/>
-            Mail : <input type="text" id="mail" value="<?php echo $mail;?>"/><br/><br/>
+            Mail : <input type="text" id="email" value="<?php echo $mail;?>"/><br/><br/>
             Tél : <input type="text" id="tel"  value="<?php echo $tel;?>"/><br/><br/>
             <input type="submit" name="action" value="Valider" onclick="updateInfos('<?php echo $_SESSION["idUser"];?>');"/><br/><br/>
     </div>
