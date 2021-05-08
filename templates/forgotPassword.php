@@ -151,7 +151,7 @@ function getMail() {
              },
             error : function(jqXHR, textStatus)
             {
-                console.log("erreur");
+                console.log("#erreur");
 
             },
             dataType: "json"
@@ -257,11 +257,15 @@ function forgotPassword() {
 
 	if (validateEmail(mail)) {
 
-		$.ajax({
+		$("#erreur").hide();
+
+		$.ajax({ // ajax 1 vérification de l'existence du compte
 		    url: "libs/dataBdd.php",
 		    data:{"action":"CompteExiste","mail": mail},
 		    type : "GET",
 		    success:function (compteExiste) {
+
+		    	$("#erreur").hide();
 
 		    	console.log(compteExiste);
 
@@ -278,10 +282,10 @@ function forgotPassword() {
 
 				var expediteur = "decima-ne-pas-repondre";
 				var email = "no-reply@decima.fr";
-				var subject = "Mot de passe oublié";
+				var subject = "Code de reinitialisation de votre mot de passe Decima";
 				var body = "Voici le code permettant de vous connecter &agrave; votre compte D&eacute;cima : " + word;
 
-				$.ajax({
+				$.ajax({ // ajax 2 code de validation
 					url: 'PHPMailer/mail.php',
 					method: 'POST',
 					dataType: 'json',
@@ -304,53 +308,87 @@ function forgotPassword() {
 												if (nbEssais) {
 													
 													if ( $("#mailInput").val() == word ) {
-															$.ajax({
-															    url: "libs/dataBdd.php",
-															    data:{"action":"CompteByMail","mail": mail},
-															    type : "GET",
-															    dataType: "json",
-															    success:function (oRep) {
-															    	console.log(oRep);
 
-															    	var login = oRep[0].mail;
-															    	var passe = oRep[0].mdp;
-															    	// connexion
+														$("#erreur").hide();
 
-																	$.ajax({
-													                url: "libs/dataBdd.php",
-													                data:{"action":"Connexion","login":login,"passe":passe,"remember":0},
-													                type : "GET",
-													               
-													                success:function (oRep) {
-																					 	console.log(oRep);
-																					 	document.location.href="./index.php?view=catalogue";
-																					 	alert("Vous avez été reconnecté à votre compte. Nous vous recommandons vivement de changer votre mot de passe dans la section Connexion/Compte");
+														var newPassword = ""
+
+														for (var i = 0; i < 10; i++) {
+															letter = alphabet[Math.floor((Math.random() * alphabet.length))];
+															newPassword += letter;
+														}
+
+														$.ajax({ // ajax 3 changement du mdp dans la BDD
+
+														url: "libs/dataBdd.php",
+													    data:{"action":"resetMdp","login": mail, "newMdp": newPassword},
+													    type : "POST",
+													    dataType: 'json',
+
+													    success:function (response) {
+
+													    	$("#erreur").hide();
+
+														    subject = "Votre nouveau mot de passe Decima";
+															body = "Voici votre nouveau mot de passe permettant de vous connecter &agrave; votre compte D&eacute;cima : " + newPassword;
+
+															$.ajax({ // ajax 4 envoi du nouveau mdp
+															url: 'PHPMailer/mail.php',
+															method: 'POST',
+															dataType: 'json',
+
+															data: {
+																name: "decima-ne-pas-repondre",
+																email: email,
+																subject: subject,
+																body: body,
+																mailD: mail
+															},
+
+															success: function(response) {
+
+																$("#erreur").hide();
+
+
+
+																$("#veuillez").html("Votre mot de passe a été réinitialisé. Vous pouvez à présent vous connecter avec votre nouveau mot de passe envoyé par mail. Il sera ensuite possible de le changer dans l'onglet Connexion/Compte.");
+
+																$("#mailInput").remove();
+
+																$("#erreur").hide();
+
+																$("#Envoyer").click(
+																					function() {
+
+																						document.location.replace("./index.php?view=connexion");
+																					});
+
+																$("#Envoyer").val("Revenir à la page de connexion");
+
 																
-																 		},
-																	error : function(jqXHR, textStatus) {
-																		console.log(textStatus);
-																	$("#erreur").html("Code incorrect").show();
-																	 
-																		},
-																	dataType: "json"
-																	});
-												}
 
-								   		// fin connexion
-
-
-																});
-															} // fin ajax 3
-															else {
-																$("#erreur").html("Code incorrect (" + nbEssais + " essais restants)").show();
 															}
-												}
+														}); // fin ajax 4
+
+
+													    }
+
+														}); // fin ajax 3
+
+
+														
+													}
+													else 
+													{
+														$("#erreur").html("Code incorrect (" + nbEssais + " essais restants)").show();
+													}
+												}	
 												else
 												{
-													document.location.href="./index.php?view=connexion";
+													document.location.replace("./index.php?view=connexion");
 												}
-											}
-										);
+											
+										});
 
 						$("#veuillez").html("Veuillez entrer le code envoyé par mail :");
 						$("#mailInput").val("");
