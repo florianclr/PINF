@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Sam 01 Mai 2021 à 16:28
+-- Généré le :  Dim 09 Mai 2021 à 11:03
 -- Version du serveur :  5.7.33-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.7
 
@@ -90,12 +90,12 @@ CREATE TABLE `devis` (
 --
 
 INSERT INTO `devis` (`id`, `numeroDevis`, `refCA`, `nomProjet`, `nomClient`, `dateCreation`, `etat`, `dateLivraison`, `commentaire`, `PrixTotal`) VALUES
-(1, '11', 1, 'essai', 'essai', '2021-02-23', 'ARCHIVÉ', '2021-04-30', NULL, 1305),
-(2, '23', 1, 'Ferme', 'Benoit', '2021-02-23', 'DEMANDE_COMMANDE', NULL, NULL, 0),
+(1, '11', 1, 'essai', 'essai', '2021-02-23', 'ARCHIVÉ', '2021-04-30', NULL, 997),
 (4, '2', 1, 'Chantier1', 'Jeanne', '2021-04-09', 'LIVRÉ', '2021-04-01', 'Aucun commentaire', 952),
-(8, '4', 2, 'Chantier3', 'Pierre', '2021-03-30', 'LIVRÉ', '2021-05-12', 'Aucun commentaire', 0),
-(11, '12', 4, 'Chantier6', 'Johnson', '2021-04-24', 'EN_FABRICATION', '2021-05-06', NULL, 0),
-(14, '1234', 2, 'testNew', 'Beubeu', '2021-04-28', 'EN_CRÉATION', NULL, NULL, 0);
+(11, '12', 4, 'Chantier6', 'Johnson', '2021-04-24', 'EN_FABRICATION', '2021-05-13', NULL, 0),
+(14, '1234', 6, 'testNew', 'Beubeu', '2021-04-28', 'LIVRÉ', '2021-05-18', 'Validé', 1953),
+(16, '203', 6, 'Tesla', 'Quentin', '2021-05-02', 'EN_FABRICATION', '2021-05-27', 'CC', 308),
+(17, '12345', 7, 'Chantier10', 'defsghj', '2021-05-05', 'ARCHIVÉ', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -119,8 +119,9 @@ CREATE TABLE `dimension` (
 INSERT INTO `dimension` (`id`, `min`, `max`, `refFerrures`, `nom`, `incluePrix`) VALUES
 (1, 20, 50, 1, 'a', 0),
 (2, 80, 100, 1, 'b', 0),
-(3, 0.7, 3, 2, 'a', 1),
-(4, 2.1, 5.7, 2, 'b', 0);
+(3, 1, 3, 2, 'a', 1),
+(4, 4, 6, 2, 'b', 0),
+(5, 15, 20, 32, 'a', 1);
 
 -- --------------------------------------------------------
 
@@ -147,20 +148,18 @@ CREATE TABLE `ferrures` (
 
 INSERT INTO `ferrures` (`id`, `image`, `refMatiere`, `refFinition`, `numeroPlan`, `planPDF`, `refcategories`, `description`, `titre`, `tags`) VALUES
 (1, 'image1.jpeg', 1, 1, '03-0174-00', '03-0174-00', 1, 'support drapeau ', 'support drapeau ', 'support video'),
-(2, 'image2.jpeg', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable', 'support video'),
-(3, 'image1.jpeg', 1, 1, '03-0207-000', 'PDF3', 1, 'socle orientable', 'socle orientable', 'scocle vidéo'),
-(4, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant', 'video'),
-(5, 'image1.jpeg', 1, 1, '03-0234-001', 'pdf1', 2, 'tablier', 'tablier', ''),
-(9, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF10', 2, 'TEST', 'test ferrure', 'ferrure'),
-(10, 'image1.jpeg', 2, 2, '03-0174-00', 'PDF11', 2, 'TEST', 'test ferrure 2', 'ferrure'),
-(11, 'image2.jpeg', 1, 1, '03-0174-00', 'PDF4', 8, 'test', 'ferrure test', 'test'),
+(2, 'image3.jpeg', 1, 1, '03-01-74-000', 'PDF2', 1, 'support réglable', 'support réglable', 'support video'),
+(3, 'image1.jpeg', 1, 1, '03-0207-000', 'PDF3', 1, 'support', 'support', 'support vidéo'),
+(4, 'mat_basculant.jpg', 1, 1, '03-0174-00', 'PDF4', 1, 'mat basculant', 'mat basculant', 'video'),
+(5, 'SET_83779__-606120b7ed01a.jpg', 2, 2, '03-0234-001', 'pdf1', 2, 'attache tablier', 'attache de tablier', 'attache tablier'),
 (18, 'Q3.png', 1, 1, 'SDA2-TP5.pdf', 'SDA2-TP5.pdf', 8, 'frgh', 'qsdcfvg', 'efrgth;qsdcfvg;Test;Acier S235JR;Thermolaqué'),
 (24, 'addFriendPicture.png', 1, 1, 'ISIM TP4 2016.pdf', 'ISIM TP4 2016.pdf', 8, 'n', 'new', 'u;new;Test;Acier S235JR;Thermolaqué'),
 (25, 'addFriendPicture.png', 1, 1, 'secret (1).pdf', 'secret (1).pdf', 8, 'n', 'new2', 'u;new;Test;Acier S235JR;Thermolaqué'),
 (26, 'Truck-Blue.png', 1, 1, 'null', 'null', 8, 'this', 'this', ';this;Test;Acier S235JR;Thermolaqué;undefined'),
 (29, 'zenity-information-screenshot.png', 1, 1, 'null', 'null', 8, 'zertgy', 'hey', 'edqfrgthy;hey;Test;Acier S235JR;Thermolaqué;undefined'),
 (30, 'webclip-icon.png', 1, 1, 'null', 'null', 8, 'edfrgh', 'test3', 'rfgtrh;test3;Test;Acier S235JR;Thermolaqué;undefined'),
-(31, 'tree.jpg', 1, 1, 'null', 'null', 8, 'fdghnj,fbgnh', 'dvfbgnh', ';dvfbgnh;Test;Acier S235JR;Thermolaqué;undefined');
+(31, 'ferrure-pour-plan-de-travail-amovible.jpg', 1, 1, 'null', 'null', 8, 'fdghnj,fbgnh', 'dvfbgnh', ';dvfbgnh;Test;Acier S235JR;Thermolaqué;undefined'),
+(32, 's-l500.jpg', 1, 1, 'null', 'null', 2, 'raccord plan de travail', 'raccord plan', 'raccord plan travail;raccord plan de travail;Audio;Acier S235JR;Thermolaqué;undefined');
 
 -- --------------------------------------------------------
 
@@ -188,9 +187,12 @@ INSERT INTO `ferruresDevis` (`id`, `refFerrures`, `refDevis`, `quantite`, `a`, `
 (16, 1, 1, 1, 20, 80, -1, 308, 2),
 (18, 1, 1, 1, 20, 80, -1, 343, 3),
 (19, 1, 1, 2, 20, 80, -1, 346, 1),
-(21, 1, 1, 1, 20, 80, -1, 308, 2),
 (22, 1, 4, 3, 21, 100, -1, 554, 2),
-(28, 2, 4, 1, 0.7, 2.1, -1, 398, 2);
+(28, 2, 4, 1, 0.7, 2.1, -1, 398, 2),
+(29, 2, 14, 3, 1.7, 4.1, -1, 860, 2),
+(30, 1, 14, 3, 20, 80, -1, 595, 1),
+(32, 2, 14, 2, 0.7, 2.1, -1, 498, 4),
+(33, 1, 16, 1, 20, 80, -1, 308, 2);
 
 -- --------------------------------------------------------
 
@@ -271,7 +273,10 @@ CREATE TABLE `optionDevis` (
 
 INSERT INTO `optionDevis` (`quantité`, `refOption`, `id`, `refFerrureDevis`) VALUES
 (1, 1, 1, 16),
-(1, 2, 2, 16);
+(1, 2, 2, 16),
+(2, 4, 3, 29),
+(1, 1, 4, 30),
+(2, 2, 5, 30);
 
 -- --------------------------------------------------------
 
@@ -309,7 +314,11 @@ INSERT INTO `prix` (`id`, `dimMin`, `dimMax`, `prixU`, `refFerrures`, `qteMin`, 
 (16, 2, 3, 425, 2, 0, 1),
 (17, 2, 3, 294, 2, 2, 4),
 (18, 2, 3, 236, 2, 5, 9),
-(19, 2, 3, 217, 2, 10, 1000);
+(19, 2, 3, 217, 2, 10, 1000),
+(20, 15, 17, 10, 32, 1, 5),
+(21, 18, 20, 15, 32, 1, 5),
+(22, 15, 17, 20, 32, 6, 10),
+(23, 18, 20, 25, 32, 6, 10);
 
 -- --------------------------------------------------------
 
@@ -333,11 +342,13 @@ CREATE TABLE `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mdp`, `mail`, `telephone`, `connecte`, `admin`) VALUES
-(1, 'benoit', 'admin', 'admin', 'benoit.blart@ig2i.centralelille.fr', 123, 0, 0),
-(2, 'Sueur', 'Jeanne', 'jeanne', 'jsu62n@orange.fr', 679296422, 0, 1),
-(3, 'Faget', 'Pierre', 'pierro', 'pierre@ig2i.fr', 1234, 0, 2),
-(4, 'Dumont', 'Mathilde', 'math', 'mathilde@ig2i.fr', 101, 0, 0),
-(5, 'Durand', 'Isabelle', '1b1802', 'isa@ig2i.fr', 909, 0, 1);
+(1, 'benoit', 'admin', '$2y$12$Uh0DsFNaPAaTipEZf7WX/eL.X6ifZEnUjlaySy11Ba/hMYsPL1X2i', 'benoit.blart@ig2i.centralelille.fr', 123, 0, 0),
+(2, 'Sueur', 'Jeanne', '$2y$12$PfbN3yJabf8yJPZLDvcYeuXcJshf0leVJgHUiOzr5OI6omzvI6Zm2', 'jsu62n@orange.fr', 679296422, 0, 2),
+(3, 'Faget', 'Pierre', '$2y$12$MChysjSwAT2KnQ/4hsVSyua/wqDFl9lKPovSycIBdgliGmnLdGn5y', 'pierre@ig2i.fr', 1234, 0, 1),
+(4, 'Dumont', 'Mathilde', '$2y$12$N0wP1XV/UfU5NckXP5A9iuxI4.F7/DnfODEFTNmVBDSywaI4Vr9.e', 'mathilde@ig2i.fr', 101, 0, 0),
+(6, 'Celary', 'Flo', '$2y$12$j7EP1x.iTLjY/0zdJ/axkuxPXf3AJ/GBFfHCU2BuEXwkorvcsMOO.', 'jsu62n@gmail.com', 69, 0, 0),
+(7, 'new', 'new', '$2y$12$O3tAZzrPWoqEkqSVxN3n5edsrXMkyRliH48z6pnoT4zOfumLpTgy6', 'new@new.fr', 1, 0, 0),
+(13, 'Sagnol', 'Quentin', NULL, 'quentin@ig2i.fr', 122, 0, 0);
 
 --
 -- Index pour les tables exportées
@@ -445,22 +456,22 @@ ALTER TABLE `couleursFerrures`
 -- AUTO_INCREMENT pour la table `devis`
 --
 ALTER TABLE `devis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 --
 -- AUTO_INCREMENT pour la table `dimension`
 --
 ALTER TABLE `dimension`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT pour la table `ferrures`
 --
 ALTER TABLE `ferrures`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 --
 -- AUTO_INCREMENT pour la table `ferruresDevis`
 --
 ALTER TABLE `ferruresDevis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 --
 -- AUTO_INCREMENT pour la table `finition`
 --
@@ -480,17 +491,17 @@ ALTER TABLE `option`
 -- AUTO_INCREMENT pour la table `optionDevis`
 --
 ALTER TABLE `optionDevis`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT pour la table `prix`
 --
 ALTER TABLE `prix`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 --
 -- AUTO_INCREMENT pour la table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- Contraintes pour les tables exportées
 --
