@@ -56,33 +56,71 @@ $pseudo = valider("pseudo","SESSION");
     '</select>"').change(function(){
         var newEtat = $(this).val(); 
         var select = $(this); 
-        var date = $("#datePicker").val(); 
+        var date = $("#datepicker").val(); 
         var oldEtat = $("#etat").data("current");
     
-        if( (newEtat == 'LIVRÉ' || newEtat == 'EN_FABRICATION') &&  date==null){
-          alert("Veuillez sélectionner une date de livraison avant de changer l'état.");
-          $(this).val($("#etat").data("current"));
-          return; 
+    	if(newEtat =="EN_CRÉATION" && oldEtat != "DEMANDE_COMMANDE"){
+    		alert("Impossible de repasser le devis en création");
+        	$(this).val($("#etat").data("current"));
+        	return; 
+    	}
+
+        if (newEtat =="LIVRÉ"){
+        	if(oldEtat != "EN_FABRICATION"){
+        		alert("Veuillez passe le debis en fabrication d'abord");
+        		$(this).val($("#etat").data("current"));
+        		return; 
+        	}
+        	if (date==null){
+        		alert("Veuillez sélectionner une date de livraison avant de changer l'état.");
+        		$(this).val($("#etat").data("current"));
+        		return; 
+        	}
         }
-        if (newEtat == 'COMMANDE_VALIDÉE'){
-          $("#dateLivraison").replaceWith(jDate.clone(true));
+
+        if (newEtat =="EN_FABRICATION"){
+        	if(oldEtat != "COMMANDE_VALIDÉE" && oldEtat!="LIVRÉ"){
+        		alert("Veuillez passe le debis en fabrication d'abord");
+        		$(this).val($("#etat").data("current"));
+        		return; 
+        	}
+        	if (date==''){
+        		alert("Veuillez sélectionner une date de livraison avant de changer l'état.");
+        		$(this).val($("#etat").data("current"));
+        		return; 
+        	}
+        }
+
+        if (newEtat=="ARCHIVÉ" && oldEtat !="LIVRÉ"){
+        	alert("Impossible d'archiver une devis qui n'a pas été livré");
+        	$(this).val($("#etat").data("current"));
+        		return;
+        }
+
+        if (newEtat =="DEMANDE_COMMANDE" && oldEtat!="EN_CRÉATION"){
+        	alert("Impossible le devis est déjà passé en commande ");
+        	$(this).val($("#etat").data("current"));
+        		return;
+        }
+
+        if (newEtat =="COMMANDE_VALIDÉE"){
+        	 if (oldEtat == "EN_FABRICATION" && newEtat =="COMMANDE_VALIDÉE"){
+	          $("#datepicker").val(""); 
+	          annulerDevis(idDevis); 
+	          return ; 
+        	}
+
+        	if(oldEtat != "DEMANDE_COMMANDE"){
+        		alert("Impossible de valider la commande car soit elle est déjà validée ou la demande n'a pas été faite");
+        		$(this).val($("#etat").data("current"));
+        		return ; 
+        	}
+
+        	if(oldEtat =="DEMANDE_COMMANDE"){
+        		 $("#dateLivraison").replaceWith(jDate.clone(true));
           datePicker();
           $("#datepicker").val("");
-        }
-
-        if ( newEtat=="EN_CRÉATION" && (oldEtat != "EN_CRÉATION" || oldEtat != "DEMANDE_COMMANDE") ){
-          alert("Impossible de revenir dans cet état !");
-          return; 
-        }
-
-        if ( newEtat =="LIVRÉ" && (oldEtat == "EN_CRÉATION" || oldEtat =="DEMANDE_COMMANDE")){
-          alert("Impossible de livrer le devis car il doit d'abord être passé en commande.");
-          return; 
-        }
-
-        if (oldEtat == "EN_FABRICATION" && newEtat =="COMMANDE_VALIDÉE"){
-          $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>'));
-          annulerDevis(idDevis); 
+        	}
         }
 
         $.ajax({
@@ -384,7 +422,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
                     $("#numDevis").html(oRep[0].numeroDevis);
                     $("#dateCreation").html(oRep[0].dateCreation);
 
-                    if(admin==0 || (oRep[0].etat=="ARCHIVÉ" || oRep[0].etat=="EN_CRÉATION" || oRep[0].etat=="DEMANDE_COMMANDE")){
+                    if(admin==0 || (oRep[0].etat=="ARCHIVÉ" || oRep[0].etat=="LIVRÉ" || oRep[0].etat=="EN_CRÉATION" || oRep[0].etat=="DEMANDE_COMMANDE")){
                       $("#datepicker").replaceWith($('<p id="datepicker" text-align="left"></p>').html(oRep[0].dateLivraison));
                     }
 
