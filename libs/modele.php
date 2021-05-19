@@ -11,7 +11,7 @@ function listerCategories($cat)
         return parcoursRs(SQLSelect($SQL));
     }
     else {
-        $SQL="SELECT * FROM catalogue";
+        $SQL="SELECT * FROM catalogue ORDER BY nomCategorie";
         return parcoursRs(SQLSelect($SQL));
     }
 }
