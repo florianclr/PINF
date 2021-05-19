@@ -506,7 +506,7 @@ var jDisplayArchive=$('<div class="buttonsCenter"><label for="archive">Afficher 
 			        	$("#lig0")
 			        	.after($('<tr id="lig'+(i+1)+'""><td class="tabDevis" id="img"></td><td class="tabDevis" id="nomF'+i+'"></td><td class="tabDevis" id="qte'+i+'"></td></td><td id="dim'+i+'""><b>dim1 : </b>'+oRep[i].a+'</br><b>dim2 : </b>'+oRep[i].b+'</br><b>dim3 : </b>'+oRep[i].c+'</td><td>'+oRep[i].couleur+'</td><td class="tabDevis"id="prix'+i+'""></tr>'));
 
-			        	if($("#etat").text() =="EN_CRÉATION"  ||( admin==1 || admin==2)){
+			        	if($("#etat").text() =="EN_CRÉATION" || ((admin==1 || admin==2) && $("#etat").text() != "ARCHIVÉ" && $("#etat option:selected").val() != "LIVRÉ")){
         					$("#img").prepend(jImg.clone(true).attr("id",oRep[i].id));
         				}
 
