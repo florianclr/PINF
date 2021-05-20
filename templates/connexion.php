@@ -106,6 +106,7 @@ function updateInfos(idUser) {
                     type : "PUT",
                     success: function (oRep) {
                     	console.log(oRep);
+			$("#modifOK").remove();
                     	$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
                     },
                     dataType: "json"
@@ -119,6 +120,7 @@ function updateInfos(idUser) {
                     type : "PUT",
                     success:function (oRep){
                     	console.log(oRep);
+			$("#modifOK").remove();
                     	$("#compte").before("<div id='modifOK'>Les changements ont bien été effectués</div>");
                     },
                     dataType: "json"
