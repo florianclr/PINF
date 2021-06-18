@@ -499,6 +499,18 @@ if ($action = valider("action"))
                 echo(json_encode($tab));
             break ;
             
+            case 'GET_maxQte' :
+            	if($idProduit=valider("idProduit")) {
+            		$dimension=valider("dimension");
+            		
+            		if ($dimension==0)
+            			$dimension=null;
+            			
+            		$tab = maxQte($idProduit, $dimension);
+            	}
+                echo(json_encode($tab));
+            break;
+            
             case 'POST_AjouterAuDevis' :
             	if($idUser=valider("idUser"))
                 if($idUser==$idUserCo)

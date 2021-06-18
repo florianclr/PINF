@@ -379,6 +379,15 @@ function getMdp($login){
 		
         return SQLGetChamp($SQL);
 	}
+	
+	function maxQte($idProduit, $dimension) {
+		if ($dimension == null)
+			$SQL="SELECT prixU FROM `prix` WHERE refFerrures='$idProduit' AND qteMax >= (SELECT MAX(qteMax) FROM `prix` WHERE refFerrures='$idProduit')"; 
+		else
+			$SQL="SELECT prixU FROM `prix` WHERE refFerrures='$idProduit' AND dimMin <= '$dimension' AND dimMax >= '$dimension' AND qteMax >= (SELECT MAX(qteMax) FROM `prix` WHERE refFerrures='$idProduit')"; 
+		
+		return SQLGetChamp($SQL);
+	}
 
 	function ajouterAuDevis($refFerrures, $refDevis, $quantite, $a, $b, $c, $prix,$couleur)
 	{
