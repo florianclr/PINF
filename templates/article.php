@@ -116,7 +116,7 @@
   				if ($("#qteFerrure").val() <= 0) {
   					$('input:checkbox[id="checkOpt"]').prop("checked", false);
         			$("#qteOpt").remove();
-  					$("#warning").remove();
+  						$("#warning").remove();
       				$("#quantite").append("<div id='warning'>La quantité est négative ou nulle</div>");
       				$("#majPrix").html(0);
       			}
@@ -209,7 +209,7 @@
       		$("#popUpDevis").append(jLabel.clone(true)); 
     		// Tableau options copie
       		$("#popUpDevis").append(jcloneOption);
-      		$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier</div>');
+      		$("#popUpDevis").append('<div id="indic">Appuyez sur ENTREE dès que vous saisissez une quantité au clavier.</br>&#9888; Décocher les options avant de modifier la quantité globale pour éviter un bug au niveau du calcul du prix.</div>');
     		// pour chaque option on ajoute une checkbox pour l'inclure ou pas dans le prix
       		$("#popUpDevis #options tr").each(function(){
         		$(this).prepend(jCheckBox.clone(true));
@@ -633,6 +633,7 @@ function finirCommande() {
 }
 
 function calculPrix() {
+
 	if (isPrixInclude != '') {
 		if (dim == 0)
 			dim = $("."+isPrixInclude).val();
@@ -642,10 +643,29 @@ function calculPrix() {
 			data:{"action":"calculerPrix","idProduit":produit,"quantite":qte,"dimension":dim},
 			type : "GET",
 			success: function(oRep){
-				prixDisplay -= prixTemp;
-				prixTemp = parseInt(oRep,10)*qte;
-				prixDisplay += parseInt(oRep,10)*qte;
-				$("#majPrix").html(prixDisplay);
+				if (oRep == false) {
+					$.ajax({
+						url: "libs/dataBdd.php",
+						data:{"action":"maxQte","idProduit":produit,"dimension":dim},
+						type : "GET",
+						success: function(oData){
+							prixDisplay -= prixTemp;
+							prixTemp = parseInt(oData,10)*qte;
+							prixDisplay += parseInt(oData,10)*qte;
+							$("#majPrix").html(prixDisplay);
+						},
+						error : function(jqXHR, textStatus) {
+							console.log("erreur");
+						},
+						dataType: "json"
+					});
+				}
+				else {
+					prixDisplay -= prixTemp;
+					prixTemp = parseInt(oRep,10)*qte;
+					prixDisplay += parseInt(oRep,10)*qte;
+					$("#majPrix").html(prixDisplay);
+				}
 			},
 			error : function(jqXHR, textStatus) {
 			  console.log("erreur");
@@ -660,10 +680,29 @@ function calculPrix() {
 			data:{"action":"calculerPrix","idProduit":produit,"quantite":qte,"dimension":"0"},
 			type : "GET",
 			success: function(oRep){
-				prixDisplay -= prixTemp;
-				prixTemp = parseInt(oRep,10)*qte;
-				prixDisplay += parseInt(oRep,10)*qte;
-				$("#majPrix").html(prixDisplay);
+				if (oRep == false) {
+					$.ajax({
+						url: "libs/dataBdd.php",
+						data:{"action":"maxQte","idProduit":produit,"dimension":"0"},
+						type : "GET",
+						success: function(oData){
+							prixDisplay -= prixTemp;
+							prixTemp = parseInt(oData,10)*qte;
+							prixDisplay += parseInt(oData,10)*qte;
+							$("#majPrix").html(prixDisplay);
+						},
+						error : function(jqXHR, textStatus) {
+							console.log("erreur");
+						},
+						dataType: "json"
+					});
+				}
+				else {
+					prixDisplay -= prixTemp;
+					prixTemp = parseInt(oRep,10)*qte;
+					prixDisplay += parseInt(oRep,10)*qte;
+					$("#majPrix").html(prixDisplay);
+				}
 			},
 			error : function(jqXHR, textStatus) {
 			  console.log("erreur");
